@@ -49,7 +49,7 @@ export const GET = async ({ path, params }: ApiOptions) => {
       result = (await axios.get(url, addAuthHeader({ withCredentials: true })))
         ?.data;
     }
-    return result;
+    return result?.metadata ? result?.metadata : result;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
       const errorResponse = err.response?.data || {
@@ -73,7 +73,7 @@ export const POST = async ({ path, payload, params }: ApiOptions) => {
         withCredentials: true,
       })
     );
-    return data;
+    return data?.metadata ? data?.metadata : data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
       const errorResponse = err.response?.data || {
