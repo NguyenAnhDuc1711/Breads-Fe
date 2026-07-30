@@ -9,25 +9,24 @@ import {
   MenuList,
   useColorMode,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BsBrightnessHigh } from "react-icons/bs";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { MdOutlineBrightness2 } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch } from "../../hooks/redux";
 import { openPopup } from "../../store/ReportSlice";
 import { logout } from "../../store/UserSlice/asyncThunk";
 import { showToast } from "../../store/UtilSlice";
-import { changePage } from "../../store/UtilSlice/asyncThunk";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 
 const SidebarMenu = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [isSubMenuOpen1, setIsSubMenuOpen1] = useState(false);
@@ -125,8 +124,7 @@ const SidebarMenu = () => {
   const handleLogout = async () => {
     try {
       dispatch(logout());
-      dispatch(changePage({ nextPage: PageConstant.LOGIN }));
-      navigate("/auth");
+      router.push(`/${PageConstant.AUTH}/${PageConstant.LOGIN}`);
     } catch (error: any) {
       dispatch(
         showToast({
