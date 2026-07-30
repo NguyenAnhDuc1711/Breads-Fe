@@ -1,9 +1,10 @@
+import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
 import { IPost, ISurveyOption } from "../../../../store/PostSlice";
 import { selectSurveyOption } from "../../../../store/PostSlice/asyncThunk";
-import { isAdminPage } from "../../../../util";
+import { getIsAdminPage } from "../../../../util";
 import "./index.css";
 
 const SurveyOption = ({
@@ -15,6 +16,8 @@ const SurveyOption = ({
   post: IPost;
   isParentPost?: boolean;
 }) => {
+  const pathname = usePathname();
+  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const handleTickOption = () => {
@@ -43,7 +46,7 @@ const SurveyOption = ({
       <p
         className="value"
         style={
-          isAdminPage
+          isAdmin
             ? {
                 textOverflow: "ellipsis",
                 overflow: "hidden",
@@ -55,13 +58,13 @@ const SurveyOption = ({
       >
         {option.value}
       </p>
-      {!isAdminPage && (
+      {!isAdmin && (
         <div className="action-wrapper">
           <p className="percent">{percent}%</p>
           <input
             type="checkbox"
             onChange={() => {
-              if (!isParentPost && !isAdminPage) {
+              if (!isParentPost && !isAdmin) {
                 handleTickOption();
               }
             }}

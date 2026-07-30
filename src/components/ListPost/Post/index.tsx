@@ -11,6 +11,7 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import moment from "moment";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { RiDoubleQuotesL } from "react-icons/ri";
@@ -23,7 +24,7 @@ import usePopupCancel from "../../../hooks/usePopupCancel";
 import useSocket from "../../../hooks/useSocket";
 import { AppState } from "../../../store";
 import { IPost, updatePostLike } from "../../../store/PostSlice";
-import { isAdminPage } from "../../../util";
+import { getIsAdminPage } from "../../../util";
 import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import CustomLinkPreview from "../../../util/CustomLinkPreview";
 import PopupCancel from "../../../util/PopupCancel";
@@ -51,6 +52,8 @@ const Post = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const pathname = usePathname();
+  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const { colorMode } = useColorMode();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
@@ -120,7 +123,7 @@ const Post = ({
               >
                 {moment(post?.createdAt).fromNow()}
               </Text>
-              {!isParentPost && !isAdminPage && (
+              {!isParentPost && !isAdmin && (
                 <div className="btn-more-action">
                   <ClickOutsideComponent
                     onClose={() => {
