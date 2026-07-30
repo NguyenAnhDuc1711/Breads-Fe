@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
-export const serverUrl: string = "http://localhost:4000";
+export const serverUrl: string =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 interface ApiOptions {
   path: string;
