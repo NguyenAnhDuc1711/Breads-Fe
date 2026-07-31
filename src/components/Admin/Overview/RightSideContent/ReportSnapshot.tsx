@@ -1,16 +1,33 @@
+"use client";
+
 import { Container, Flex, Text } from "@chakra-ui/react";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { ANALYTICS_PATH, Route } from "../../../../Breads-Shared/APIConfig";
 import { useAppSelector } from "../../../../hooks/redux";
 import Socket from "../../../../socket";
 import { AppState } from "../../../../store";
-import BarGraph from "../AnalyticsGraph/BarGraph";
 import DetailStatisticTable from "../AnalyticsGraph/DetailStatistic";
-import DoughnutGraph from "../AnalyticsGraph/DonutGraph";
-import LineGraph from "../AnalyticsGraph/LineGraph";
-import MapGraph from "../AnalyticsGraph/MapGraph";
-import DateRangeView from "../utils/DateRange";
 import { sortObjectByValue } from "../utils";
+
+// chart.js/react-chartjs-2 (Bar/Line/Doughnut) and chartjs-chart-geo (Map)
+// touch canvas/window at module/mount time; react-date-range touches
+// document for portal positioning. All four load client-only.
+const BarGraph = dynamic(() => import("../AnalyticsGraph/BarGraph"), {
+  ssr: false,
+});
+const DoughnutGraph = dynamic(() => import("../AnalyticsGraph/DonutGraph"), {
+  ssr: false,
+});
+const LineGraph = dynamic(() => import("../AnalyticsGraph/LineGraph"), {
+  ssr: false,
+});
+const MapGraph = dynamic(() => import("../AnalyticsGraph/MapGraph"), {
+  ssr: false,
+});
+const DateRangeView = dynamic(() => import("../utils/DateRange"), {
+  ssr: false,
+});
 
 const ReportSnapshot = () => {
   const dateRange = useAppSelector(
