@@ -1,8 +1,15 @@
+"use client";
+
 import { Flex } from "@chakra-ui/react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { REPORT_PATH, Route } from "../../Breads-Shared/APIConfig";
-import ReportBox from "../../components/Admin/Report";
 import InfiniteScroll from "../../components/InfiniteScroll";
+
+// @uiw/react-md-editor touches window/navigator at import time.
+const ReportBox = dynamic(() => import("../../components/Admin/Report"), {
+  ssr: false,
+});
 import { GET } from "../../config/API";
 import { useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";

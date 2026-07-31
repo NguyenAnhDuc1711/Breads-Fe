@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar } from "@chakra-ui/avatar";
 import { Box, Divider, Flex, Link, Text, VStack } from "@chakra-ui/layout";
 import {
@@ -23,7 +25,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CgDanger, CgMoreO } from "react-icons/cg";
 import { FaLink } from "react-icons/fa";
-import { Link as RouterLink } from "react-router-dom";
+import NextLink from "next/link";
 import { EmptyContentSvg } from "../assests/icons";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
@@ -158,7 +160,7 @@ const UserHeader = ({
         </Flex>
         <Text>{user?.bio}</Text>
         {userInfo._id === user?._id && (
-          <Link as={RouterLink} to="/update">
+          <Link as={NextLink} href="/update">
             <Button size={"sm"} w={"full"}>
               {" "}
               {t("updateprofile")}

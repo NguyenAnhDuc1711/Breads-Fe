@@ -1,4 +1,8 @@
+"use client";
+
 import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
+import NextLink from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { BiLogIn } from "react-icons/bi";
 import { BsFilePost } from "react-icons/bs";
@@ -8,7 +12,6 @@ import { FiSearch } from "react-icons/fi";
 import { GrHomeRounded, GrOverview } from "react-icons/gr";
 import { MdAdd } from "react-icons/md";
 import { TbMessageReport } from "react-icons/tb";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { LeftSideBarWidth } from "..";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
@@ -22,20 +25,19 @@ import {
   updateHasNotification,
 } from "../../store/NotificationSlice";
 import { updatePostAction } from "../../store/PostSlice";
-import { changeDisplayPageData } from "../../store/UtilSlice";
-import { changePage } from "../../store/UtilSlice/asyncThunk";
+import { getCurrentPage, getPathForPage } from "../../util/route";
 import SidebarMenu from "./SidebarMenu";
 
 const LeftSideBar = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { colorMode, toggleColorMode } = useColorMode();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { colorMode } = useColorMode();
 
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
-  const { currentPage, displayPageData } = useAppSelector(
-    (state: AppState) => state.util
-  );
+  // Active item now comes from the URL, not from Redux (AD-4).
+  const currentPage = getCurrentPage(pathname);
   const hasNewNotification = useAppSelector(
     (state: AppState) => state.notification.hasNewNotification
   );
@@ -103,19 +105,11 @@ const LeftSideBar = () => {
   };
 
   const getItemPropByPage = (page, queryInParams = "") => {
-    const linkTo = "/" + page + (queryInParams ?? "");
+    const linkTo = getPathForPage(page, queryInParams);
     return {
       linkTo: linkTo,
       onClick: () => {
-        if (currentPage !== page) {
-          dispatch(
-            changePage({
-              currentPage,
-              nextPage: page,
-            })
-          );
-        }
-        navigate(linkTo);
+        router.push(linkTo);
       },
       color: getButtonColor(currentPage === page, colorMode),
     };
@@ -145,12 +139,6 @@ const LeftSideBar = () => {
         {
           icon: <GrHomeRounded size={24} />,
           ...getItemPropByPage(PageConstant.HOME),
-          onClick: () => {
-            getItemPropByPage(PageConstant.HOME).onClick();
-            if (displayPageData !== PageConstant.FOR_YOU) {
-              dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
-            }
-          },
         },
         {
           icon: <FiSearch size={24} />,
@@ -182,12 +170,11 @@ const LeftSideBar = () => {
     : [
         {
           icon: <BiLogIn size={24} />,
-          ...getItemPropByPage(PageConstant.AUTH),
+          ...getItemPropByPage(PageConstant.AUTH, `/${PageConstant.LOGIN}`),
         },
       ];
 
   if (
-    !currentPage ||
     currentPage === PageConstant.LOGIN ||
     currentPage === PageConstant.SIGNUP
   ) {
@@ -217,7 +204,7 @@ const LeftSideBar = () => {
           color={colorMode === "dark" ? "white" : "black"}
           position="relative"
         >
-          <Link as={RouterLink} to={"/"}>
+          <Link as={NextLink} href={"/"}>
             <Box m={5}>
               <Image
                 cursor={"pointer"}
@@ -228,17 +215,6 @@ const LeftSideBar = () => {
                     ? "/bread-logo-dark.svg"
                     : "/bread-logo-light.svg"
                 }
-                onClick={() => {
-                  if (currentPage !== PageConstant.HOME) {
-                    dispatch(
-                      changePage({ currentPage, nextPage: PageConstant.HOME })
-                    );
-                    if (displayPageData !== PageConstant.FOR_YOU) {
-                      dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
-                    }
-                  }
-                  navigate("/");
-                }}
               />
             </Box>
           </Link>
@@ -264,8 +240,8 @@ const LeftSideBar = () => {
                 >
                   {item?.linkTo ? (
                     <Link
-                      as={RouterLink}
-                      to={item.linkTo}
+                      as={NextLink}
+                      href={item.linkTo}
                       borderRadius="md"
                       width={"100%"}
                       height={"100%"}
@@ -332,8 +308,8 @@ const LeftSideBar = () => {
                 >
                   {item?.linkTo ? (
                     <Link
-                      as={RouterLink}
-                      to={item.linkTo}
+                      as={NextLink}
+                      href={item.linkTo}
                       _hover={{ textDecoration: "none" }}
                     >
                       {item.icon}

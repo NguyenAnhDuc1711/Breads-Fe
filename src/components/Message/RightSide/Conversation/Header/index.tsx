@@ -1,3 +1,5 @@
+"use client";
+
 import { InfoIcon } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -7,8 +9,8 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../../hooks/redux";
 import { AppState } from "../../../../../store";
 import { addEvent } from "../../../../../util";
@@ -23,7 +25,7 @@ const ConversationHeader = ({
   setOpenDetailTab: Function;
   onBack: Function;
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const selectedConversation = useAppSelector(
     (state: AppState) => state.message.selectedConversation
   );
@@ -84,7 +86,7 @@ const ConversationHeader = ({
           src={participant?.avatar}
           size={"sm"}
           onClick={() => {
-            navigate(`/users/${participant?._id}`);
+            router.push(`/users/${participant?._id}`);
           }}
         />
         <Text display={"flex"} alignItems={"center"}>

@@ -1,3 +1,5 @@
+"use client";
+
 import { Flex } from "@chakra-ui/react";
 import { useEffect, useMemo } from "react";
 import { Constants } from "../Breads-Shared/Constants";
@@ -13,10 +15,9 @@ import { addEvent } from "../util";
 import { showToast } from "../store/UtilSlice";
 import { useTranslation } from "react-i18next";
 
-const PostDetail = () => {
+const PostDetail = ({ postId }: { postId: string }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const postId = window.location.pathname.split("/")?.[2];
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const postSelected = useAppSelector(
     (state: AppState) => state.post.postSelected

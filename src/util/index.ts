@@ -477,7 +477,8 @@ export const getEmojiNameFromIcon = (emojiIcon) => {
   return emjStr;
 };
 
-export const isAdminPage = window.location.pathname.includes("admin");
+export const getIsAdminPage = (pathname: string | null) =>
+  !!pathname?.includes("admin");
 
 export const getAnalyticsInfoFromBrowser = async () => {
   const deviceInfo = {

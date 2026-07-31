@@ -1,3 +1,5 @@
+"use client";
+
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -16,6 +18,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
@@ -23,10 +26,10 @@ import CodePopup from "../components/CodePopup";
 import { useAppDispatch } from "../hooks/redux";
 import { signUp, validateEmailByCode } from "../store/UserSlice/asyncThunk";
 import { showToast } from "../store/UtilSlice";
-import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const Signup = () => {
   const { t } = useTranslation();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [inputs, setInputs] = useState({
@@ -152,12 +155,7 @@ const Signup = () => {
           })
         );
         setTimeout(() => {
-          dispatch(
-            changePage({
-              nextPage: PageConstant.LOGIN,
-              currentPage: PageConstant.SIGNUP,
-            })
-          );
+          router.push(`/${PageConstant.AUTH}/${PageConstant.LOGIN}`);
         }, 500);
       } else {
         const { errorType, error } = result.payload;
@@ -332,14 +330,7 @@ const Signup = () => {
                 {t("hadAccount")}{" "}
                 <Link
                   color={"blue.400"}
-                  onClick={() => {
-                    dispatch(
-                      changePage({
-                        nextPage: PageConstant.LOGIN,
-                        currentPage: PageConstant.SIGNUP,
-                      })
-                    );
-                  }}
+                  onClick={() => router.push(`/${PageConstant.AUTH}/${PageConstant.LOGIN}`)}
                 >
                   {t("SignIn")}
                 </Link>

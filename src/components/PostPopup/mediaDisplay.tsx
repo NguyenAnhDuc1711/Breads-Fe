@@ -1,7 +1,9 @@
+"use client";
+
 import { CloseIcon } from "@chakra-ui/icons";
 import { Button, Flex, Image } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Constants } from "../../Breads-Shared/Constants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
@@ -19,7 +21,7 @@ const MediaDisplay = ({
   media?: any;
 }) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const postAction = useAppSelector((state: AppState) => state.post.postAction);
   const mediaContainerRef = useRef<any>(null);
   const isDragging = useRef(false);
@@ -96,7 +98,7 @@ const MediaDisplay = ({
     }
   };
   const handleSeeDetail = () => {
-    navigate(`/posts/${post?._id}`);
+    router.push(`/posts/${post?._id}`);
   };
 
   return (

@@ -6,8 +6,8 @@ import {
   Input,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
@@ -21,7 +21,7 @@ const CreatePostBar = () => {
   const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const navigate = useRouter().push;
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
 
   const handleOpenPostPopup = () => {

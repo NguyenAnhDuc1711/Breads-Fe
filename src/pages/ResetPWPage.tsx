@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Button,
   Flex,
@@ -8,10 +10,10 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { decodeString } from "../Breads-Shared/util";
 import { handleUpdatePW } from "../components/UpdateUser/changePWModal";
@@ -20,13 +22,25 @@ import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 import ErrorPage from "./ErrorPage";
 
-const ResetPWPage = () => {
+const ResetPWPage = ({
+  userId,
+  code,
+}: {
+  userId: string;
+  code: string;
+}) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { userId, code } = useParams();
-  const encodedCode = localStorage.getItem("encodedCode");
-  const isTrueCode: boolean = decodeString(encodedCode ?? "") === code;
+  const router = useRouter();
+  // localStorage is only readable client-side — start false (SSR-safe
+  // default) and resolve for real once mounted, rather than reading it
+  // directly in the render body.
+  const [isTrueCode, setIsTrueCode] = useState(false);
+
+  useEffect(() => {
+    const encodedCode = localStorage.getItem("encodedCode");
+    setIsTrueCode(decodeString(encodedCode ?? "") === code);
+  }, [code]);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     password: "",
@@ -63,7 +77,7 @@ const ResetPWPage = () => {
               localStorage.setItem("userId", userId);
               localStorage.removeItem("encodedCode");
               setTimeout(() => {
-                navigate("/");
+                router.push("/");
                 window.location.reload();
               }, 100);
             }

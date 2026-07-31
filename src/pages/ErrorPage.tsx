@@ -1,13 +1,15 @@
+"use client";
+
 import { Container, Text, Button, VStack } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 const ErrorPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleGoBack = (): void => {
-    navigate("/");
+    router.push("/");
   };
 
   return (

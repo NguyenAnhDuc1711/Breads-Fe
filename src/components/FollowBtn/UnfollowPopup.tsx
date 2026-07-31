@@ -8,6 +8,7 @@ import {
   Button,
   Flex,
 } from "@chakra-ui/react";
+import { useRef } from "react";
 import { IUserShortInfo } from "../../store/PostSlice";
 
 const UnFollowPopup = ({
@@ -21,8 +22,14 @@ const UnFollowPopup = ({
   onClose: Function;
   onClick: Function;
 }) => {
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
   return (
-    <AlertDialog isOpen={isOpen} onClose={() => onClose()}>
+    <AlertDialog
+      isOpen={isOpen}
+      onClose={() => onClose()}
+      leastDestructiveRef={cancelRef}
+    >
       <AlertDialogOverlay>
         <AlertDialogContent
           width={"fit-content"}
@@ -54,6 +61,7 @@ const UnFollowPopup = ({
             borderTop={"1px solid gray"}
           >
             <Button
+              ref={cancelRef}
               onClick={() => onClose()}
               width={"50%"}
               borderRadius={0}

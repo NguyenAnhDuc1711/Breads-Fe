@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Container, Flex, Image, Box, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";

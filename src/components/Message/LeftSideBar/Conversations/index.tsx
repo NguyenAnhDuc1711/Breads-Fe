@@ -1,6 +1,8 @@
+"use client";
+
 import { Flex, useBreakpointValue } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { EmptyContentSvg } from "../../../../assests/icons";
 import { MESSAGE_PATH, Route } from "../../../../Breads-Shared/APIConfig";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
@@ -23,7 +25,8 @@ const Conversations = ({
   searchValue: string;
   onSelect: Function;
 }) => {
-  const { conversationId } = useParams();
+  const conversationId = useParams<{ conversationId?: string }>()
+    ?.conversationId;
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const currentPage = useAppSelector(

@@ -1,27 +1,29 @@
+"use client";
+
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
+import { usePathname, useRouter } from "next/navigation";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { HeaderHeight } from ".";
 import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { containerBoxWidth } from "../components/MainBoxLayout";
-import { useAppDispatch, useAppSelector } from "../hooks/redux";
+import { useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
-import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";
+import { getCurrentPage, getDisplayPageData } from "../util/route";
 import { BtnLike, BtnMess } from "./LeftSideBar/ActionsBtns";
 
 const Header = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
+  const pathname = usePathname();
   const { colorMode } = useColorMode();
   const { t } = useTranslation();
 
-  const { currentPage, displayPageData } = useAppSelector(
-    (state: AppState) => state.util
-  );
+  // Active section / tab now comes from the URL, not from Redux (AD-4).
+  const currentPage = getCurrentPage(pathname);
+  const displayPageData = getDisplayPageData(pathname);
   const { userInfo, userSelected } = useAppSelector(
     (state: AppState) => state.user
   );
@@ -109,8 +111,11 @@ const Header = () => {
         [t("reposts")]: PageConstant.REPOSTS,
       };
       const targetPage = activityPageMap[item];
-      navigate(PageConstant.ACTIVITY + "/" + targetPage);
-      dispatch(changeDisplayPageData(targetPage));
+      router.push(
+        targetPage
+          ? `/${PageConstant.ACTIVITY}/${targetPage}`
+          : `/${PageConstant.ACTIVITY}`
+      );
     } else {
       const pageMap = {
         [t("forYou")]: PageConstant.FOR_YOU,
@@ -119,8 +124,7 @@ const Header = () => {
         [t("saved")]: PageConstant.SAVED,
       };
       const targetPage = pageMap[item] || item;
-      navigate("/" + targetPage);
-      dispatch(changeDisplayPageData(targetPage));
+      router.push("/" + targetPage);
     }
   };
 

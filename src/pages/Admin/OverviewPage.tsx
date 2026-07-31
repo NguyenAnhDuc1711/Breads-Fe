@@ -1,3 +1,5 @@
+"use client";
+
 import { Container, Flex } from "@chakra-ui/react";
 import LeftSideBarOverview from "../../components/Admin/Overview/LeftSideBar";
 import RightSideContentOverview from "../../components/Admin/Overview/RightSideContent";

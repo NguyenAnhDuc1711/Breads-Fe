@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Avatar,
   Button,
@@ -14,9 +16,9 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ChangePWModal from "../components/UpdateUser/changePWModal";
 import LinksModal from "../components/UpdateUser/linksModal";
@@ -34,7 +36,7 @@ const POPUP_TYPE = {
 
 const UpdateProfilePage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [inputs, setInputs] = useState<any>({
@@ -77,7 +79,7 @@ const UpdateProfilePage = () => {
         })
       );
       dispatch(changePage({ nextPage: PageConstant.USER }));
-      navigate(`/users/${userInfo._id}`);
+      router.push(`/users/${userInfo._id}`);
       setUpdating(false);
     }
   }, [userInfo]);
@@ -340,7 +342,7 @@ const UpdateProfilePage = () => {
                   bg: "red.500",
                 }}
                 onClick={() => {
-                  navigate(-1);
+                  router.back();
                 }}
               >
                 {t("cancel")}

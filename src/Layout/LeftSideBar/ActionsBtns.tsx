@@ -1,16 +1,16 @@
+"use client";
+
 import { Button, useColorMode } from "@chakra-ui/react";
+import { usePathname, useRouter } from "next/navigation";
 import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { AppState } from "../../store";
-import { changePage } from "../../store/UtilSlice/asyncThunk";
+import { getCurrentPage } from "../../util/route";
 
 export const BtnLike = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { colorMode, toggleColorMode } = useColorMode();
-  const { currentPage } = useAppSelector((state: AppState) => state.util);
+  const router = useRouter();
+  const pathname = usePathname();
+  const { colorMode } = useColorMode();
+  const currentPage = getCurrentPage(pathname);
 
   const getButtonColor = (isActive, colorMode) => {
     if (isActive) {
@@ -20,10 +20,7 @@ export const BtnLike = () => {
   };
 
   const handleClick = (): void => {
-    if (currentPage !== PageConstant.ACTIVITY) {
-      dispatch(changePage({ currentPage, nextPage: PageConstant.ACTIVITY }));
-    }
-    navigate("/" + PageConstant.ACTIVITY);
+    router.push("/" + PageConstant.ACTIVITY);
   };
 
   return (
@@ -44,12 +41,11 @@ export const BtnLike = () => {
 };
 
 export const BtnMess = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { colorMode, toggleColorMode } = useColorMode();
-  const { currentPage, displayPageData } = useAppSelector(
-    (state: AppState) => state.util
-  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const { colorMode } = useColorMode();
+  const currentPage = getCurrentPage(pathname);
+
   const getButtonColor = (isActive, colorMode) => {
     if (isActive) {
       return colorMode === "dark" ? "#f3f5f7" : "#000000";
@@ -58,10 +54,7 @@ export const BtnMess = () => {
   };
 
   const handleClick = () => {
-    if (currentPage !== PageConstant.CHAT) {
-      dispatch(changePage({ currentPage, nextPage: PageConstant.CHAT }));
-    }
-    navigate("/" + PageConstant.CHAT);
+    router.push("/" + PageConstant.CHAT);
   };
 
   return (

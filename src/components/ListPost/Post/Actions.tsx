@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { usePathname } from "next/navigation";
 import { Fragment, memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IoIosLink } from "react-icons/io";
@@ -30,7 +31,7 @@ import {
   updatePostAction,
 } from "../../../store/PostSlice";
 import { updatePostStatus } from "../../../store/PostSlice/asyncThunk";
-import { addEvent, isAdminPage } from "../../../util";
+import { addEvent, getIsAdminPage } from "../../../util";
 import useCopyLink from "./MoreAction/CopyLink";
 import { openLoginPopupAction } from "../../../store/UtilSlice";
 
@@ -44,6 +45,8 @@ const ACTIONS_NAME = {
 
 const Actions = ({ post }: { post: IPost }) => {
   const { t } = useTranslation();
+  const pathname = usePathname();
+  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [openSubBox, setOpenSubBox] = useState<boolean>(false);
@@ -147,7 +150,7 @@ const Actions = ({ post }: { post: IPost }) => {
     );
   };
 
-  if (isAdminPage) {
+  if (isAdmin) {
     return (
       <Flex alignItems={"center"} gap={3} width={"100%"} mt={1}>
         <Button

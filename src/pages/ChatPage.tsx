@@ -1,6 +1,7 @@
+"use client";
+
 import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import LeftSideBarMsg from "../components/Message/LeftSideBar";
 import RightSideMsg from "../components/Message/RightSide";
@@ -11,9 +12,8 @@ import { getConversationById } from "../store/MessageSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 
-const ChatPage = () => {
+const ChatPage = ({ conversationId }: { conversationId?: string }) => {
   const dispatch = useAppDispatch();
-  const { conversationId } = useParams();
   const selectedConversation = useAppSelector(
     (state: AppState) => state.message.selectedConversation
   );

@@ -1,16 +1,19 @@
 import { Flex } from "@chakra-ui/react";
+import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { EmptyContentSvg } from "../../assests/icons";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { getPosts } from "../../store/PostSlice/asyncThunk";
-import { isAdminPage } from "../../util";
+import { getIsAdminPage } from "../../util";
 import InfiniteScroll from "../InfiniteScroll";
 import Post from "./Post";
 import SkeletonPost from "./Post/skeleton";
 
 const ListPost = () => {
+  const pathname = usePathname();
+  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { listPost, isLoading } = useAppSelector(
@@ -31,7 +34,7 @@ const ListPost = () => {
       ) {
       } else {
         let filter = { page: displayPageData };
-        if (isAdminPage) {
+        if (isAdmin) {
           filter = {
             ...filter,
             ...filterPostValidation,
@@ -59,7 +62,7 @@ const ListPost = () => {
 
   return (
     <>
-      {(isAdminPage ? true : listPost?.length !== 0) ? (
+      {(isAdmin ? true : listPost?.length !== 0) ? (
         <>
           <InfiniteScroll
             queryFc={(page) => {
@@ -83,7 +86,7 @@ const ListPost = () => {
             condition={!!userInfo._id}
             deps={[userInfo._id, currentPage, filterPostValidation]}
             skeletonCpn={<SkeletonPost />}
-            reloadPageDeps={isAdminPage ? [filterPostValidation] : null}
+            reloadPageDeps={isAdmin ? [filterPostValidation] : null}
           />
         </>
       ) : (

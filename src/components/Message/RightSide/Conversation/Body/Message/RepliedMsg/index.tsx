@@ -127,7 +127,7 @@ const RepliedMsg = ({
       </Flex>
       {content?.trim() ? (
         <Text
-          {...cssProp}
+          {...(cssProp as any)}
           maxW={"30vw"}
           textOverflow={"ellipsis"}
           overflow={"hidden"}
@@ -138,7 +138,7 @@ const RepliedMsg = ({
       ) : (
         <>
           {(media?.length || file?._id) && (
-            <Flex alignItems={"center"} {...cssProp}>
+            <Flex alignItems={"center"} {...(cssProp as any)}>
               <MdOutlineAttachFile />
               <Text ml={1}>
                 Attached {media?.length ? media[0].type : "file"}
