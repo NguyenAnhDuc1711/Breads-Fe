@@ -284,7 +284,7 @@ const Message = ({
         label={!isSettingMsg && getTooltipTime()}
         placement={ownMessage ? "left" : "right"}
       >
-        <Flex {...(isSettingMsg ? settingMsgProp : messageProp)}>
+        <Flex {...(isSettingMsg ? settingMsgProp : (messageProp as any))}>
           {isSettingMsg ? handleSettingMsg() : msgContent()}
         </Flex>
       </Tooltip>

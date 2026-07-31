@@ -1,5 +1,7 @@
+"use client";
+
 import { Avatar, Flex, Text } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import {
   MESSAGE_PATH,
   Route,
@@ -23,7 +25,7 @@ const UserReactItem = ({
   msgId: string;
 }) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const participant = useAppSelector(
     (state: AppState) => state.message.selectedConversation?.participant
@@ -32,7 +34,7 @@ const UserReactItem = ({
   const userDisplay = isOwnReact ? userInfo : participant;
 
   const handleSeeProfile = () => {
-    navigate(`/users/${participant?._id}`);
+    router.push(`/users/${participant?._id}`);
   };
 
   const handleRemoveReact = async () => {

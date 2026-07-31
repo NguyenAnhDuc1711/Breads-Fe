@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Container, Text, VStack } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 

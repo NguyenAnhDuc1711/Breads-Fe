@@ -1,3 +1,5 @@
+"use client";
+
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -16,9 +18,9 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { encodedString } from "../Breads-Shared/util";
@@ -29,7 +31,6 @@ import { useAppDispatch } from "../hooks/redux";
 import { IUser } from "../store/UserSlice";
 import { login } from "../store/UserSlice/asyncThunk";
 import { showToast } from "../store/UtilSlice";
-import { changePage } from "../store/UtilSlice/asyncThunk";
 
 type LoginInput = {
   email: string;
@@ -39,7 +40,7 @@ type LoginInput = {
 
 const Login = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [countClick, setCountClick] = useState<number>(0);
@@ -242,7 +243,7 @@ const Login = () => {
             userEmail: inputs.email,
           },
         });
-        navigate(`/reset-pw/${userId}/${code}`);
+        router.push(`/reset-pw/${userId}/${code}`);
       } else {
         dispatch(
           showToast({
@@ -414,14 +415,7 @@ const Login = () => {
                 {t("dontHaveAccount")}{" "}
                 <Link
                   color={"blue.400"}
-                  onClick={() =>
-                    dispatch(
-                      changePage({
-                        nextPage: PageConstant.SIGNUP,
-                        currentPage: PageConstant.LOGIN,
-                      })
-                    )
-                  }
+                  onClick={() => router.push(`/${PageConstant.AUTH}/${PageConstant.SIGNUP}`)}
                 >
                   {t("SignUp")}
                 </Link>

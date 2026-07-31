@@ -1,3 +1,5 @@
+"use client";
+
 import { Container, Text, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

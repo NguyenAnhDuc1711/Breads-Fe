@@ -1,3 +1,5 @@
+"use client";
+
 import { LinkIcon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -21,7 +23,7 @@ import { CgProfile } from "react-icons/cg";
 import { FaFileAlt } from "react-icons/fa";
 import { IoIosArrowBack, IoIosSearch, IoMdPhotos } from "react-icons/io";
 import { MdColorLens } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
 import { getEmojiIcon } from "../../../../util";
@@ -53,7 +55,7 @@ const DetailConversationTab = ({
 }) => {
   const { t } = useTranslation();
   const { SEARCH, THEME, EMOJI, MEDIA, FILES, LINKS } = useTabItems();
-  const navigate = useNavigate();
+  const router = useRouter();
   const selectedConversation = useAppSelector(
     (state: AppState) => state.message.selectedConversation
   );
@@ -90,7 +92,7 @@ const DetailConversationTab = ({
       name: t("profile"),
       icon: <CgProfile width={"24px"} height={"24px"} />,
       onClick: () => {
-        navigate(`/users/${participant?._id}`);
+        router.push(`/users/${participant?._id}`);
       },
     },
     {
