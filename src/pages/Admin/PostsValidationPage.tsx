@@ -1,3 +1,5 @@
+"use client";
+
 import { Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";

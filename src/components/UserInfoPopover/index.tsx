@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Avatar,
   Box,
@@ -11,8 +13,9 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
@@ -97,7 +100,7 @@ const UserInfoPopover = ({
   isDetail?: boolean;
 }) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { userInfo, userSelected } = useAppSelector(
     (state: AppState) => state.user
   );
@@ -107,7 +110,7 @@ const UserInfoPopover = ({
   const isFrPage: boolean = currentPage === PageConstant.FRIEND;
 
   const handleGoToUserPage = (): void => {
-    navigate(`/users/${user._id}`);
+    router.push(`/users/${user._id}`);
     dispatch(
       changePage({
         nextPage:
@@ -120,8 +123,8 @@ const UserInfoPopover = ({
     <Popover trigger="hover" placement="bottom-start">
       <PopoverTrigger>
         <Link
-          as={RouterLink}
-          to={`/users/${user?._id}`}
+          as={NextLink}
+          href={`/users/${user?._id}`}
           onClick={() => handleGoToUserPage()}
           onMouseEnter={() => {
             if (userSelected?._id !== user?._id && !isFrPage) {

@@ -1,4 +1,7 @@
+"use client";
+
 import { Flex, Container, Image, Button, Box, Text } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GET } from "../../config/API";
 import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
@@ -8,7 +11,6 @@ import { Constants } from "../../Breads-Shared/Constants";
 import { updateUser } from "../../store/UserSlice/asyncThunk";
 import PaginationBtn from "../../components/PaginationBtn";
 import useDebounce from "../../hooks/useDebounce";
-import { useNavigate } from "react-router-dom";
 
 const convertUserStatus = (status: number) => {
   const { ACTIVE, INACTIVE, LOCK, BANNED } = Constants.USER_STATUS;
@@ -27,7 +29,7 @@ const convertUserStatus = (status: number) => {
 };
 
 const UsersCmsPage = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const rowsPerPage = 7;
   const props = ["name", "username", "avatar", "status", "action"];
@@ -191,7 +193,7 @@ const UsersCmsPage = () => {
                       color="black"
                       border={"1px solid black"}
                       onClick={() => {
-                        navigate(`/users/${user?._id}`);
+                        router.push(`/users/${user?._id}`);
                       }}
                     >
                       See detail

@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -11,11 +13,10 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import moment from "moment";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { RiDoubleQuotesL } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
 import PostConstants from "../../../Breads-Shared/Constants/PostConstants";
@@ -51,7 +52,7 @@ const Post = ({
   isReply?: boolean;
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const pathname = usePathname();
   const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
@@ -192,7 +193,7 @@ const Post = ({
               color={"lightgray"}
               cursor={"pointer"}
               onClick={() => {
-                navigate(`/posts/${post?.quote?._id}`);
+                router.push(`/posts/${post?.quote?._id}`);
               }}
             >
               <RiDoubleQuotesL />

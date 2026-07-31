@@ -1,10 +1,12 @@
+"use client";
+
 import { Container, Fade, Flex, Text, useColorMode } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { CiBookmark } from "react-icons/ci";
 import { GoBookmarkSlash } from "react-icons/go";
 import { IoIosLink } from "react-icons/io";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 import PageConstant from "../../../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
@@ -35,7 +37,7 @@ const PostMoreActionBox = ({
   closePopupCancel: Function;
 }) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { colorMode } = useColorMode();
   const { t } = useTranslation();
   const { copyURL } = useCopyLink();
@@ -107,7 +109,7 @@ const PostMoreActionBox = ({
         postId === postSelected?._id &&
         currentPage === PageConstant.POST_DETAIL
       ) {
-        navigate("/");
+        router.push("/");
       }
     } catch (err) {
       console.error(err);

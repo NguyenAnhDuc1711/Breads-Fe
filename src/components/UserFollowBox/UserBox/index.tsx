@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Avatar,
   Container,
@@ -5,7 +7,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import UserInfoPopover from "../../UserInfoPopover";
 import { IUser } from "../../../store/UserSlice";
 
@@ -24,12 +26,12 @@ const UserBox = ({
   searchValue?: string;
   onClick?: Function;
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
 
   const getToUserPage = () => {
-    navigate(`/users/${user._id}`);
+    router.push(`/users/${user._id}`);
   };
 
   return (

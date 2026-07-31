@@ -1,3 +1,5 @@
+"use client";
+
 import { Flex } from "@chakra-ui/react";
 import { useState } from "react";
 import { REPORT_PATH, Route } from "../../Breads-Shared/APIConfig";
