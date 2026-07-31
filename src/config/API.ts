@@ -35,7 +35,7 @@ const addAuthHeader = (config: any = {}) => {
 export const GET = async ({ path, params }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
-    let result = null;
+    let result: any = null;
     if (params) {
       result = (
         await axios.get(

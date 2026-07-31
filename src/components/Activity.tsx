@@ -7,7 +7,7 @@ import { BsThreads } from "react-icons/bs";
 import { FaHeart } from "react-icons/fa";
 import { FaRepeat, FaUser } from "react-icons/fa6";
 import { IoImageOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Constants } from "../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
@@ -16,7 +16,7 @@ import { updateHasNotification } from "../store/NotificationSlice";
 
 const Activity = ({ currentPage }: { currentPage: string }) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const navigate = useRouter().push;
   const { t } = useTranslation();
   const notifications = useAppSelector(
     (state: AppState) => state.notification.notifications
