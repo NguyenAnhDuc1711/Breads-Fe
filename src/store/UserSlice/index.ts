@@ -9,25 +9,9 @@ import {
   removePostFromCollection,
   updateUser,
 } from "./asyncThunk";
+import { IUser } from "../../Breads-Shared/Types";
 
-export interface IUser {
-  _id: string;
-  email: string;
-  name: string;
-  username: string;
-  bio: string;
-  avatar: string;
-  followed: string[];
-  following: string[];
-  followersCount?: number;
-  followingCount?: number;
-  collection: string[];
-  links: [];
-  role: number;
-  hasNewMsg: boolean;
-  createdAt?: Date | string | number;
-  status?: number;
-}
+export type { IUser };
 
 export interface UserState {
   userInfo: IUser;

@@ -3,6 +3,7 @@ import { getConversationById, getConversations, getMsgs } from "./asyncThunk";
 import { formatDateToDDMMYYYY } from "../../util";
 import moment from "moment";
 import { IUser } from "../UserSlice";
+import { Media } from "../../Breads-Shared/Types";
 
 export interface MsgState {
   conversations: any;
@@ -25,10 +26,7 @@ export interface MsgState {
   msgAction: string;
 }
 
-export type Media = {
-  url: string;
-  type: string;
-};
+export type { Media };
 
 export interface IMessage {
   _id?: string;

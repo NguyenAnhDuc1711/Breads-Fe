@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
-import { Media } from "../MessageSlice";
+import { IPost, ISurveyOption, IUserShortInfo } from "../../Breads-Shared/Types";
 import {
   createPost,
   deletePost,
@@ -13,12 +13,7 @@ import {
   updatePostStatus,
 } from "./asyncThunk";
 
-export interface ISurveyOption {
-  _id?: string;
-  placeholder: string;
-  value: string;
-  usersId?: string[];
-}
+export type { IPost, ISurveyOption, IUserShortInfo };
 
 export const surveyTemplate = ({
   placeholder,
@@ -32,40 +27,6 @@ export const surveyTemplate = ({
     value,
   };
 };
-
-export interface IUserShortInfo {
-  _id: string;
-  name: string;
-  username: string;
-  avatar: string;
-  bio: string;
-  followersCount?: number;
-}
-
-export interface IPost {
-  _id?: string;
-  content: string;
-  media: Media[];
-  survey: ISurveyOption[];
-  usersTag?: any;
-  files: any;
-  links?: any;
-  likesCount?: number;
-  likedByMe?: boolean;
-  replies?: IPost[];
-  parentPostInfo?: IPost;
-  status?: number;
-  authorId?: string;
-  createdAt?: Date;
-  authorInfo?: IUserShortInfo;
-  linksInfo?: any;
-  quote?: any;
-  repostNum?: number;
-  share?: any;
-  usersTagInfo?: any;
-  type?: string;
-  parentPost?: string;
-}
 
 export interface ILink {}
 
