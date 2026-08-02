@@ -44,7 +44,7 @@ const ViewActivity = ({
   const actionsArray = [
     {
       action: CiHeart,
-      num: post.usersLike?.length,
+      num: post.likesCount ?? 0,
       name: t("countLike"),
     },
     {

@@ -21,11 +21,7 @@ const HomePage = ({ tab }: { tab: string }) => {
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { currentPage } = useAppSelector((state: AppState) => state.util);
   const { FOR_YOU } = PageConstant;
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setUserId(localStorage.getItem("userId"));
-  }, []);
+  const userId = userInfo?._id;
 
   useEffect(() => {
     if (userInfo?._id && userInfo?.role === Constants.USER_ROLE.ADMIN) {

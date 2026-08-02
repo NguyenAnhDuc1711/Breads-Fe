@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Skeleton, SkeletonText } from "@chakra-ui/react";
 import axios from "axios";
 import { memo, useEffect, useState } from "react";
@@ -7,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { updatePostInfo } from "../../store/PostSlice";
 import "./index.css";
-import { previewLinkKey } from "../../Breads-Shared/util";
 
 const CustomLinkPreview = ({
   link = null,
@@ -34,54 +35,26 @@ const CustomLinkPreview = ({
     }
   }, [url, postInfo?.links?.length]);
 
+  // Calls our own /api/link-preview route instead of api.linkpreview.net
+  // directly — the API key(s) now live server-only (LINKPREVIEW_API_KEYS),
+  // never sent to or visible in the browser.
   const fetchLinkData = async (fetchUrl) => {
-    let result = null;
-    const previewLen = previewLinkKey?.length;
-    let index = 1;
     try {
-      do {
-        let key = previewLinkKey[index - 1];
-        try {
-          const { data } = await axios.get(
-            `https://api.linkpreview.net?key=${key}&q=${fetchUrl}`
-          );
-          if (data) {
-            result = data;
-          }
-        } catch (err) {
-          index += 1;
-          console.error("End of preview link quota: ", err);
-        }
-      } while (index < previewLen && !result);
+      const { data } = await axios.get("/api/link-preview", {
+        params: { url: fetchUrl },
+      });
+      if (data && !data.error) {
+        setData(data);
+        dispatch(
+          updatePostInfo({
+            ...postInfo,
+            links: [...postInfo.links, data],
+          })
+        );
+      }
     } catch (err) {
       console.error("getLinkPreview: ", err);
     }
-
-    if (result) {
-      setData(result);
-      dispatch(
-        updatePostInfo({
-          ...postInfo,
-          links: [...postInfo.links, result],
-        })
-      );
-    }
-    // else {
-    //   try {
-    //     const { data } = await axios.get(
-    //       `https://api.linkpreview.net?key=6e7b8bc11c79257b251760d26dad6645&q=${fetchUrl}`
-    //     );
-    //     setData(data);
-    //     dispatch(
-    //       updatePostInfo({
-    //         ...postInfo,
-    //         links: [...postInfo.links, data],
-    //       })
-    //     );
-    //   } catch (err) {
-    //     console.error(err);
-    //   }
-    // }
   };
 
   const handleDeleteLink = () => {

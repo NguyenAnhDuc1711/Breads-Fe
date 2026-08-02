@@ -54,7 +54,7 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
         </Flex>
         <Text fontSize={"sm"}> {user?.bio}</Text>
         <Text color={"gray.400"}>
-          {user?.followed?.length || 0} người theo dõi
+          {user?.followersCount ?? 0} người theo dõi
         </Text>
         {user?._id !== userInfo?._id && (
           <Button

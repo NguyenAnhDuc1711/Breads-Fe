@@ -76,6 +76,27 @@ export const login = createAsyncThunk(
   }
 );
 
+export const getMe = createAsyncThunk(
+  "user/getMe",
+  async (_, thunkAPI) => {
+    try {
+      const data = await GET({
+        path: Route.USER + USER_PATH.ME,
+      });
+      if (data && data._id) {
+        localStorage.setItem("userId", data._id);
+        return data;
+      }
+      return thunkAPI.rejectWithValue("Session expired or user not found");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        return thunkAPI.rejectWithValue(err.response?.data);
+      }
+      return thunkAPI.rejectWithValue(err);
+    }
+  }
+);
+
 export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
   try {
     const data = await POST({

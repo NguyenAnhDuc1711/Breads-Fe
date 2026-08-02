@@ -67,12 +67,12 @@ const Post = ({
   const [openPostBox, setOpenPostBox] = useState<boolean>(false);
 
   useSocket((socket: Socket) => {
-    socket.on(Route.POST + POST_PATH.GET_ONE, ({ usersLike, postId }) => {
+    socket.on(Route.POST + POST_PATH.GET_ONE, ({ likesCount, postId }) => {
       if (post._id === postId) {
         dispatch(
           updatePostLike({
             postId,
-            usersLike: usersLike,
+            likesCount,
           })
         );
       }

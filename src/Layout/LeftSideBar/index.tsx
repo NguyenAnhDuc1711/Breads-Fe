@@ -39,7 +39,7 @@ const LeftSideBar = () => {
   // Active item now comes from the URL, not from Redux (AD-4).
   const currentPage = getCurrentPage(pathname);
   const hasNewNotification = useAppSelector(
-    (state: AppState) => state.notification.hasNewNotification
+    (state: AppState) => state.notification.hasNewNotification,
   );
 
   const linkIcon = useMemo(
@@ -61,7 +61,7 @@ const LeftSideBar = () => {
         )}
       </Box>
     ),
-    [hasNewNotification]
+    [hasNewNotification],
   );
 
   const messIcon = useMemo(
@@ -83,7 +83,7 @@ const LeftSideBar = () => {
         )}
       </Box>
     ),
-    [userInfo.hasNewMsg]
+    [userInfo.hasNewMsg],
   );
 
   useSocket((socket) => {
@@ -135,44 +135,44 @@ const LeftSideBar = () => {
         },
       ]
     : userInfo?._id
-    ? [
-        {
-          icon: <GrHomeRounded size={24} />,
-          ...getItemPropByPage(PageConstant.HOME),
-        },
-        {
-          icon: <FiSearch size={24} />,
-          ...getItemPropByPage(PageConstant.SEARCH),
-        },
-        {
-          icon: linkIcon,
-          ...getItemPropByPage(PageConstant.ACTIVITY),
-          onClick: () => {
-            getItemPropByPage(PageConstant.ACTIVITY).onClick();
-            dispatch(updateHasNotification(false));
+      ? [
+          {
+            icon: <GrHomeRounded size={24} />,
+            ...getItemPropByPage(PageConstant.HOME),
           },
-        },
-        {
-          icon: <MdAdd size={24} />,
-          onClick: () => {
-            dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+          {
+            icon: <FiSearch size={24} />,
+            ...getItemPropByPage(PageConstant.SEARCH),
           },
-        },
-        {
-          icon: <FaRegUser size={24} />,
-          ...getItemPropByPage(PageConstant.USER, `/${userInfo._id}`),
-        },
-        {
-          icon: messIcon,
-          ...getItemPropByPage(PageConstant.CHAT),
-        },
-      ]
-    : [
-        {
-          icon: <BiLogIn size={24} />,
-          ...getItemPropByPage(PageConstant.AUTH, `/${PageConstant.LOGIN}`),
-        },
-      ];
+          {
+            icon: linkIcon,
+            ...getItemPropByPage(PageConstant.ACTIVITY),
+            onClick: () => {
+              getItemPropByPage(PageConstant.ACTIVITY).onClick();
+              dispatch(updateHasNotification(false));
+            },
+          },
+          {
+            icon: <MdAdd size={24} />,
+            onClick: () => {
+              dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+            },
+          },
+          {
+            icon: <FaRegUser size={24} />,
+            ...getItemPropByPage(PageConstant.USER, `/${userInfo._id}`),
+          },
+          {
+            icon: messIcon,
+            ...getItemPropByPage(PageConstant.CHAT),
+          },
+        ]
+      : [
+          {
+            icon: <BiLogIn size={24} />,
+            ...getItemPropByPage(PageConstant.LOGIN, ""),
+          },
+        ];
 
   if (
     currentPage === PageConstant.LOGIN ||
@@ -284,7 +284,7 @@ const LeftSideBar = () => {
           {listItems
             .filter(({ linkTo }) => {
               return ![PageConstant.ACTIVITY, PageConstant.CHAT].includes(
-                linkTo?.slice(1, linkTo.length)
+                linkTo?.slice(1, linkTo.length),
               );
             })
             .map((item, index) => (

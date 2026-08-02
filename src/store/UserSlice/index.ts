@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   addPostToCollection,
   followUser,
+  getMe,
   getUserInfo,
   login,
   logout,
@@ -18,6 +19,8 @@ export interface IUser {
   avatar: string;
   followed: string[];
   following: string[];
+  followersCount?: number;
+  followingCount?: number;
   collection: string[];
   links: [];
   role: number;
@@ -78,6 +81,19 @@ const userSlice = createSlice({
     });
     builder.addCase(logout.fulfilled, (state) => {
       state.userInfo = defaultUser;
+    });
+    builder.addCase(getMe.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getMe.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.userInfo = action.payload;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(getMe.rejected, (state) => {
+      state.userInfo = defaultUser;
+      state.isLoading = false;
     });
     builder.addCase(getUserInfo.pending, (state) => {
       state.isLoading = true;

@@ -63,7 +63,7 @@ const PostsCmsPage = () => {
       status,
       replies,
       repostNum,
-      usersLike,
+      likesCount,
     }: any) => ({
       _id,
       author: authorInfo?.username,
@@ -74,7 +74,7 @@ const PostsCmsPage = () => {
       type,
       status,
       statistic: {
-        like: usersLike?.length,
+        like: likesCount ?? 0,
         reply: replies?.length,
         repost: repostNum,
       },

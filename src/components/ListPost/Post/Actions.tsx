@@ -28,6 +28,7 @@ import {
   IPost,
   selectPost,
   selectPostReply,
+  toggleLikedByMe,
   updatePostAction,
 } from "../../../store/PostSlice";
 import { updatePostStatus } from "../../../store/PostSlice/asyncThunk";
@@ -58,6 +59,7 @@ const Actions = ({ post }: { post: IPost }) => {
       userId: userInfo._id,
       postId: post._id,
     };
+    dispatch(toggleLikedByMe({ postId: post._id }));
     socket.emit(Route.POST + POST_PATH.LIKE, payload);
   };
 
@@ -85,18 +87,17 @@ const Actions = ({ post }: { post: IPost }) => {
   const listActions = [
     {
       name: ACTIONS_NAME.LIKE,
-      icon: <LikeIcon liked={post.usersLike?.includes(userInfo._id)} />,
-      statistic: convertStatistic(post.usersLike?.length),
+      icon: <LikeIcon liked={!!post.likedByMe} />,
+      statistic: convertStatistic(post.likesCount ?? 0),
       onClick: () => {
         if (!userInfo?._id) {
           dispatch(openLoginPopupAction());
           return;
         }
+        const wasLiked = !!post.likedByMe;
         handleLike();
         addEvent({
-          event: post.usersLike?.includes(userInfo._id)
-            ? "unlike_post"
-            : "like_post",
+          event: wasLiked ? "unlike_post" : "like_post",
           payload: {
             postId: post._id,
           },

@@ -40,10 +40,13 @@ const Signup = () => {
   });
   const [openCodePopup, setOpenCodePopup] = useState(false);
   const [errors, setErrors] = useState<any>({});
+  // Fix #7: Add loading state so the button properly shows spinner
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const usernameRef = useRef();
-  const emailRef = useRef();
-  const passwordRef = useRef();
+  // Fix #11: Properly typed refs
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const validateInputs = () => {
     const validationErrors: any = {};
@@ -64,23 +67,11 @@ const Signup = () => {
     } else if (password.length < 6) {
       validationErrors.password = t("minPassWarning");
     }
-    // else if (!/[A-Z]/.test(password)) {
-    //   validationErrors.password =
-    //     "Mật khẩu phải chứa ít nhất một chữ cái viết hoa!";
-    // } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    //   validationErrors.password =
-    //     "Mật khẩu phải chứa ít nhất một ký tự đặc biệt!";
-    // }
 
     return validationErrors;
   };
 
-  const handleValidateCode = async () => {
-    try {
-    } catch (err) {
-      console.error("handleValidateCode err: ", err);
-    }
-  };
+  // Fix #2: Removed dead handleValidateCode function (empty body, never called)
 
   const handleSignup = async () => {
     const validationErrors = validateInputs();
@@ -89,24 +80,16 @@ const Signup = () => {
       return;
     }
 
+    // Fix #7: Set loading state around API call
+    setIsLoading(true);
     try {
       const result = await dispatch(signUp(inputs));
 
       if (result?.meta?.requestStatus === "fulfilled") {
         setOpenCodePopup(true);
-        // showToast("Success", t("signupsuccess"), "success");
-        // setTimeout(() => {
-        //   dispatch(
-        //     changePage({
-        //       nextPage: PageConstant.LOGIN,
-        //       currentPage: PageConstant.SIGNUP,
-        //     })
-        //   );
-        // }, 500)
       } else {
         const { errorType, error } = result.payload;
 
-        // Set specific errors based on errorType
         if (errorType === "USERNAME_EXISTS") {
           dispatch(
             showToast({
@@ -135,6 +118,8 @@ const Signup = () => {
           status: "error",
         })
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -155,7 +140,8 @@ const Signup = () => {
           })
         );
         setTimeout(() => {
-          router.push(`/${PageConstant.AUTH}/${PageConstant.LOGIN}`);
+          // Fix #1: Route to /login not /auth/login
+          router.push(`/${PageConstant.LOGIN}`);
         }, 500);
       } else {
         const { errorType, error } = result.payload;
@@ -183,14 +169,14 @@ const Signup = () => {
     }
   };
 
-  const handleKeyDown = (e, nextField?: any) => {
+  const handleKeyDown = (e: React.KeyboardEvent, nextField?: React.RefObject<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       nextField?.current?.focus();
     }
   };
 
-  const handleBlur = (field) => {
+  const handleBlur = (field: string) => {
     if (!inputs[field]) {
       let errMsg = "";
       switch (field) {
@@ -224,12 +210,17 @@ const Signup = () => {
     }
   };
 
-  const handlePasswordChange = (e) => {
+  // Fix #6: Validate password against the new value directly (not stale state)
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
-    setInputs({ ...inputs, password: newPassword });
+    setInputs((prev) => ({ ...prev, password: newPassword }));
 
-    const validationErrors = validateInputs();
-    setErrors(validationErrors);
+    // Validate against newPassword directly — avoids stale state issue
+    if (newPassword.length > 0 && newPassword.length < 6) {
+      setErrors((prev) => ({ ...prev, password: t("minPassWarning") }));
+    } else {
+      setErrors((prev) => ({ ...prev, password: "" }));
+    }
   };
 
   return (
@@ -267,6 +258,7 @@ const Signup = () => {
                 <FormControl isRequired isInvalid={!!errors.username}>
                   <FormLabel>{t("loginName")}</FormLabel>
                   <Input
+                    ref={usernameRef}
                     type="text"
                     onChange={(e) =>
                       setInputs({ ...inputs, username: e.target.value })
@@ -282,6 +274,7 @@ const Signup = () => {
             <FormControl id="email" isRequired isInvalid={!!errors.email}>
               <FormLabel>{t("email")}</FormLabel>
               <Input
+                ref={emailRef}
                 type="email"
                 onChange={(e) =>
                   setInputs({ ...inputs, email: e.target.value })
@@ -296,6 +289,7 @@ const Signup = () => {
               <FormLabel>{t("password")}</FormLabel>
               <InputGroup>
                 <Input
+                  ref={passwordRef}
                   type={showPassword ? "text" : "password"}
                   onChange={handlePasswordChange}
                   value={inputs.password}
@@ -314,7 +308,9 @@ const Signup = () => {
               <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
             <Stack spacing={10} pt={2}>
+              {/* Fix #7: isLoading prop wired up so loadingText actually shows */}
               <Button
+                isLoading={isLoading}
                 loadingText="Submitting"
                 size="lg"
                 bg={useColorModeValue("gray.600", "gray.700")}
@@ -328,9 +324,10 @@ const Signup = () => {
             <Stack pt={6}>
               <Text align={"center"}>
                 {t("hadAccount")}{" "}
+                {/* Fix #1: Route to /login not /auth/login */}
                 <Link
                   color={"blue.400"}
-                  onClick={() => router.push(`/${PageConstant.AUTH}/${PageConstant.LOGIN}`)}
+                  onClick={() => router.push(`/${PageConstant.LOGIN}`)}
                 >
                   {t("SignIn")}
                 </Link>

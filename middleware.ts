@@ -11,14 +11,16 @@ import { NextRequest, NextResponse } from "next/server";
 // gets past this gate and only fails at the API, exactly like today's
 // client-side `localStorage.getItem("userId")` check did.
 
-const LOGIN_PATH = "/auth/login";
+const LOGIN_PATH = "/login";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasJwt = !!request.cookies.get("jwt");
 
   // Logged-in users never need the auth screens.
-  if (pathname.startsWith("/auth")) {
+  // Auth screens live at /login and /signup (the (auth) route group does
+  // NOT create a URL segment — app/(main)/(auth)/login → /login).
+  if (pathname === "/login" || pathname === "/signup") {
     if (hasJwt) {
       return NextResponse.redirect(new URL("/", request.url));
     }
@@ -36,7 +38,8 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/auth/:path*",
+    "/login",
+    "/signup",
     "/for_you",
     "/following",
     "/liked",

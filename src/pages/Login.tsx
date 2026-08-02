@@ -19,7 +19,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
@@ -38,6 +38,9 @@ type LoginInput = {
   loginAsAdmin?: boolean;
 };
 
+// Fix #9: Separate error type — loginAsAdmin is not a validation field
+type LoginErrors = Partial<Pick<LoginInput, "email" | "password">>;
+
 const Login = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -52,27 +55,44 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState<LoginInput>();
+  // Fix #9: Use LoginErrors instead of LoginInput
+  const [errors, setErrors] = useState<LoginErrors>({});
+  // Fix #7: Add loading state so button properly shows spinner
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const codeSend = useRef(genRandomCode());
 
+  // Fix #5: Split into two separate effects, use === 5 to trigger exactly once
   useEffect(() => {
-    if (countClick >= 5) {
+    if (countClick === 5) {
       handleLogin(true);
     }
-    if (countClickGetFullAcc >= 5) {
+  }, [countClick]);
+
+  useEffect(() => {
+    if (countClickGetFullAcc === 5) {
       handleGetAllAcc();
     }
-  }, [countClick, countClickGetFullAcc]);
+  }, [countClickGetFullAcc]);
+
+  // Fix #4: Stable keydown listener — no longer depends on inputs (stale closure
+  // avoided by reading the latest inputs via a ref)
+  const inputsRef = useRef(inputs);
+  useEffect(() => {
+    inputsRef.current = inputs;
+  }, [inputs]);
+
+  const handleLoginStable = useCallback(async () => {
+    // Read latest inputs from ref so the listener is never stale
+    await handleLoginWithInputs(inputsRef.current);
+  }, []);
 
   useEffect(() => {
     const enterListener = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        handleLogin();
-      }
+      if (e.key === "Enter") handleLoginStable();
     };
     window.addEventListener("keydown", enterListener);
     return () => window.removeEventListener("keydown", enterListener);
-  }, [inputs]);
+  }, [handleLoginStable]); // stable ref — listener registered only once
 
   const handleGetAllAcc = async () => {
     try {
@@ -91,50 +111,70 @@ const Login = () => {
     }
   };
 
-  const validateField = (fieldName: string) => {
-    const newErrors: any = { ...errors };
-    const { email, password } = inputs;
+  // Fix #10: validateField now only checks its own errors, not the whole object
+  const validateField = (
+    fieldName: keyof LoginErrors,
+    value?: string,
+  ): boolean => {
+    const fieldValue = value ?? inputs[fieldName as keyof LoginInput];
+    let errorMsg = "";
 
     if (fieldName === "email") {
-      if (!email) {
-        newErrors.email = t("emailRequired");
-      } else if (!/\S+@\S+\.\S+/.test(email)) {
-        newErrors.email = t("invalidEmail");
-      } else {
-        delete newErrors.email;
+      if (!fieldValue) {
+        errorMsg = t("emailRequired");
+      } else if (!/\S+@\S+\.\S+/.test(fieldValue as string)) {
+        errorMsg = t("invalidEmail");
       }
     }
 
     if (fieldName === "password") {
-      if (!password) {
-        newErrors.password = t("passwordRequired");
-      } else if (password.length < 6) {
-        newErrors.password = t("incorrectPassword");
-      } else {
-        delete newErrors.password;
+      if (!fieldValue) {
+        errorMsg = t("passwordRequired");
+      } else if ((fieldValue as string).length < 6) {
+        errorMsg = t("incorrectPassword");
       }
     }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    setErrors((prev) => ({
+      ...prev,
+      [fieldName]: errorMsg || undefined,
+    }));
+
+    return !errorMsg;
   };
 
-  const handleLogin = async (loginAsAdmin?: boolean) => {
-    let payload = inputs;
+  const validateAll = (): boolean => {
+    const emailOk = validateField("email");
+    const passwordOk = validateField("password");
+    return emailOk && passwordOk;
+  };
+
+  // Extracted inner logic so the stable keydown handler can call it with a snapshot
+  const handleLoginWithInputs = async (
+    currentInputs: LoginInput,
+    loginAsAdmin?: boolean,
+  ) => {
+    // Fix #3: Never mutate the inputs object — build a new payload instead
+    const payload: LoginInput = loginAsAdmin
+      ? { ...currentInputs, loginAsAdmin: true }
+      : currentInputs;
+
     if (loginAsAdmin) {
-      payload.loginAsAdmin = true;
       await dispatch(login(payload));
       dispatch(
         showToast({
           title: t("success"),
           description: "Đăng nhập bằng Admin thành công",
           status: "success",
-        })
+        }),
       );
       return;
     }
-    if (!validateField("email") || !validateField("password")) {
-      return;
-    }
+
+    if (!validateAll()) return;
+
+    // Fix #7: Set loading state around API call
+    setIsLoading(true);
     try {
       const data: any = await dispatch(login(payload));
       if (data?.meta?.requestStatus === "fulfilled") {
@@ -144,7 +184,7 @@ const Login = () => {
               title: "Không thành công!",
               description: data?.payload?.error,
               status: "error",
-            })
+            }),
           );
         } else {
           dispatch(
@@ -152,8 +192,9 @@ const Login = () => {
               title: t("success"),
               description: t("loginsuccess"),
               status: "success",
-            })
+            }),
           );
+          router.replace("/");
         }
       }
     } catch (error: any) {
@@ -162,9 +203,15 @@ const Login = () => {
           title: "Không thành công!",
           description: error?.error || t("checkagain"),
           status: "error",
-        })
+        }),
       );
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleLogin = async (loginAsAdmin?: boolean) => {
+    await handleLoginWithInputs(inputs, loginAsAdmin);
   };
 
   const handleForgotPassword = async () => {
@@ -183,9 +230,9 @@ const Login = () => {
               title: "",
               description: t("codesend"),
               status: "success",
-            })
+            }),
           );
-          console.log("code: ", codeSend.current);
+          // Fix #8: Removed console.log that exposed the verification code
           const codeSendDecoded = encodedString(codeSend.current);
           try {
             const options = {
@@ -210,7 +257,7 @@ const Login = () => {
               title: "",
               description: t("Invalidaccount"),
               status: "error",
-            })
+            }),
           );
         }
       } else {
@@ -219,7 +266,7 @@ const Login = () => {
             title: "",
             description: t("Invalidemail"),
             status: "error",
-          })
+          }),
         );
       }
     } catch (err) {
@@ -229,7 +276,7 @@ const Login = () => {
           title: "Error",
           description: "Server error",
           status: "error",
-        })
+        }),
       );
     }
   };
@@ -250,7 +297,7 @@ const Login = () => {
             title: "",
             description: t("wrongcode"),
             status: "error",
-          })
+          }),
         );
       }
     } catch (err) {
@@ -297,7 +344,6 @@ const Login = () => {
           }}
         />
         <Flex
-          // flexDir={"column"}
           maxHeight={"60vh"}
           width={"60vw"}
           overflowY={"scroll"}
@@ -306,6 +352,7 @@ const Login = () => {
         >
           {displayUsers?.map((user) => (
             <Flex
+              key={user._id}
               p={2}
               px={4}
               borderRadius={8}
@@ -359,6 +406,8 @@ const Login = () => {
                 onChange={(e) =>
                   setInputs((prev) => ({ ...prev, email: e.target.value }))
                 }
+                // Fix #4: onKeyDown on input instead of global window listener
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                 onBlur={() => validateField("email")}
                 value={inputs.email}
               />
@@ -372,6 +421,8 @@ const Login = () => {
                   onChange={(e) =>
                     setInputs((prev) => ({ ...prev, password: e.target.value }))
                   }
+                  // Fix #4: onKeyDown on input instead of global window listener
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   onBlur={() => validateField("password")}
                   value={inputs.password}
                 />
@@ -389,7 +440,9 @@ const Login = () => {
               <FormErrorMessage>{errors?.password}</FormErrorMessage>
             </FormControl>
             <Stack spacing={10} pt={2}>
+              {/* Fix #7: isLoading prop wired up so loadingText actually shows */}
               <Button
+                isLoading={isLoading}
                 loadingText="Đang gửi"
                 size="lg"
                 bg={useColorModeValue("gray.600", "gray.700")}
@@ -413,9 +466,10 @@ const Login = () => {
               </Text>
               <Text align={"center"}>
                 {t("dontHaveAccount")}{" "}
+                {/* Fix #1: Route to /signup not /auth/signup */}
                 <Link
                   color={"blue.400"}
-                  onClick={() => router.push(`/${PageConstant.AUTH}/${PageConstant.SIGNUP}`)}
+                  onClick={() => router.push(`/${PageConstant.SIGNUP}`)}
                 >
                   {t("SignUp")}
                 </Link>

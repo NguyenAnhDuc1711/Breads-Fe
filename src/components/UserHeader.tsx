@@ -188,7 +188,7 @@ const UserHeader = ({
                 });
               }}
             >
-              {user?.followed?.length} {t("followers")}
+              {user?.followersCount ?? 0} {t("followers")}
             </Text>
           </Flex>
           <Flex>

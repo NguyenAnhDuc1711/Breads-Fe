@@ -39,7 +39,7 @@ export interface IUserShortInfo {
   username: string;
   avatar: string;
   bio: string;
-  followed: string[];
+  followersCount?: number;
 }
 
 export interface IPost {
@@ -50,7 +50,8 @@ export interface IPost {
   usersTag?: any;
   files: any;
   links?: any;
-  usersLike?: any;
+  likesCount?: number;
+  likedByMe?: boolean;
   replies?: IPost[];
   parentPostInfo?: IPost;
   status?: number;
@@ -114,13 +115,16 @@ const postSlice = createSlice({
     selectPostReply: (state, action) => {
       state.postReply = action.payload;
     },
+    // Authoritative like count from the server broadcast (sent to every
+    // viewer of the post). Never touches `likedByMe` — that's per-viewer
+    // and only the acting client's own click can know it changed.
     updatePostLike: (state, action) => {
-      const { postId, usersLike } = action.payload;
+      const { postId, likesCount } = action.payload;
       const postIndex = state.listPost.findIndex((post) => post._id === postId);
       if (postIndex !== -1) {
         state.listPost[postIndex] = {
           ...state.listPost[postIndex],
-          usersLike: usersLike,
+          likesCount,
         };
       } else {
         if (!!state.postSelected) {
@@ -130,10 +134,32 @@ const postSlice = createSlice({
             (_id) => _id === postId
           );
           if (postSelected._id === postId) {
-            postSelected.usersLike = usersLike;
+            postSelected.likesCount = likesCount;
           } else if (postReplieIndex !== -1 && postSelected.replies) {
-            postSelected.replies[postReplieIndex].usersLike = usersLike;
+            postSelected.replies[postReplieIndex].likesCount = likesCount;
           }
+        }
+      }
+    },
+    // Optimistic local flip for the user who just clicked Like — fires
+    // immediately on click, before the server round-trip / broadcast.
+    toggleLikedByMe: (state, action) => {
+      const { postId } = action.payload;
+      const flip = (post: IPost) => {
+        const wasLiked = !!post.likedByMe;
+        post.likedByMe = !wasLiked;
+        post.likesCount = Math.max(0, (post.likesCount ?? 0) + (wasLiked ? -1 : 1));
+      };
+      const postIndex = state.listPost.findIndex((post) => post._id === postId);
+      if (postIndex !== -1) {
+        flip(state.listPost[postIndex]);
+      } else if (state.postSelected) {
+        const postSelected: IPost = state.postSelected;
+        if (postSelected._id === postId) {
+          flip(postSelected);
+        } else {
+          const reply = postSelected.replies?.find(({ _id }) => _id === postId);
+          if (reply) flip(reply);
         }
       }
     },
@@ -309,6 +335,7 @@ export const {
   updateListPost,
   selectPostReply,
   updatePostLike,
+  toggleLikedByMe,
   reloadListPost,
 } = postSlice.actions;
 export default postSlice.reducer;

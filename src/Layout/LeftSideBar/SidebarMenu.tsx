@@ -124,14 +124,14 @@ const SidebarMenu = () => {
   const handleLogout = async () => {
     try {
       dispatch(logout());
-      router.push(`/${PageConstant.AUTH}/${PageConstant.LOGIN}`);
+      router.push(`${PageConstant.LOGIN}`);
     } catch (error: any) {
       dispatch(
         showToast({
           title: "Error",
           description: error.message,
           status: "error",
-        })
+        }),
       );
     }
   };

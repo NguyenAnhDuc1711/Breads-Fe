@@ -8,29 +8,22 @@ interface ApiOptions {
   payload?: Record<string, any>;
 }
 
-// Function to get JWT token from cookies
-const getJwtFromCookies = (): string | null => {
-  const cookies = document.cookie.split(";");
-  for (let cookie of cookies) {
-    const [name, value] = cookie.trim().split("=");
-    if (name === "jwt") {
-      return value;
+if (typeof window !== "undefined") {
+  axios.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError) => {
+      if (
+        error.response?.status === 401 &&
+        !window.location.pathname.startsWith("/login") &&
+        !window.location.pathname.startsWith("/signup")
+      ) {
+        localStorage.removeItem("userId");
+        window.location.href = "/login";
+      }
+      return Promise.reject(error);
     }
-  }
-  return null;
-};
-
-// Add authorization header to requests if JWT token exists
-const addAuthHeader = (config: any = {}) => {
-  const token = getJwtFromCookies();
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    };
-  }
-  return config;
-};
+  );
+}
 
 export const GET = async ({ path, params }: ApiOptions) => {
   try {
@@ -38,17 +31,13 @@ export const GET = async ({ path, params }: ApiOptions) => {
     let result: any = null;
     if (params) {
       result = (
-        await axios.get(
-          url,
-          addAuthHeader({
-            params: params,
-            withCredentials: true,
-          })
-        )
+        await axios.get(url, {
+          params,
+          withCredentials: true,
+        })
       )?.data;
     } else {
-      result = (await axios.get(url, addAuthHeader({ withCredentials: true })))
-        ?.data;
+      result = (await axios.get(url, { withCredentials: true }))?.data;
     }
     return result?.metadata ? result?.metadata : result;
   } catch (err: unknown) {
@@ -66,14 +55,10 @@ export const GET = async ({ path, params }: ApiOptions) => {
 export const POST = async ({ path, payload, params }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
-    const { data } = await axios.post(
-      url,
-      payload,
-      addAuthHeader({
-        params: params,
-        withCredentials: true,
-      })
-    );
+    const { data } = await axios.post(url, payload, {
+      params,
+      withCredentials: true,
+    });
     return data?.metadata ? data?.metadata : data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
@@ -90,13 +75,9 @@ export const POST = async ({ path, payload, params }: ApiOptions) => {
 export const PUT = async ({ path, payload }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
-    const { data } = await axios.put(
-      url,
-      payload,
-      addAuthHeader({
-        withCredentials: true,
-      })
-    );
+    const { data } = await axios.put(url, payload, {
+      withCredentials: true,
+    });
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
@@ -113,13 +94,9 @@ export const PUT = async ({ path, payload }: ApiOptions) => {
 export const PATCH = async ({ path, payload }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
-    const { data } = await axios.patch(
-      url,
-      payload,
-      addAuthHeader({
-        withCredentials: true,
-      })
-    );
+    const { data } = await axios.patch(url, payload, {
+      withCredentials: true,
+    });
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
@@ -136,13 +113,10 @@ export const PATCH = async ({ path, payload }: ApiOptions) => {
 export const DELETE = async ({ path, params }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
-    const { data } = await axios.delete(
-      url,
-      addAuthHeader({
-        params: params,
-        withCredentials: true,
-      })
-    );
+    const { data } = await axios.delete(url, {
+      params,
+      withCredentials: true,
+    });
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
