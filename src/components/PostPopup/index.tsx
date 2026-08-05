@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Avatar,
   Button,
@@ -9,6 +11,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
@@ -46,7 +49,8 @@ import PostSurvey from "./survey";
 
 const PostPopup = () => {
   const MAX_CONTENT_LENGTH = 500;
-  const postId = window.location.pathname.split("/")?.[2];
+  const pathname = usePathname();
+  const postId = pathname?.split("/")?.[2];
   const { t } = useTranslation();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.dark", "ccl.light");
@@ -283,6 +287,8 @@ const PostPopup = () => {
       );
     }
   };
+
+  if (!postAction) return null;
 
   return (
     <>

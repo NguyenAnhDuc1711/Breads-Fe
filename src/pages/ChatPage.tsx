@@ -6,6 +6,7 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import LeftSideBarMsg from "../components/Message/LeftSideBar";
 import RightSideMsg from "../components/Message/RightSide";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
+import { HeaderHeight } from "../Layout";
 import { AppState } from "../store";
 import { selectConversation } from "../store/MessageSlice";
 import { getConversationById } from "../store/MessageSlice/asyncThunk";
@@ -61,6 +62,7 @@ const ChatPage = ({ conversationId }: { conversationId?: string }) => {
     <Flex
       id={"chat-page"}
       position="absolute"
+      top={`${HeaderHeight + 12}px`}
       left="50%"
       w={{
         base: "100%",
@@ -71,7 +73,6 @@ const ChatPage = ({ conversationId }: { conversationId?: string }) => {
       pr={3}
       transform="translateX(-50%)"
       gap="24px"
-      // bottom={isMobile ? "100px" : "0px"}
     >
       {!isMobile || !showRightSide ? (
         <Box

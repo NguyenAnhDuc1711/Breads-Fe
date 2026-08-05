@@ -110,6 +110,8 @@ const SeeMedia = () => {
     );
   };
 
+  if (!seeMediaInfo?.open) return null;
+
   return (
     <>
       <CloseIcon
@@ -172,6 +174,7 @@ const SeeMedia = () => {
                 alignItems="center"
                 justifyContent="center"
                 margin="auto"
+                alt="Media viewer"
               />
             )}
           </Flex>

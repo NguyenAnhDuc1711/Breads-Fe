@@ -64,7 +64,7 @@ const FileMsg = ({
         }}
       >
         <Flex gap={3}>
-          <Image src={getImgByType()} width="32px" height="32px" />
+          <Image src={getImgByType()} width="32px" height="32px" alt={`${fileType ?? "file"} icon`} />
           <Text
             fontWeight={500}
             fontSize={"14px"}

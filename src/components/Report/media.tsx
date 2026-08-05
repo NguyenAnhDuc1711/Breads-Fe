@@ -34,7 +34,7 @@ const ReportMediaDisplay = () => {
               maxH={"150px"}
               maxW={"150px"}
             >
-              <Image src={url} maxH={"150px"} maxW={"150px"} />
+              <Image src={url} maxH={"150px"} maxW={"150px"} alt="Report media" />
               <CloseIcon
                 pos={"absolute"}
                 top={"-6px"}

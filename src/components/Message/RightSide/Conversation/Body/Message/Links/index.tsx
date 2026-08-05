@@ -27,6 +27,7 @@ const LinkBox = ({ link, color = "" }: { link: any; color?: string }) => {
           width={"36px"}
           height={"36px"}
           borderRadius={3}
+          alt={link.title ? `${link.title} thumbnail` : "Link preview"}
         />
         <Flex
           flexDir={"column"}

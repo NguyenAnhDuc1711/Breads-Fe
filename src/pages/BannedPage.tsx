@@ -1,14 +1,16 @@
 "use client";
 
 import { Button, Container, Text, VStack } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 const BannedPage = () => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const handleGoBack = (): void => {
     localStorage.removeItem("userId");
-    window.location.reload();
+    router.push("/");
   };
 
   return (

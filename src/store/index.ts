@@ -40,15 +40,22 @@ const rootReducer = (state: AppState | undefined, action: AnyAction) => {
   return appReducer(state, action);
 };
 
-const store = configureStore({
-  reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
-});
+// Factory instead of a module-level singleton so the root layout can seed
+// user identity (resolved server-side from the jwt cookie, see
+// app/layout.tsx) into the store at creation time, instead of the client
+// having to wait for its own getMe() round trip to populate it.
+// `preloadedState` is typed loosely because our custom rootReducer's own
+// signature otherwise forces callers to supply every slice.
+export const makeStore = (preloadedState?: Partial<AppState>) =>
+  configureStore({
+    reducer: rootReducer,
+    preloadedState: preloadedState as AppState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
+  });
 
-export type AppStore = typeof store;
+export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore["getState"]>;
 export type AppDispatch = AppStore["dispatch"];
-export default store;

@@ -1,4 +1,7 @@
+"use client";
+
 import { Container, Flex, useColorMode } from "@chakra-ui/react";
+import { HeaderHeight } from "../../Layout";
 
 export const containerBoxWidth = "640px";
 
@@ -15,15 +18,17 @@ const ContainerLayout = ({ children }) => {
     >
       <Container
         bg={colorMode === "dark" ? "#181818" : "#fafafa"}
-        minHeight={"100vh"}
+        minHeight={`calc(100vh - ${HeaderHeight + 24}px)`}
         height={"fit-content"}
-        mt={6}
+        mt={`${HeaderHeight + 12}px`}
+        mb={"12px"}
         borderRadius={"2xl"}
         width={containerBoxWidth}
         maxWidth={containerBoxWidth}
-        margin={"10px"}
         padding={"16px"}
         boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
+        display={"flex"}
+        flexDirection={"column"}
       >
         {children}
       </Container>

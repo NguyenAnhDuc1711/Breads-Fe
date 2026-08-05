@@ -23,6 +23,7 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ChangePWModal from "../components/UpdateUser/changePWModal";
 import LinksModal from "../components/UpdateUser/linksModal";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
+import { HeaderHeight } from "../Layout";
 import { AppState } from "../store";
 import { updateUser } from "../store/UserSlice/asyncThunk";
 import { showToast } from "../store/UtilSlice";
@@ -208,7 +209,7 @@ const UpdateProfilePage = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Flex align={"center"} justify={"center"}>
+        <Flex align={"center"} justify={"center"} mt={`${HeaderHeight + 12}px`}>
           <Stack
             spacing={4}
             w={"full"}

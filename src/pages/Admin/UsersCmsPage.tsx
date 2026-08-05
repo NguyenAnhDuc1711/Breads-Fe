@@ -144,6 +144,7 @@ const UsersCmsPage = () => {
                       objectFit={"cover"}
                       borderRadius="md"
                       cursor={"pointer"}
+                      alt={user?.username ? `${user.username}'s avatar` : "User avatar"}
                       _hover={{
                         opacity: 0.7,
                       }}

@@ -161,6 +161,13 @@ const vnTranslations = {
 
   postDeleted: "Bài viết đã bị xóa",
   postPending: "Bài viết đang chờ duyệt",
+
+  noActivity: "Chưa có hoạt động nào",
+  noFollows: "Chưa có lượt theo dõi nào",
+  noLikes: "Chưa có lượt thích nào",
+  noReplies: "Chưa có câu trả lời nào",
+  noReposts: "Chưa có lượt đăng lại nào",
+  noTags: "Chưa có lượt đề cập nào",
 };
 
 export default vnTranslations;

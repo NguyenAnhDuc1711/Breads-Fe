@@ -44,12 +44,21 @@ export async function generateMetadata({
   }
   const text: string = post.content ?? "";
   const image = post.media?.[0]?.url;
+  const title = text ? text.slice(0, 60) : "Breads";
+  const description = text.slice(0, 160);
   return {
-    title: text ? text.slice(0, 60) : "Bread",
-    description: text.slice(0, 160),
+    title,
+    description,
     openGraph: {
-      title: text ? text.slice(0, 60) : "Bread",
-      description: text.slice(0, 160),
+      type: "article",
+      title,
+      description,
+      images: image ? [{ url: image, alt: title }] : undefined,
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
       images: image ? [image] : undefined,
     },
   };
@@ -71,7 +80,7 @@ const Page = async ({ params }: { params: { postId: string } }) => {
     );
   }
 
-  // PENDING/DELETED/ONLY_ME/ONLY_FOLLOWERS: no reliable server-side way to
+  // PRE_ACCEPT/DELETED/ONLY_ME/ONLY_FOLLOWERS: no reliable server-side way to
   // know the requester's identity (the app's identity source is
   // localStorage, browser-only — see epic handoff notes), so these fall
   // back to PostDetail.tsx's exact existing client-only gating, unchanged

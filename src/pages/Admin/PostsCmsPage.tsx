@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Container, Flex, Image, Box, Text } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
@@ -16,6 +17,7 @@ import { changePage } from "../../store/UtilSlice/asyncThunk";
 
 const PostsCmsPage = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const userInfo = useAppSelector((state) => state.user.userInfo);
   const props = [
     "author",
@@ -143,12 +145,7 @@ const PostsCmsPage = () => {
         <h2>Posts CMS</h2>
         <Button
           onClick={() => {
-            const newUrl =
-              window.location.origin +
-              "/" +
-              PageConstants.ADMIN.POSTS_VALIDATION;
-            history.pushState(null, "", newUrl);
-            window.location.reload();
+            router.push(`/${PageConstants.ADMIN.POSTS_VALIDATION}`);
           }}
         >
           Validation
@@ -239,6 +236,7 @@ const PostsCmsPage = () => {
                             objectFit={"cover"}
                             maxHeight={"80px"}
                             cursor={"pointer"}
+                            alt="Post media preview"
                             _hover={{
                               opacity: 0.7,
                             }}

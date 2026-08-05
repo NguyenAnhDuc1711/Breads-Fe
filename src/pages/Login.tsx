@@ -96,15 +96,19 @@ const Login = () => {
 
   const handleGetAllAcc = async () => {
     try {
-      const data: IUser[] | undefined | null = await GET({
+      const data = await GET({
         path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
         params: {
           isTest: true,
         },
       });
-      if (data) {
+      // GET() returns an error-shaped object (not an array) on request
+      // failure — guard against passing that straight into array state.
+      if (Array.isArray(data)) {
         setUsers(data);
         setDisplayUsers(data);
+      } else {
+        console.error("handleGetAllAcc: unexpected response", data);
       }
     } catch (err) {
       console.error("handleGetAllAcc: ", err);

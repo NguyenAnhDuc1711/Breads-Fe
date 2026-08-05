@@ -110,7 +110,6 @@ export const getPosts = createAsyncThunk(
   "post/getPosts",
   async (params: any, thunkApi) => {
     try {
-      const dispatch = thunkApi.dispatch;
       if (!params?.page) {
         params.page = 1;
       }
@@ -121,14 +120,15 @@ export const getPosts = createAsyncThunk(
         path: Route.POST + POST_PATH.GET_ALL,
         params,
       });
-      if (posts) {
-        const hasMoreData = posts?.length !== 0 ? true : false;
-        dispatch(updateHasMoreData(hasMoreData));
+      if (Array.isArray(posts)) {
+        const hasMoreData = posts.length !== 0;
+        thunkApi.dispatch(updateHasMoreData(hasMoreData));
+        return {
+          posts: posts,
+          isNewPage: params?.isNewPage ?? false,
+        };
       }
-      return {
-        posts: posts,
-        isNewPage: params?.isNewPage ?? false,
-      };
+      return thunkApi.rejectWithValue(posts);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         return thunkApi.rejectWithValue(err.response?.data);
@@ -144,7 +144,10 @@ export const getPost = createAsyncThunk(
       const data = await GET({
         path: Route.POST + "/" + postId,
       });
-      return data;
+      if (data?._id) {
+        return data;
+      }
+      return thunkApi.rejectWithValue(data);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         return thunkApi.rejectWithValue(err.response?.data);
@@ -159,7 +162,6 @@ export const getUserPosts = createAsyncThunk(
     try {
       const rootState: any = thunkApi.getState();
       const displayPageData = rootState.util.displayPageData;
-      const currentPage = rootState.util.currentPage;
       const data = await GET({
         path: Route.POST + POST_PATH.GET_ALL,
         params: {
@@ -167,7 +169,10 @@ export const getUserPosts = createAsyncThunk(
           filter: { page: PageConstant.USER, value: displayPageData },
         },
       });
-      return data;
+      if (Array.isArray(data)) {
+        return data;
+      }
+      return thunkApi.rejectWithValue(data);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         return thunkApi.rejectWithValue(err.response?.data);

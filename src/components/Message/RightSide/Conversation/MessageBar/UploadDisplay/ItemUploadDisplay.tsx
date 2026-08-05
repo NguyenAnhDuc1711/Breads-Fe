@@ -39,6 +39,7 @@ const ItemUploadDisplay = ({ item, imgSrc, onClick, isPost = false }) => {
         width={isPost ? "fit-content" : "60px"}
         maxHeight={item?.name && !isPost ? "calc(100% - 16px)" : "100%"}
         objectFit={"cover"}
+        alt={item?.name ? `Preview of ${item.name}` : "Upload preview"}
       />
       {item?.name && (
         <Text

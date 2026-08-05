@@ -1,10 +1,11 @@
 "use client";
 
-import { Container, Text, useColorModeValue } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { Container, Flex, Text, useColorModeValue } from "@chakra-ui/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import { EmptyContentSvg } from "../assests/icons";
 import InfiniteScroll from "../components/InfiniteScroll";
 import ContainerLayout from "../components/MainBoxLayout";
 import SearchBar from "../components/SearchBar";
@@ -14,28 +15,77 @@ import { GET } from "../config/API";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import { IUser } from "../store/UserSlice";
+import { updateHasMoreData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
-import { updateHasMoreData } from "../store/UtilSlice";
 
 const SearchPage = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
-  const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [users, setUsers] = useState<IUser[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const init = useRef(true);
 
+  const handleGetUsers = useCallback(
+    async ({
+      page,
+      searchValue,
+      isFetchMore,
+    }: {
+      page: number;
+      searchValue: string;
+      isFetchMore: boolean;
+    }) => {
+      if (!userInfo?._id) return;
+      try {
+        if (!isFetchMore) {
+          setLoading(true);
+        }
+        const data: IUser[] | undefined | null = await GET({
+          path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
+          params: {
+            userId: userInfo._id,
+            page: page,
+            limit: 20,
+            searchValue,
+          },
+        });
+        if (!!data && data.length > 0) {
+          if (isFetchMore) {
+            setUsers((prev) => [...prev, ...data]);
+          } else {
+            setUsers(data);
+          }
+          dispatch(updateHasMoreData(data.length >= 20));
+        } else {
+          if (!isFetchMore) {
+            setUsers([]);
+          }
+          dispatch(updateHasMoreData(false));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!isFetchMore) {
+          setLoading(false);
+        }
+      }
+    },
+    [userInfo?._id, dispatch],
+  );
+
   useEffect(() => {
-    if (!init.current) {
+    if (userInfo?._id) {
       handleGetUsers({
         page: 1,
         searchValue,
         isFetchMore: false,
       });
     }
+
     if (init.current) {
       dispatch(changePage({ nextPage: PageConstant.SEARCH }));
       addEvent({
@@ -44,36 +94,9 @@ const SearchPage = () => {
           page: "search",
         },
       });
+      init.current = false;
     }
-    init.current = false;
-  }, [searchValue]);
-
-  const handleGetUsers = async ({ page, searchValue, isFetchMore }) => {
-    try {
-      const data: IUser[] | undefined | null = await GET({
-        path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
-        params: {
-          userId: userInfo._id,
-          page: page,
-          limit: 20,
-          searchValue,
-        },
-      });
-      if (!!data) {
-        if (isFetchMore) {
-          setUsers([...users, ...data]);
-        } else {
-          setUsers(data);
-        }
-        dispatch(updateHasMoreData(true));
-      } else {
-        dispatch(updateHasMoreData(false));
-        // setHasMore && setHasMore(false);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  }, [searchValue, userInfo?._id]);
 
   return (
     <>
@@ -103,21 +126,40 @@ const SearchPage = () => {
         >
           {t("Suggested_follow_up")}
         </Text>
-        <InfiniteScroll
-          queryFc={(page, setHasMore) => {
-            handleGetUsers({
-              page,
-              searchValue,
-              isFetchMore: true,
-              // setHasMore,
-            });
-          }}
-          data={users}
-          cpnFc={(user) => <UserFollowBox user={user} />}
-          condition={!!userInfo._id}
-          deps={[userInfo._id]}
-          skeletonCpn={<UserFollowBoxSkeleton />}
-        />
+        {loading ? (
+          <Flex direction="column" gap={3} width="100%">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+              <UserFollowBoxSkeleton key={`search-skeleton-${num}`} />
+            ))}
+          </Flex>
+        ) : users.length === 0 ? (
+          <Flex
+            flex={1}
+            justifyContent="center"
+            alignItems="center"
+            width="100%"
+            py={6}
+          >
+            <EmptyContentSvg />
+          </Flex>
+        ) : (
+          <InfiniteScroll
+            queryFc={(page) => {
+              if (page > 1) {
+                handleGetUsers({
+                  page,
+                  searchValue,
+                  isFetchMore: true,
+                });
+              }
+            }}
+            data={users}
+            cpnFc={(user) => <UserFollowBox user={user} />}
+            condition={!!userInfo._id}
+            deps={[userInfo._id, searchValue]}
+            skeletonCpn={<UserFollowBoxSkeleton />}
+          />
+        )}
       </ContainerLayout>
     </>
   );

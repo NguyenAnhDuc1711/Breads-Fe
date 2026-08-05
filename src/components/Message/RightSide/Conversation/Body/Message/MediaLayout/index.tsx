@@ -28,6 +28,7 @@ const MsgMediaLayout = ({ media }: { media: any }) => {
           objectFit={"cover"}
           borderRadius={4}
           cursor={"pointer"}
+          alt="Message media"
           onClick={() => {
             handleSeeMedia(0);
           }}
@@ -51,6 +52,7 @@ const MsgMediaLayout = ({ media }: { media: any }) => {
               objectFit={"cover"}
               borderRadius={4}
               cursor={"pointer"}
+              alt={`Message media ${index + 1}`}
               onClick={() => {
                 handleSeeMedia(index);
               }}
@@ -74,6 +76,7 @@ const MsgMediaLayout = ({ media }: { media: any }) => {
                   objectFit={"cover"}
                   borderRadius={4}
                   cursor={"pointer"}
+                  alt={`Message media ${index + 1}`}
                   onClick={() => {
                     handleSeeMedia(index);
                   }}
@@ -102,6 +105,7 @@ const MsgMediaLayout = ({ media }: { media: any }) => {
                     top={0}
                     src={url}
                     objectFit={"cover"}
+                    alt={`Message media ${index + 1}`}
                   />
                   {mediaLen - 5 > 0 && (
                     <Flex

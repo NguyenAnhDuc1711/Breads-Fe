@@ -41,13 +41,13 @@ const PostDetail = ({ postId }: { postId: string }) => {
 
   const getContentRender = useMemo(() => {
     const postStatus = postSelected?.status;
-    const { PENDING, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
+    const { PRE_ACCEPT, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
       Constants.POST_STATUS;
     let ableToDisplayPost: boolean = !!userInfo?._id;
     console.log("ableToDisplayPost: ", ableToDisplayPost);
 
     switch (postStatus) {
-      case PENDING:
+      case PRE_ACCEPT:
       case DELETED:
         if (postStatus === DELETED) {
           dispatch(

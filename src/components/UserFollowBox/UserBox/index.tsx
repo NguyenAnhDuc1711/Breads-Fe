@@ -74,8 +74,7 @@ const UserBox = ({
             onClick={(e) => {
               e.stopPropagation();
               if (inFollowBox) {
-                window.location.href =
-                  window.location.origin + `/users/${user?._id}`;
+                getToUserPage();
               }
             }}
           >

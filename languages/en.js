@@ -159,6 +159,13 @@ const enTranslations = {
 
   postDeleted: "This post has been deleted",
   postPending: "This post is waiting for validation from admin",
+
+  noActivity: "No activity yet",
+  noFollows: "No follows yet",
+  noLikes: "No likes yet",
+  noReplies: "No replies yet",
+  noReposts: "No reposts yet",
+  noTags: "No mentions yet",
 };
 
 export default enTranslations;

@@ -31,6 +31,17 @@ const nextConfig = {
       { protocol: "https", hostname: "plus.unsplash.com" },
     ],
   },
+  // app/layout.tsx reads cookies() to resolve identity server-side, which
+  // makes every route dynamic. Next's default client router cache doesn't
+  // cache dynamic segments (staleTime 0), so without this every client-side
+  // navigation (e.g. LeftSideBar tab clicks) re-hit the server to re-run
+  // that cookie fetch — same URL revisited within this window instead
+  // reuses the cached RSC payload, restoring SPA-like transitions.
+  experimental: {
+    staleTimes: {
+      dynamic: 120,
+    },
+  },
 };
 
 module.exports = nextConfig;

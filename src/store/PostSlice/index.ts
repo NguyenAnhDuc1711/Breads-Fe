@@ -71,7 +71,7 @@ const postSlice = createSlice({
       state.postAction = action.payload ?? "";
     },
     updateListPost: (state, action) => {
-      state.listPost = action.payload ?? [];
+      state.listPost = Array.isArray(action.payload) ? action.payload : [];
     },
     selectPostReply: (state, action) => {
       state.postReply = action.payload;
@@ -144,17 +144,20 @@ const postSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getPosts.fulfilled, (state, action) => {
-      if (action.payload?.posts) {
+      state.isLoading = false;
+      if (Array.isArray(action.payload?.posts)) {
         const newPosts: IPost[] = action.payload.posts;
         const isNewPage = action.payload.isNewPage;
-        state.isLoading = false;
-        if (!isNewPage) {
+        if (!isNewPage && Array.isArray(state.listPost)) {
           state.listPost.push(...newPosts);
         } else {
           state.listPost = newPosts;
         }
         state.postInfo = defaultPostInfo;
       }
+    });
+    builder.addCase(getPosts.rejected, (state) => {
+      state.isLoading = false;
     });
     builder.addCase(createPost.pending, (state) => {
       state.isLoading = true;
@@ -274,11 +277,14 @@ const postSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getUserPosts.fulfilled, (state, action) => {
+      state.isLoading = false;
       const userPosts = action.payload;
-      if (userPosts) {
+      if (Array.isArray(userPosts)) {
         state.listPost = userPosts;
-        state.isLoading = false;
       }
+    });
+    builder.addCase(getUserPosts.rejected, (state) => {
+      state.isLoading = false;
     });
     builder.addCase(updatePostStatus.fulfilled, (state, action) => {
       const postId = action.payload;

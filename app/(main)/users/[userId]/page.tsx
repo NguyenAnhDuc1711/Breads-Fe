@@ -33,18 +33,6 @@ async function fetchUser(userId: string) {
   return fetchJson(`${Route.USER}${USER_PATH.PROFILE}${userId}`, jwt);
 }
 
-async function fetchUsersFollow(userId: string) {
-  const jwt = cookies().get("jwt")?.value;
-  const data = await fetchJson(
-    `${Route.USER}${USER_PATH.USERS_FOLLOW}?userId=${userId}`,
-    jwt
-  );
-  return {
-    followed: data?.followed ?? [],
-    following: data?.following ?? [],
-  };
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -54,12 +42,23 @@ export async function generateMetadata({
   if (!user) {
     return { title: "Bread" };
   }
+  const title = user.username ? `${user.username} · Breads` : "Breads";
+  const description = user.bio ?? undefined;
   return {
-    title: user.username ? `${user.username} · Bread` : "Bread",
-    description: user.bio ?? undefined,
+    title,
+    description,
     openGraph: {
-      title: user.username ? `${user.username} · Bread` : "Bread",
-      description: user.bio ?? undefined,
+      type: "profile",
+      title,
+      description,
+      images: user.avatar
+        ? [{ url: user.avatar, alt: `${user.username}'s avatar` }]
+        : undefined,
+    },
+    twitter: {
+      card: user.avatar ? "summary" : "summary",
+      title,
+      description,
       images: user.avatar ? [user.avatar] : undefined,
     },
   };
@@ -72,11 +71,9 @@ const Page = async ({ params }: { params: { userId: string } }) => {
     notFound();
   }
 
-  const usersFollow = await fetchUsersFollow(params.userId);
-
   return (
     <ContainerLayout>
-      <UserHeader user={user} usersFollow={usersFollow} />
+      <UserHeader user={user} />
       <UserPageHydrate userId={params.userId} />
     </ContainerLayout>
   );

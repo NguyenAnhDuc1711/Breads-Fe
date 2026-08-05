@@ -149,6 +149,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
                       w={"30%"}
                       objectFit={"cover"}
                       cursor={"pointer"}
+                      alt={`Shared media ${index + 1}`}
                       onClick={() => handleSeeMedia(index)}
                     />
                   );

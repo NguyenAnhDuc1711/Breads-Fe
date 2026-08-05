@@ -17,13 +17,13 @@ const ListPost = () => {
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { listPost, isLoading } = useAppSelector(
-    (state: AppState) => state.post
+    (state: AppState) => state.post,
   );
   const { currentPage, displayPageData } = useAppSelector(
-    (state: AppState) => state.util
+    (state: AppState) => state.util,
   );
   const filterPostValidation = useAppSelector(
-    (state: AppState) => state.admin.filterPostValidation
+    (state: AppState) => state.admin.filterPostValidation,
   );
 
   const handleGetPosts = async ({ page }) => {
@@ -32,37 +32,42 @@ const ListPost = () => {
         currentPage === PageConstant.USER ||
         currentPage === PageConstant.FRIEND
       ) {
-      } else {
-        let filter = { page: displayPageData };
-        if (isAdmin) {
-          filter = {
-            ...filter,
-            ...filterPostValidation,
-          };
-        }
-        const payload: {
-          filter: any;
-          userId: string;
-          page: string;
-          isNewPage?: boolean;
-        } = {
-          filter: filter,
-          userId: userInfo?._id,
-          page: page,
-        };
-        if (page === 1) {
-          payload.isNewPage = true;
-        }
-        dispatch(getPosts(payload));
+        return;
       }
+      if (page === 1 && !isAdmin) {
+        return;
+      }
+      let filter = { page: displayPageData };
+      if (isAdmin) {
+        filter = {
+          ...filter,
+          ...filterPostValidation,
+        };
+      }
+      const payload: {
+        filter: any;
+        userId: string;
+        page: string;
+        isNewPage?: boolean;
+      } = {
+        filter: filter,
+        userId: userInfo?._id,
+        page: page,
+      };
+      if (page === 1) {
+        payload.isNewPage = true;
+      }
+      dispatch(getPosts(payload));
     } catch (err) {
       console.error("Error scroll to get more post: ", err);
     }
   };
 
+  const hasPosts = Array.isArray(listPost) && listPost.length > 0;
+
   return (
     <>
-      {(isAdmin ? true : listPost?.length !== 0) ? (
+      {(isAdmin ? true : hasPosts) ? (
         <>
           <InfiniteScroll
             queryFc={(page) => {
@@ -70,7 +75,7 @@ const ListPost = () => {
                 page,
               });
             }}
-            data={listPost}
+            data={Array.isArray(listPost) ? listPost : []}
             cpnFc={(post) => (
               <Fragment>
                 <Post post={post} />

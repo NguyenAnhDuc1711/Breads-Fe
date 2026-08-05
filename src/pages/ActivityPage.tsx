@@ -3,7 +3,6 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import Activity from "../components/Activity";
 import ContainerLayout from "../components/MainBoxLayout";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import { HeaderHeight } from "../Layout";
 import { AppState } from "../store";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import { getNotificattions } from "../store/NotificationSlice/asyncThunk";
@@ -44,14 +43,9 @@ const ActivityPage = ({ tab }: { tab: string }) => {
   }, [userInfo, tab]);
 
   return (
-    // Old App.tsx applied this same marginTop to every non-auth/non-admin
-    // route's wrapper div (Header is `position: fixed`); that spacing now
-    // lives in each route's own page body (see app/(main)/layout.tsx note).
-    <div style={{ marginTop: HeaderHeight + 12 + "px" }}>
-      <ContainerLayout>
-        <Activity currentPage={tab} />
-      </ContainerLayout>
-    </div>
+    <ContainerLayout>
+      <Activity currentPage={tab} />
+    </ContainerLayout>
   );
 };
 

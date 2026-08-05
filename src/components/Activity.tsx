@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Box, Flex, Text } from "@chakra-ui/react";
+import { Avatar, AvatarBadge, Box, Flex, Skeleton, Text } from "@chakra-ui/react";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { FaHeart } from "react-icons/fa";
 import { FaRepeat, FaUser } from "react-icons/fa6";
 import { IoImageOutline } from "react-icons/io5";
 import { useRouter } from "next/navigation";
+import { EmptyContentSvg } from "../assests/icons";
 import { Constants } from "../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
@@ -18,14 +19,14 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
   const dispatch = useAppDispatch();
   const navigate = useRouter().push;
   const { t } = useTranslation();
-  const notifications = useAppSelector(
-    (state: AppState) => state.notification.notifications
+  const { notifications, isLoading } = useAppSelector(
+    (state: AppState) => state.notification
   );
   const [uniqueNotifications, setUniqueNotifications] = useState<any>([]);
 
   useEffect(() => {
     const seen = new Set();
-    const unique = notifications.filter((notification) => {
+    const unique = (notifications ?? []).filter((notification) => {
       if (!seen.has(notification._id)) {
         seen.add(notification._id);
         return true;
@@ -91,6 +92,58 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
   const comeToUser = (userId) => {
     navigate(`/users/${userId}`);
   };
+
+  const getEmptyMessage = () => {
+    switch (currentPage) {
+      case "follows":
+        return t("noFollows");
+      case "likes":
+        return t("noLikes");
+      case "reposts":
+        return t("noReposts");
+      case "replies":
+        return t("noReplies");
+      case "tags":
+        return t("noTags");
+      default:
+        return t("noActivity");
+    }
+  };
+
+  if (isLoading && filteredNotifications.length === 0) {
+    return (
+      <Flex direction="column" gap={3} py={2}>
+        {[1, 2, 3, 4, 5].map((num) => (
+          <Skeleton
+            key={`activity-skeleton-${num}`}
+            height="64px"
+            borderRadius="10px"
+            startColor="#202020"
+            endColor="#2a2a2a"
+          />
+        ))}
+      </Flex>
+    );
+  }
+
+  if (filteredNotifications.length === 0) {
+    return (
+      <Flex
+        flex={1}
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        width="100%"
+        gap={3}
+        py={6}
+      >
+        <EmptyContentSvg />
+        <Text color="gray.500" fontSize="15px" fontWeight="500">
+          {getEmptyMessage()}
+        </Text>
+      </Flex>
+    );
+  }
 
   return (
     <>

@@ -1,4 +1,5 @@
 import { Button } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { POST } from "../../config/API";
@@ -11,6 +12,7 @@ import { openLoginPopupAction } from "../../store/UtilSlice";
 
 const ConversationBtn = ({ user }: { user: IUser }) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const handleClickChat = async () => {
     try {
@@ -28,7 +30,7 @@ const ConversationBtn = ({ user }: { user: IUser }) => {
       if (!!data) {
         dispatch(changePage({ nextPage: PageConstant.CHAT }));
         dispatch(selectConversation(data));
-        window.location.href = window.location.origin + `/chat/${data._id}`;
+        router.push(`/chat/${data._id}`);
       }
     } catch (err) {
       console.error("handleClickChat: ", err);

@@ -17,6 +17,7 @@ const InfiniteScroll = ({
   deps = [],
   condition = true,
   skeletonCpn,
+  hasInitialFetch,
   reloadPageDeps = null,
   preloadIndex = 5,
   reverseScroll = false,
@@ -30,6 +31,7 @@ const InfiniteScroll = ({
   deps?: any;
   condition?: boolean;
   skeletonCpn?: any;
+  hasInitialFetch?: boolean;
   reloadPageDeps?: any;
   preloadIndex?: number;
   reverseScroll?: boolean;
@@ -45,6 +47,13 @@ const InfiniteScroll = ({
   const [updatePageWithoutLoad, setUpdatePageWithoutLoad] =
     useState<boolean>(false);
   const observer = useRef<IntersectionObserver>();
+  const isFirstRender = useRef<boolean>(true);
+  const prevPage = useRef<number>(page);
+
+  const shouldInitialFetch =
+    hasInitialFetch !== undefined
+      ? hasInitialFetch
+      : !data || data.length === 0;
 
   const lastUserElementRef = useCallback(
     (node) => {
@@ -52,7 +61,12 @@ const InfiniteScroll = ({
         observer.current.disconnect();
       }
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMoreData && !reverseScroll) {
+        if (
+          entries[0].isIntersecting &&
+          hasMoreData &&
+          !reverseScroll &&
+          !isLoading
+        ) {
           setPage((prevPage) => prevPage + 1);
           // setIsLoading(true);
         }
@@ -61,34 +75,47 @@ const InfiniteScroll = ({
         observer.current.observe(node);
       }
     },
-    [hasMoreData]
+    [hasMoreData, isLoading, reverseScroll],
   );
 
-  useEffect(
-    () => {
-      if (condition && !updatePageWithoutLoad) {
+  useEffect(() => {
+    if (condition && !updatePageWithoutLoad) {
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        prevPage.current = page;
+        if (shouldInitialFetch) {
+          queryFc && queryFc(page);
+        }
+      } else if (page !== prevPage.current) {
+        prevPage.current = page;
         queryFc && queryFc(page);
       }
-      setIsLoading(false);
-      setUpdatePageWithoutLoad(false);
-      if (reverseScroll && elementId) {
-        const containerEle = document.getElementById(elementId);
-        if (containerEle) {
-          const listenScroll = () => {
-            if (containerEle.scrollTop === 0) {
-              setPage((prev) => prev + 1);
-              setCurrentScrollY(containerEle.scrollHeight);
-            }
-          };
-          containerEle.addEventListener("scroll", listenScroll);
-          return () => {
-            containerEle.removeEventListener("scroll", listenScroll);
-          };
-        }
+    }
+    setIsLoading(false);
+    setUpdatePageWithoutLoad(false);
+    if (reverseScroll && elementId) {
+      const containerEle = document.getElementById(elementId);
+      if (containerEle) {
+        const listenScroll = () => {
+          if (containerEle.scrollTop === 0) {
+            setPage((prev) => prev + 1);
+            setCurrentScrollY(containerEle.scrollHeight);
+          }
+        };
+        containerEle.addEventListener("scroll", listenScroll);
+        return () => {
+          containerEle.removeEventListener("scroll", listenScroll);
+        };
       }
-    },
-    deps ? [...deps, page] : [page]
-  );
+    }
+  }, [
+    page,
+    condition,
+    shouldInitialFetch,
+    updatePageWithoutLoad,
+    reverseScroll,
+    elementId,
+  ]);
 
   useEffect(
     () => {
@@ -96,11 +123,12 @@ const InfiniteScroll = ({
         if (page !== 1) {
           setIsLoading(true);
           setPage(1);
+          prevPage.current = 1;
           dispatch(updateHasMoreData(true));
         }
       }
     },
-    reloadPageDeps ? reloadPageDeps : []
+    reloadPageDeps ? reloadPageDeps : [],
   );
 
   useEffect(() => {

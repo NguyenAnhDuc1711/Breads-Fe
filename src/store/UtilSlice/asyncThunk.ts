@@ -8,10 +8,8 @@ type PageUpdate = {
 
 export const changePage = createAsyncThunk(
   "util/changePage",
-  (payload: PageUpdate, thunkApi) => {
-    const dispatch = thunkApi.dispatch;
+  (payload: PageUpdate) => {
     const { nextPage, currentPage } = payload;
-    dispatch(reloadListPost());
     return {
       currentPage: currentPage ?? "",
       nextPage: nextPage,

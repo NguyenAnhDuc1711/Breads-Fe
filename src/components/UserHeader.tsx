@@ -27,21 +27,26 @@ import { CgDanger, CgMoreO } from "react-icons/cg";
 import { FaLink } from "react-icons/fa";
 import NextLink from "next/link";
 import { EmptyContentSvg } from "../assests/icons";
+import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";
+import { GET } from "../config/API";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import { IUser } from "../store/UserSlice";
 import {
   changeDisplayPageData,
   showToast,
+  updateHasMoreData,
   updateSeeMedia,
 } from "../store/UtilSlice";
 import { addEvent } from "../util";
 import ConversationBtn from "./ConversationBtn";
 import FollowBtn from "./FollowBtn";
+import InfiniteScroll from "./InfiniteScroll";
 import ListPost from "./ListPost";
 import SkeletonPost from "./ListPost/Post/skeleton";
 import UserFollowBox from "./UserFollowBox";
+import UserFollowBoxSkeleton from "./UserFollowBox/skeleton";
 
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
@@ -54,13 +59,12 @@ const TABS = {
   Reposts: PostConstants.ACTIONS.REPOST,
 };
 
-const UserHeader = ({
-  user,
-  usersFollow,
-}: {
-  user: IUser;
-  usersFollow: any;
-}) => {
+const EMPTY_FOLLOW_TAB_STATE = {
+  items: [] as any[],
+  loaded: false,
+};
+
+const UserHeader = ({ user }: { user: IUser }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
@@ -69,6 +73,32 @@ const UserHeader = ({
     open: false,
     currentTab: FOLLOW_TAB.FOLLOWED,
   });
+  const [followLists, setFollowLists] = useState({
+    [FOLLOW_TAB.FOLLOWED]: EMPTY_FOLLOW_TAB_STATE,
+    [FOLLOW_TAB.FOLLOWING]: EMPTY_FOLLOW_TAB_STATE,
+  });
+
+  const loadFollowPage = async (type: string, page: number) => {
+    const data = await GET({
+      path: `${Route.USER}${USER_PATH.USERS_FOLLOW}`,
+      params: { userId: user._id, type, page, limit: 20 },
+    });
+    setFollowLists((prev) => ({
+      ...prev,
+      [type]: {
+        items:
+          page === 1
+            ? data?.users ?? []
+            : [...prev[type].items, ...(data?.users ?? [])],
+        loaded: true,
+      },
+    }));
+    dispatch(updateHasMoreData(!!data?.hasMore));
+  };
+
+  const openFollowBox = (tab: string) => {
+    setFollowBox({ open: true, currentTab: tab });
+  };
 
   const copyURL = () => {
     addEvent({
@@ -181,12 +211,7 @@ const UserHeader = ({
                 cursor: "pointer",
               }}
               color={"gray.light"}
-              onClick={() => {
-                setFollowBox({
-                  ...followBox,
-                  open: true,
-                });
-              }}
+              onClick={() => openFollowBox(FOLLOW_TAB.FOLLOWED)}
             >
               {user?.followersCount ?? 0} {t("followers")}
             </Text>
@@ -332,13 +357,21 @@ const UserHeader = ({
       >
         <ModalOverlay />
         <ModalContent overflow={"hidden"}>
-          <Tabs>
+          <Tabs
+            isLazy
+            index={followBox.currentTab === FOLLOW_TAB.FOLLOWED ? 0 : 1}
+            onChange={(index) => {
+              const tab =
+                index === 0 ? FOLLOW_TAB.FOLLOWED : FOLLOW_TAB.FOLLOWING;
+              setFollowBox({ ...followBox, currentTab: tab });
+            }}
+          >
             <TabList width={"100%"} maxWidth={"100%"}>
               <Tab width={"50%"} textTransform={"capitalize"}>
                 <Flex flexDirection={"column"}>
                   <Text>{FOLLOW_TAB.FOLLOWED}</Text>
                   <Text fontSize={"14px"} fontWeight={500}>
-                    {usersFollow.followed?.length}
+                    {user?.followersCount ?? 0}
                   </Text>
                 </Flex>
               </Tab>
@@ -346,43 +379,35 @@ const UserHeader = ({
                 <Flex flexDirection={"column"}>
                   <Text>{FOLLOW_TAB.FOLLOWING}</Text>
                   <Text fontSize={"14px"} fontWeight={500}>
-                    {usersFollow.following?.length}
+                    {user?.followingCount ?? 0}
                   </Text>
                 </Flex>
               </Tab>
             </TabList>
 
-            <TabPanels padding={0} maxHeight={"85vh"} overflowY={"auto"}>
-              <TabPanel padding={0}>
-                {usersFollow.followed?.length > 0 ? (
-                  usersFollow.followed?.map((user) => (
-                    <UserFollowBox
-                      user={user}
-                      key={`user-follow-${user?._id}`}
-                      inFollowBox={true}
-                    />
-                  ))
-                ) : (
-                  <Flex justifyContent={"center"} padding={"16px"}>
-                    <EmptyContentSvg />
-                  </Flex>
-                )}
-              </TabPanel>
-              <TabPanel padding={0}>
-                {usersFollow.following?.length > 0 ? (
-                  usersFollow.following?.map((user) => (
-                    <UserFollowBox
-                      user={user}
-                      key={`user-follow-${user?._id}`}
-                      inFollowBox={true}
-                    />
-                  ))
-                ) : (
-                  <Flex justifyContent={"center"} padding={"16px"}>
-                    <EmptyContentSvg />
-                  </Flex>
-                )}
-              </TabPanel>
+            <TabPanels padding={0} maxHeight={"50vh"} overflowY={"auto"}>
+              {[FOLLOW_TAB.FOLLOWED, FOLLOW_TAB.FOLLOWING].map((tab) => (
+                <TabPanel padding={0} key={tab}>
+                  <InfiniteScroll
+                    queryFc={(page) => loadFollowPage(tab, page)}
+                    data={followLists[tab].items}
+                    cpnFc={(followUser) => (
+                      <UserFollowBox
+                        user={followUser}
+                        key={`user-follow-${followUser?._id}`}
+                        inFollowBox={true}
+                      />
+                    )}
+                    skeletonCpn={<UserFollowBoxSkeleton inFollowBox={true} />}
+                  />
+                  {followLists[tab].loaded &&
+                    followLists[tab].items.length === 0 && (
+                      <Flex justifyContent={"center"} padding={"16px"}>
+                        <EmptyContentSvg />
+                      </Flex>
+                    )}
+                </TabPanel>
+              ))}
             </TabPanels>
           </Tabs>
         </ModalContent>

@@ -78,7 +78,6 @@ const ResetPWPage = ({
               localStorage.removeItem("encodedCode");
               setTimeout(() => {
                 router.push("/");
-                window.location.reload();
               }, 100);
             }
           },
