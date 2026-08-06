@@ -10,15 +10,18 @@ import {
   Divider,
   Flex,
   Text,
+  Tooltip,
   useColorMode,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
+import { MdLock, MdPeopleAlt } from "react-icons/md";
 import { RiDoubleQuotesL } from "react-icons/ri";
 import { Socket } from "socket.io-client";
 import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
+import { Constants } from "../../../Breads-Shared/Constants";
 import PostConstants from "../../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import usePopupCancel from "../../../hooks/usePopupCancel";
@@ -118,6 +121,20 @@ const Post = ({
             </Flex>
 
             <Flex gap={4} alignItems={"center"}>
+              {post?.visibility === Constants.POST_VISIBILITY.ONLY_ME && (
+                <Tooltip label={t("visibilityOnlyMe")}>
+                  <span>
+                    <MdLock size={16} />
+                  </span>
+                </Tooltip>
+              )}
+              {post?.visibility === Constants.POST_VISIBILITY.ONLY_FOLLOWERS && (
+                <Tooltip label={t("visibilityFollowers")}>
+                  <span>
+                    <MdPeopleAlt size={16} />
+                  </span>
+                </Tooltip>
+              )}
               <Text
                 fontSize={"sm"}
                 color={colorMode === "dark" ? "gray.100" : "gray.light"}

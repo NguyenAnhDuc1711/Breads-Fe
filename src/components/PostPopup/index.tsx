@@ -4,10 +4,15 @@ import {
   Avatar,
   Button,
   Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalContent,
   ModalFooter,
   ModalOverlay,
+  Portal,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
@@ -67,8 +72,22 @@ const PostPopup = () => {
   const [content, setContent] = useState("");
   const [clickPost, setClickPost] = useState(false);
   const [filesData, setFilesData] = useState([]);
+  const [visibility, setVisibility] = useState<number>(
+    Constants.POST_VISIBILITY.PUBLIC
+  );
   const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
+  const VISIBILITY_OPTIONS = [
+    { value: Constants.POST_VISIBILITY.PUBLIC, label: t("visibilityPublic") },
+    {
+      value: Constants.POST_VISIBILITY.ONLY_FOLLOWERS,
+      label: t("visibilityFollowers"),
+    },
+    {
+      value: Constants.POST_VISIBILITY.ONLY_ME,
+      label: t("visibilityOnlyMe"),
+    },
+  ];
   const containsLink = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return urlRegex.test(text);
@@ -165,6 +184,7 @@ const PostPopup = () => {
       } else {
         let notificationPayload: any = {};
         payload._id = generateObjectId();
+        payload.visibility = visibility;
         if (postAction === PostConstants.ACTIONS.REPOST && !!postSelected) {
           payload.quote = {
             _id: postSelected._id,
@@ -183,6 +203,11 @@ const PostPopup = () => {
             },
           });
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
+          // Snapshot the parent post's visibility at creation time so a
+          // reply never leaks context from a non-PUBLIC thread — no
+          // later re-sync if the parent's visibility changes.
+          payload.visibility =
+            postReply?.visibility ?? Constants.POST_VISIBILITY.PUBLIC;
           payload.parentPost = postReply?._id;
           if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
             notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
@@ -341,6 +366,36 @@ const PostPopup = () => {
                   tagUsers={true}
                   placeholder={t("whatnew")}
                 />
+                {!isEditing && postAction !== PostConstants.ACTIONS.REPLY && (
+                  <Menu>
+                    <MenuButton
+                      as={Button}
+                      size="sm"
+                      variant="outline"
+                      borderRadius="16px"
+                      width="fit-content"
+                      mb="6px"
+                    >
+                      {
+                        VISIBILITY_OPTIONS.find(
+                          (option) => option.value === visibility
+                        )?.label
+                      }
+                    </MenuButton>
+                    <Portal>
+                      <MenuList zIndex={3100}>
+                        {VISIBILITY_OPTIONS.map((option) => (
+                          <MenuItem
+                            key={option.value}
+                            onClick={() => setVisibility(option.value)}
+                          >
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </MenuList>
+                    </Portal>
+                  </Menu>
+                )}
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />

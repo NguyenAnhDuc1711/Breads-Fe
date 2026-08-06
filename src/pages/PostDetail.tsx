@@ -41,8 +41,9 @@ const PostDetail = ({ postId }: { postId: string }) => {
 
   const getContentRender = useMemo(() => {
     const postStatus = postSelected?.status;
-    const { PRE_ACCEPT, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
-      Constants.POST_STATUS;
+    const postVisibility = postSelected?.visibility;
+    const { PRE_ACCEPT, DELETED } = Constants.POST_STATUS;
+    const { ONLY_ME, ONLY_FOLLOWERS } = Constants.POST_VISIBILITY;
     let ableToDisplayPost: boolean = !!userInfo?._id;
     console.log("ableToDisplayPost: ", ableToDisplayPost);
 
@@ -68,17 +69,21 @@ const PostDetail = ({ postId }: { postId: string }) => {
         }
         ableToDisplayPost = false;
         break;
-      case ONLY_ME:
-        ableToDisplayPost = userInfo?._id === postSelected?.authorId;
-        break;
-      case ONLY_FOLLOWERS:
-        const followers = userInfo?.followed;
-        ableToDisplayPost = !!followers?.length
-          ? [...followers, userInfo?._id]?.includes(userInfo?._id)
-          : false;
-        break;
       default:
-        ableToDisplayPost = !!userInfo?._id;
+        switch (postVisibility) {
+          case ONLY_ME:
+            ableToDisplayPost = userInfo?._id === postSelected?.authorId;
+            break;
+          case ONLY_FOLLOWERS: {
+            const followers = userInfo?.followed;
+            ableToDisplayPost = !!followers?.length
+              ? [...followers, userInfo?._id]?.includes(userInfo?._id)
+              : false;
+            break;
+          }
+          default:
+            ableToDisplayPost = !!userInfo?._id;
+        }
     }
     if (ableToDisplayPost) {
       return (

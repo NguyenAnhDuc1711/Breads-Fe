@@ -11,6 +11,7 @@ import {
   getUserPosts,
   selectSurveyOption,
   updatePostStatus,
+  updatePostVisibility,
 } from "./asyncThunk";
 
 export type { IPost, ISurveyOption, IUserShortInfo };
@@ -291,6 +292,22 @@ const postSlice = createSlice({
       let newListPost = JSON.parse(JSON.stringify(state.listPost));
       newListPost = newListPost.filter(({ _id }) => _id !== postId);
       state.listPost = newListPost;
+    });
+    // Unlike updatePostStatus (which removes the post from the moderation
+    // list), a visibility change keeps the post in place — only its
+    // `visibility` field changes, so task 013's badge stays in sync.
+    builder.addCase(updatePostVisibility.fulfilled, (state, action) => {
+      const postId = action.payload;
+      const visibility = action.meta.arg?.visibility;
+      const postIndex = state.listPost.findIndex(({ _id }) => _id === postId);
+      if (postIndex !== -1) {
+        state.listPost[postIndex] = {
+          ...state.listPost[postIndex],
+          visibility,
+        };
+      } else if (state.postSelected && state.postSelected._id === postId) {
+        state.postSelected = { ...state.postSelected, visibility };
+      }
     });
   },
 });

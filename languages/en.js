@@ -166,6 +166,10 @@ const enTranslations = {
   noReplies: "No replies yet",
   noReposts: "No reposts yet",
   noTags: "No mentions yet",
+
+  visibilityPublic: "Everyone",
+  visibilityFollowers: "Followers",
+  visibilityOnlyMe: "Only me",
 };
 
 export default enTranslations;

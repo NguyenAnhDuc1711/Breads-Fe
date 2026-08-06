@@ -168,6 +168,10 @@ const vnTranslations = {
   noReplies: "Chưa có câu trả lời nào",
   noReposts: "Chưa có lượt đăng lại nào",
   noTags: "Chưa có lượt đề cập nào",
+
+  visibilityPublic: "Mọi người",
+  visibilityFollowers: "Người theo dõi",
+  visibilityOnlyMe: "Chỉ mình tôi",
 };
 
 export default vnTranslations;
