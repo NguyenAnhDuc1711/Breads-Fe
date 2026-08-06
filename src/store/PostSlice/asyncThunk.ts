@@ -214,3 +214,20 @@ export const updatePostStatus = createAsyncThunk(
     }
   }
 );
+
+export const updatePostVisibility = createAsyncThunk(
+  "post/updatePostVisibility",
+  async (payload: any, thunkApi) => {
+    try {
+      await POST({
+        path: Route.POST + POST_PATH.UPDATE_POST_VISIBILITY,
+        payload,
+      });
+      return payload.postId;
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        return thunkApi.rejectWithValue(err.response?.data);
+      }
+    }
+  }
+);

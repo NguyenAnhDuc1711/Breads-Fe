@@ -2,16 +2,22 @@ import {
   Box,
   Button,
   Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Popover,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Portal,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 import { Fragment, memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IoIosLink } from "react-icons/io";
+import { MdPublic } from "react-icons/md";
 import {
   LikeIcon,
   ReplyIcon,
@@ -31,7 +37,10 @@ import {
   toggleLikedByMe,
   updatePostAction,
 } from "../../../store/PostSlice";
-import { updatePostStatus } from "../../../store/PostSlice/asyncThunk";
+import {
+  updatePostStatus,
+  updatePostVisibility,
+} from "../../../store/PostSlice/asyncThunk";
 import { addEvent, getIsAdminPage } from "../../../util";
 import useCopyLink from "./MoreAction/CopyLink";
 import { openLoginPopupAction } from "../../../store/UtilSlice";
@@ -84,6 +93,13 @@ const Actions = ({ post }: { post: IPost }) => {
     return intValue + (firstFloatValue ? "." + firstFloatValue : "") + strValue;
   };
 
+  // Repost is a UX-layer gate only — Be (task 011) is the real enforcement,
+  // rejecting reposts of non-PUBLIC content with a 400. Undefined visibility
+  // (pre-backfill posts) is treated as PUBLIC, matching the schema default.
+  const canRepost =
+    (post.visibility ?? Constants.POST_VISIBILITY.PUBLIC) ===
+    Constants.POST_VISIBILITY.PUBLIC;
+
   const listActions = [
     {
       name: ACTIONS_NAME.LIKE,
@@ -118,19 +134,24 @@ const Actions = ({ post }: { post: IPost }) => {
         dispatch(selectPost(post));
       },
     },
-    {
-      name: ACTIONS_NAME.REPOST,
-      statistic: post?.repostNum,
-      icon: <RepostIcon />,
-      onClick: () => {
-        if (!userInfo?._id) {
-          dispatch(openLoginPopupAction());
-          return;
-        }
-        dispatch(updatePostAction(PostConstants.ACTIONS.REPOST));
-        dispatch(selectPost(post));
-      },
-    },
+    ...(canRepost
+      ? [
+          {
+            name: ACTIONS_NAME.REPOST,
+            statistic: post?.repostNum,
+            icon: <RepostIcon />,
+            onClick: () => {
+              if (!userInfo?._id) {
+                dispatch(openLoginPopupAction());
+                return;
+              }
+              if (!canRepost) return;
+              dispatch(updatePostAction(PostConstants.ACTIONS.REPOST));
+              dispatch(selectPost(post));
+            },
+          },
+        ]
+      : []),
     {
       name: ACTIONS_NAME.SHARE,
       statistic: post?.share?.length,
@@ -150,6 +171,29 @@ const Actions = ({ post }: { post: IPost }) => {
       })
     );
   };
+
+  const handleUpdatePostVisibility = (visibility: number) => {
+    dispatch(
+      updatePostVisibility({
+        userId: userInfo._id,
+        postId: post._id,
+        visibility: visibility,
+      })
+    );
+  };
+
+  const isAuthor = !!userInfo?._id && userInfo._id === post.authorId;
+  const VISIBILITY_OPTIONS = [
+    { value: Constants.POST_VISIBILITY.PUBLIC, label: t("visibilityPublic") },
+    {
+      value: Constants.POST_VISIBILITY.ONLY_FOLLOWERS,
+      label: t("visibilityFollowers"),
+    },
+    {
+      value: Constants.POST_VISIBILITY.ONLY_ME,
+      label: t("visibilityOnlyMe"),
+    },
+  ];
 
   if (isAdmin) {
     return (
@@ -270,6 +314,32 @@ const Actions = ({ post }: { post: IPost }) => {
             );
           }
         })}
+        {isAuthor && (
+          <Menu>
+            <MenuButton
+              width={"32px"}
+              height={"32px"}
+              padding={"6px 10px"}
+              bg={"transparent"}
+              borderRadius={"16px"}
+              zIndex={0}
+            >
+              <MdPublic size={20} />
+            </MenuButton>
+            <Portal>
+              <MenuList zIndex={3100}>
+                {VISIBILITY_OPTIONS.map((option) => (
+                  <MenuItem
+                    key={option.value}
+                    onClick={() => handleUpdatePostVisibility(option.value)}
+                  >
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Portal>
+          </Menu>
+        )}
       </Flex>
     </>
   );
