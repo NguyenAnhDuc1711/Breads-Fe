@@ -42,31 +42,20 @@ const PostDetail = ({ postId }: { postId: string }) => {
   const getContentRender = useMemo(() => {
     const postStatus = postSelected?.status;
     const postVisibility = postSelected?.visibility;
-    const { PRE_ACCEPT, DELETED } = Constants.POST_STATUS;
+    const { DELETED } = Constants.POST_STATUS;
     const { ONLY_ME, ONLY_FOLLOWERS } = Constants.POST_VISIBILITY;
     let ableToDisplayPost: boolean = !!userInfo?._id;
     console.log("ableToDisplayPost: ", ableToDisplayPost);
 
     switch (postStatus) {
-      case PRE_ACCEPT:
       case DELETED:
-        if (postStatus === DELETED) {
-          dispatch(
-            showToast({
-              title: "",
-              description: t("postDeleted"),
-              status: "error",
-            })
-          );
-        } else {
-          dispatch(
-            showToast({
-              title: "",
-              description: t("postPending"),
-              status: "info",
-            })
-          );
-        }
+        dispatch(
+          showToast({
+            title: "",
+            description: t("postDeleted"),
+            status: "error",
+          })
+        );
         ableToDisplayPost = false;
         break;
       default:

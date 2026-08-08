@@ -170,6 +170,9 @@ const enTranslations = {
   visibilityPublic: "Everyone",
   visibilityFollowers: "Followers",
   visibilityOnlyMe: "Only me",
+  visibilityPublicDesc: "Anyone can see and reply to this post",
+  visibilityFollowersDesc: "Only profiles who follow you can see this",
+  visibilityOnlyMeDesc: "Only you can see this post",
 };
 
 export default enTranslations;

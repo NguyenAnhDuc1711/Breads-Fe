@@ -7,7 +7,8 @@ export default class Socket {
 
   constructor() {
     console.log("inital in constructor");
-    Socket.instance = io(`${serverUrl}/socket`, {
+    Socket.instance = io(serverUrl, {
+      path: "/socket",
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,

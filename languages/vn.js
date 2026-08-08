@@ -172,6 +172,9 @@ const vnTranslations = {
   visibilityPublic: "Mọi người",
   visibilityFollowers: "Người theo dõi",
   visibilityOnlyMe: "Chỉ mình tôi",
+  visibilityPublicDesc: "Bất kỳ ai cũng có thể xem và trả lời bài viết",
+  visibilityFollowersDesc: "Chỉ những người theo dõi bạn mới có thể xem",
+  visibilityOnlyMeDesc: "Chỉ một mình bạn mới có thể xem bài viết này",
 };
 
 export default vnTranslations;

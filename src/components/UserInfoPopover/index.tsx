@@ -11,11 +11,13 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
+  Tooltip,
   useColorMode,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { MdVerified } from "react-icons/md";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
@@ -25,6 +27,8 @@ import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { addEvent } from "../../util";
 import { handleFollow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
+
+const CELEBRITY_FOLLOWERS_THRESHOLD = 50000;
 
 export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
   const dispatch = useAppDispatch();
@@ -42,7 +46,16 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
       <Box m={2}>
         <Flex justifyContent={"space-between"} pb={4}>
           <Box>
-            <Text fontWeight="bold">{user?.username}</Text>
+            <Flex alignItems="center" gap={1}>
+              <Text fontWeight="bold">{user?.username}</Text>
+              {(user?.followersCount ?? 0) > CELEBRITY_FOLLOWERS_THRESHOLD && (
+                <Tooltip label="Celebrity">
+                  <span>
+                    <MdVerified color="#1d9bf0" size={16} />
+                  </span>
+                </Tooltip>
+              )}
+            </Flex>
             <Text fontSize={"sm"}>{user?.name}</Text>
           </Box>
           <Avatar
@@ -138,14 +151,23 @@ const UserInfoPopover = ({
             }
           }}
         >
-          <Text
-            fontSize={"sm"}
-            fontWeight={"bold"}
-            cursor={"pointer"}
-            _hover={{ textDecoration: "underline" }}
-          >
-            {user?.username}
-          </Text>
+          <Flex alignItems="center" gap={1}>
+            <Text
+              fontSize={"sm"}
+              fontWeight={"bold"}
+              cursor={"pointer"}
+              _hover={{ textDecoration: "underline" }}
+            >
+              {user?.username}
+            </Text>
+            {(user?.followersCount ?? 0) > CELEBRITY_FOLLOWERS_THRESHOLD && (
+              <Tooltip label="Celebrity">
+                <span>
+                  <MdVerified color="#1d9bf0" size={14} />
+                </span>
+              </Tooltip>
+            )}
+          </Flex>
         </Link>
       </PopoverTrigger>
 

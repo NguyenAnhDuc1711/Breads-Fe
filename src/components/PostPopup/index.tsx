@@ -2,8 +2,10 @@
 
 import {
   Avatar,
+  Box,
   Button,
   Flex,
+  HStack,
   Menu,
   MenuButton,
   MenuItem,
@@ -14,8 +16,12 @@ import {
   ModalOverlay,
   Portal,
   Text,
+  VStack,
+  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { CheckIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { MdLock, MdPeopleAlt, MdPublic } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -57,8 +63,19 @@ const PostPopup = () => {
   const pathname = usePathname();
   const postId = pathname?.split("/")?.[2];
   const { t } = useTranslation();
+  const { colorMode } = useColorMode();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.dark", "ccl.light");
+  const iconColor = useColorModeValue("gray.600", "gray.300");
+  const btnBg = useColorModeValue("cuse.light", "cuse.dark");
+  const btnHoverBg = useColorModeValue("gray.100", "#2a2a2a");
+  const btnBorder = useColorModeValue("gray.300", "gray.700");
+  const menuBg = useColorModeValue("cuse.light", "cuse.dark");
+  const menuBorder = useColorModeValue("gray.200", "gray.700");
+  const itemHoverBg = useColorModeValue("gray.100", "#2a2a2a");
+  const itemDescColor = useColorModeValue("gray.500", "gray.400");
+  const iconBoxBg = useColorModeValue("gray.100", "whiteAlpha.100");
+  const checkColor = useColorModeValue("gray.800", "gray.100");
 
   const dispatch = useAppDispatch();
   const { postInfo, postAction, postSelected, postReply } = useAppSelector(
@@ -78,16 +95,30 @@ const PostPopup = () => {
   const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
   const VISIBILITY_OPTIONS = [
-    { value: Constants.POST_VISIBILITY.PUBLIC, label: t("visibilityPublic") },
+    {
+      value: Constants.POST_VISIBILITY.PUBLIC,
+      label: t("visibilityPublic"),
+      desc: t("visibilityPublicDesc"),
+      icon: MdPublic,
+    },
     {
       value: Constants.POST_VISIBILITY.ONLY_FOLLOWERS,
       label: t("visibilityFollowers"),
+      desc: t("visibilityFollowersDesc"),
+      icon: MdPeopleAlt,
     },
     {
       value: Constants.POST_VISIBILITY.ONLY_ME,
       label: t("visibilityOnlyMe"),
+      desc: t("visibilityOnlyMeDesc"),
+      icon: MdLock,
     },
   ];
+
+  const selectedVisibilityOption =
+    VISIBILITY_OPTIONS.find((option) => option.value === visibility) ??
+    VISIBILITY_OPTIONS[0];
+  const SelectedIcon = selectedVisibilityOption.icon;
   const containsLink = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return urlRegex.test(text);
@@ -367,31 +398,97 @@ const PostPopup = () => {
                   placeholder={t("whatnew")}
                 />
                 {!isEditing && postAction !== PostConstants.ACTIONS.REPLY && (
-                  <Menu>
+                  <Menu placement="bottom-start">
                     <MenuButton
                       as={Button}
                       size="sm"
                       variant="outline"
-                      borderRadius="16px"
+                      borderRadius="full"
                       width="fit-content"
-                      mb="6px"
+                      mb="10px"
+                      bg={btnBg}
+                      borderColor={btnBorder}
+                      _hover={{ bg: btnHoverBg }}
+                      _active={{ bg: btnHoverBg }}
+                      px={3}
+                      py={1}
+                      height="32px"
                     >
-                      {
-                        VISIBILITY_OPTIONS.find(
-                          (option) => option.value === visibility
-                        )?.label
-                      }
+                      <HStack spacing={1.5} alignItems="center">
+                        <SelectedIcon size={15} color={iconColor} />
+                        <Text fontSize="13px" fontWeight="600" color={textColor}>
+                          {selectedVisibilityOption.label}
+                        </Text>
+                        <ChevronDownIcon boxSize={4} color={itemDescColor} />
+                      </HStack>
                     </MenuButton>
                     <Portal>
-                      <MenuList zIndex={3100}>
-                        {VISIBILITY_OPTIONS.map((option) => (
-                          <MenuItem
-                            key={option.value}
-                            onClick={() => setVisibility(option.value)}
-                          >
-                            {option.label}
-                          </MenuItem>
-                        ))}
+                      <MenuList
+                        zIndex={3100}
+                        bg={menuBg}
+                        borderColor={menuBorder}
+                        borderRadius="16px"
+                        shadow="xl"
+                        p={1.5}
+                        minW="290px"
+                      >
+                        {VISIBILITY_OPTIONS.map((option) => {
+                          const OptionIcon = option.icon;
+                          const isSelected = option.value === visibility;
+                          return (
+                            <MenuItem
+                              key={option.value}
+                              onClick={() => setVisibility(option.value)}
+                              borderRadius="12px"
+                              py={2.5}
+                              px={3}
+                              my={0.5}
+                              bg={menuBg}
+                              _hover={{ bg: itemHoverBg }}
+                              _focus={{ bg: itemHoverBg }}
+                            >
+                              <Flex
+                                width="100%"
+                                alignItems="center"
+                                justifyContent="space-between"
+                              >
+                                <HStack spacing={3} alignItems="center">
+                                  <Flex
+                                    w="34px"
+                                    h="34px"
+                                    borderRadius="10px"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    bg={iconBoxBg}
+                                    color={iconColor}
+                                    flexShrink={0}
+                                  >
+                                    <OptionIcon size={18} />
+                                  </Flex>
+                                  <VStack align="start" spacing={0}>
+                                    <Text
+                                      fontSize="14px"
+                                      fontWeight="600"
+                                      color={textColor}
+                                    >
+                                      {option.label}
+                                    </Text>
+                                    <Text
+                                      fontSize="11px"
+                                      color={itemDescColor}
+                                      maxW="190px"
+                                    >
+                                      {option.desc}
+                                    </Text>
+                                  </VStack>
+                                </HStack>
+                                {isSelected && (
+                                  <CheckIcon color={checkColor} boxSize={3.5} ml={2} />
+                                )}
+                              </Flex>
+                            </MenuItem>
+                          );
+                        })}
                       </MenuList>
                     </Portal>
                   </Menu>
