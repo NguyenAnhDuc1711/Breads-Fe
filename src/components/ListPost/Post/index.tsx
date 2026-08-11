@@ -2,7 +2,6 @@
 
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
-  Avatar,
   Button,
   Card,
   CardBody,
@@ -35,6 +34,7 @@ import PopupCancel from "../../../util/PopupCancel";
 import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
+import OptimizedAvatar from "../../OptimizedAvatar";
 import UserInfoPopover from "../../UserInfoPopover";
 import Actions from "./Actions";
 import PostContent from "./Content";
@@ -48,11 +48,13 @@ const Post = ({
   isDetail = false,
   isParentPost = false,
   isReply = false,
+  isFirst = false,
 }: {
   post: IPost;
   isDetail?: boolean;
   isParentPost?: boolean;
   isReply?: boolean;
+  isFirst?: boolean;
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -102,7 +104,7 @@ const Post = ({
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
             <Flex alignItems={"center"} gap={3}>
-              <Avatar
+              <OptimizedAvatar
                 src={post?.authorInfo?.avatar}
                 size={"md"}
                 name={post?.authorInfo?.username}
@@ -217,7 +219,7 @@ const Post = ({
               {post?.quote?.content}
             </Text>
           )}
-          <MediaDisplay post={post} isDetail={isDetail} />
+          <MediaDisplay post={post} isDetail={isDetail} isFirst={isFirst} />
           {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>

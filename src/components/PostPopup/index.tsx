@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Avatar,
   Box,
   Button,
   Flex,
@@ -53,6 +52,7 @@ import PopupCancel from "../../util/PopupCancel";
 import TextArea from "../../util/TextArea";
 import Post from "../ListPost/Post";
 import UploadDisplay from "../Message/RightSide/Conversation/MessageBar/UploadDisplay";
+import OptimizedAvatar from "../OptimizedAvatar";
 import PostPopupAction from "./action";
 import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
@@ -386,7 +386,7 @@ const PostPopup = () => {
               {postAction + " Bread"}
             </Text>
             <Flex width={"100%"} gap={4}>
-              <Avatar src={userInfo.avatar} width="40px" height="40px" />
+              <OptimizedAvatar src={userInfo.avatar} width="40px" height="40px" />
               <Flex flexDir={"column"} flex={1} transition={"auto"}>
                 <Text color={textColor} fontWeight="600" m={0}>
                   {userInfo.username}

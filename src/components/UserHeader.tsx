@@ -45,6 +45,7 @@ import ConversationBtn from "./ConversationBtn";
 import FollowBtn from "./FollowBtn";
 import InfiniteScroll from "./InfiniteScroll";
 import ListPost from "./ListPost";
+import OptimizedAvatar from "./OptimizedAvatar";
 import SkeletonPost from "./ListPost/Post/skeleton";
 import UserFollowBox from "./UserFollowBox";
 import UserFollowBoxSkeleton from "./UserFollowBox/skeleton";
@@ -167,7 +168,7 @@ const UserHeader = ({ user }: { user: IUser }) => {
           </Box>
           <Box>
             {user?.avatar && (
-              <Avatar
+              <OptimizedAvatar
                 name={user?.name}
                 src={user?.avatar}
                 size={{

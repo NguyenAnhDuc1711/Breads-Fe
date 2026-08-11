@@ -1,11 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Card,
-  Flex,
-  Input,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Button, Card, Flex, Input, useColorModeValue } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
@@ -15,6 +8,7 @@ import { AppState } from "../store";
 import { updatePostAction } from "../store/PostSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
+import OptimizedAvatar from "./OptimizedAvatar";
 
 const CreatePostBar = () => {
   const { t } = useTranslation();
@@ -43,7 +37,7 @@ const CreatePostBar = () => {
             navigate(`/users/${userInfo._id}`);
           }}
         >
-          <Avatar src={userInfo?.avatar} />
+          <OptimizedAvatar src={userInfo?.avatar} />
         </a>
         <Input
           placeholder={t("whatnew")}

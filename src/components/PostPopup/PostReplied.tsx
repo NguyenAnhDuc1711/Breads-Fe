@@ -1,13 +1,8 @@
-import {
-  Avatar,
-  Container,
-  Flex,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Container, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import { useAppSelector } from "../../hooks/redux";
 import Survey from "../ListPost/Post/Survey";
 import MediaDisplay from "./mediaDisplay";
+import OptimizedAvatar from "../OptimizedAvatar";
 
 const PostReplied = () => {
   const postReply = useAppSelector((state) => state.post.postReply);
@@ -17,7 +12,7 @@ const PostReplied = () => {
     <>
       {postReply && (
         <Flex>
-          <Avatar
+          <OptimizedAvatar
             src={postReply.authorInfo?.avatar}
             width={"40px"}
             height={"40px"}

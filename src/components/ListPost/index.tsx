@@ -76,9 +76,9 @@ const ListPost = () => {
               });
             }}
             data={Array.isArray(listPost) ? listPost : []}
-            cpnFc={(post) => (
+            cpnFc={(post, index) => (
               <Fragment>
-                <Post post={post} />
+                <Post post={post} isFirst={index === 0} />
                 <hr
                   style={{
                     borderColor: "transparent",
