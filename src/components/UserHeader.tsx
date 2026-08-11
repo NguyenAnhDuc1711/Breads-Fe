@@ -32,6 +32,7 @@ import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { GET } from "../config/API";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
+import { getUserPosts } from "../store/PostSlice/asyncThunk";
 import { IUser } from "../store/UserSlice";
 import {
   changeDisplayPageData,
@@ -322,6 +323,7 @@ const UserHeader = ({ user }: { user: IUser }) => {
                     },
                   });
                   dispatch(changeDisplayPageData(TABS[key]));
+                  dispatch(getUserPosts(user._id));
                 }}
               >
                 <Text fontWeight={"bold"}>{t(key)}</Text>
