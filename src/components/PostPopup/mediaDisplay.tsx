@@ -1,7 +1,8 @@
 "use client";
 
 import { CloseIcon } from "@chakra-ui/icons";
-import { Button, Flex, Image } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Constants } from "../../Breads-Shared/Constants";
@@ -15,10 +16,12 @@ const MediaDisplay = ({
   post,
   isDetail,
   media,
+  isFirst = false,
 }: {
   post?: IPost;
   isDetail?: boolean;
   media?: any;
+  isFirst?: boolean;
 }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -163,14 +166,20 @@ const MediaDisplay = ({
                 }}
               />
             ) : (
-              <Image
-                loading="lazy"
+              <NextImage
                 src={media.url}
                 alt={`Post Media ${index}`}
-                width="auto"
-                height="250px"
-                maxHeight="300px"
-                borderRadius="8px"
+                width={350}
+                height={250}
+                priority={isFirst && index === 0}
+                loading={isFirst && index === 0 ? undefined : "lazy"}
+                style={{
+                  width: "auto",
+                  height: "250px",
+                  maxHeight: "300px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                }}
                 onDragStart={(e) => e.preventDefault()}
                 onClick={(e) => {
                   if (!postAction) {

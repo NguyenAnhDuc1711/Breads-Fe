@@ -48,11 +48,13 @@ const Post = ({
   isDetail = false,
   isParentPost = false,
   isReply = false,
+  isFirst = false,
 }: {
   post: IPost;
   isDetail?: boolean;
   isParentPost?: boolean;
   isReply?: boolean;
+  isFirst?: boolean;
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -217,7 +219,7 @@ const Post = ({
               {post?.quote?.content}
             </Text>
           )}
-          <MediaDisplay post={post} isDetail={isDetail} />
+          <MediaDisplay post={post} isDetail={isDetail} isFirst={isFirst} />
           {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>

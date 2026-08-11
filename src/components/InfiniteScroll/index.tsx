@@ -174,17 +174,17 @@ const InfiniteScroll = ({
               if (gridColSpan !== -1) {
                 return (
                   <GridItem colSpan={gridColSpan} ref={lastUserElementRef}>
-                    {cpnFc(ele)}
+                    {cpnFc(ele, index)}
                   </GridItem>
                 );
               }
 
-              return <div ref={lastUserElementRef}>{cpnFc(ele)}</div>;
+              return <div ref={lastUserElementRef}>{cpnFc(ele, index)}</div>;
             } else if (index === data.length - 1) {
               if (gridColSpan !== -1) {
                 return (
                   <GridItem colSpan={gridColSpan}>
-                    {cpnFc(ele)}
+                    {cpnFc(ele, index)}
                     {hasMoreData && !reverseScroll && (
                       <>
                         {[1, 2, 3, 4, 5].map((num) => (
@@ -197,7 +197,7 @@ const InfiniteScroll = ({
               }
               return (
                 <Fragment>
-                  {cpnFc(ele)}
+                  {cpnFc(ele, index)}
                   {hasMoreData && !reverseScroll && (
                     <>
                       {[1, 2, 3, 4, 5].map((num) => (
@@ -208,7 +208,7 @@ const InfiniteScroll = ({
                 </Fragment>
               );
             } else {
-              return <Fragment>{cpnFc(ele)}</Fragment>;
+              return <Fragment>{cpnFc(ele, index)}</Fragment>;
             }
           })}
         </>
