@@ -2,7 +2,6 @@
 
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
-  Avatar,
   Button,
   Card,
   CardBody,
@@ -35,6 +34,7 @@ import PopupCancel from "../../../util/PopupCancel";
 import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
+import OptimizedAvatar from "../../OptimizedAvatar";
 import UserInfoPopover from "../../UserInfoPopover";
 import Actions from "./Actions";
 import PostContent from "./Content";
@@ -104,7 +104,7 @@ const Post = ({
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
             <Flex alignItems={"center"} gap={3}>
-              <Avatar
+              <OptimizedAvatar
                 src={post?.authorInfo?.avatar}
                 size={"md"}
                 name={post?.authorInfo?.username}
