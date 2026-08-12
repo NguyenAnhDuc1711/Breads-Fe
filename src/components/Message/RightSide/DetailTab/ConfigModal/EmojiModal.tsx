@@ -1,4 +1,4 @@
-import { SearchIcon } from "@chakra-ui/icons";
+import { SearchIcon } from "../../../../../assests/chakraIcons";
 import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";

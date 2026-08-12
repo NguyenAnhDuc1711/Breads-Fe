@@ -1,5 +1,5 @@
 import { Avatar, AvatarBadge, Box, Flex, Skeleton, Text } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "../util/dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BiSolidShare } from "react-icons/bi";
@@ -190,7 +190,7 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
                     </Text>
                     <Text color="gray.500" fontSize="sm">
                       {item.createdAt
-                        ? moment(new Date(item.createdAt)).fromNow()
+                        ? dayjs(new Date(item.createdAt)).fromNow()
                         : "Unknown time"}
                     </Text>
                   </Box>
@@ -241,7 +241,7 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
                       </Text>
                       <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">
                         {item.createdAt
-                          ? moment(new Date(item.createdAt)).fromNow()
+                          ? dayjs(new Date(item.createdAt)).fromNow()
                           : "Unknown time"}
                       </Text>
                     </Box>

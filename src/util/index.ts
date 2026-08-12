@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "./dayjs";
 import { ANALYTICS_PATH, Route, UTIL_PATH } from "../Breads-Shared/APIConfig";
 import { POST } from "../config/API";
 
@@ -456,9 +456,9 @@ export const formatItemDate = (itemDate) => {
   const currentYear = new Date().getFullYear();
   const msgYear = new Date(itemDate).getFullYear();
   if (currentYear === msgYear) {
-    return moment(itemDate).format("DD/MM");
+    return dayjs(itemDate).format("DD/MM");
   }
-  return moment(itemDate).format("DD/MM/YYYY");
+  return dayjs(itemDate).format("DD/MM/YYYY");
 };
 
 export const getEmojiIcon = (emojiStr) => {

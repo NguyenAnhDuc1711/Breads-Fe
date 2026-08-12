@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getConversationById, getConversations, getMsgs } from "./asyncThunk";
 import { formatDateToDDMMYYYY } from "../../util";
-import moment from "moment";
+import dayjs from "../../util/dayjs";
 import { IUser } from "../UserSlice";
 import { Media } from "../../Breads-Shared/Types";
 
@@ -146,7 +146,7 @@ const msgSlice = createSlice({
     updateMsg: (state, action) => {
       const msgUpdate = action.payload;
       if (msgUpdate?._id) {
-        const msgDateConvert = moment(msgUpdate?.createdAt).format(
+        const msgDateConvert = dayjs(msgUpdate?.createdAt).format(
           "DD/MM/YYYY"
         );
         const msgInListIndex = state.messages[msgDateConvert]?.findIndex(

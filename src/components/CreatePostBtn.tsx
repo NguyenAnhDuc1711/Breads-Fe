@@ -1,4 +1,4 @@
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon } from "../assests/chakraIcons";
 import { Button } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";

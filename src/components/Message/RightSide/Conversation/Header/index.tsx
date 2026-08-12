@@ -1,6 +1,6 @@
 "use client";
 
-import { InfoIcon } from "@chakra-ui/icons";
+import { InfoIcon } from "../../../../../assests/chakraIcons";
 import {
   Avatar,
   Box,

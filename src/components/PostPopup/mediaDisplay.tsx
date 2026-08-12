@@ -1,6 +1,6 @@
 "use client";
 
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "../../assests/chakraIcons";
 import { Button, Flex } from "@chakra-ui/react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";

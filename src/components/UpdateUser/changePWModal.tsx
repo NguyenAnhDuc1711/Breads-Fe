@@ -1,4 +1,4 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "../../assests/chakraIcons";
 import {
   Box,
   Button,

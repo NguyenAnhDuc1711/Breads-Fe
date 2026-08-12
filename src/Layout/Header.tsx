@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "../assests/chakraIcons";
 import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
 import { memo, useState } from "react";

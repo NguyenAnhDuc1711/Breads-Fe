@@ -1,4 +1,4 @@
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "../../../../../../assests/chakraIcons";
 import { Flex, Image, Text } from "@chakra-ui/react";
 
 const ItemUploadDisplay = ({ item, imgSrc, onClick, isPost = false }) => {

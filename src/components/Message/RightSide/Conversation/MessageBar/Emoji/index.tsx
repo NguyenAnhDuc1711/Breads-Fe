@@ -1,4 +1,4 @@
-import { SearchIcon } from "@chakra-ui/icons";
+import { SearchIcon } from "../../../../../../assests/chakraIcons";
 import {
   Button,
   Flex,

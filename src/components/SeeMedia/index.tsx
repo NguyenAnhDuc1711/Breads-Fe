@@ -1,4 +1,4 @@
-import { ArrowBackIcon, ArrowForwardIcon, CloseIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowForwardIcon, CloseIcon } from "../../assests/chakraIcons";
 import {
   Button,
   Flex,

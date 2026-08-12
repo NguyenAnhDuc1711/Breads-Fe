@@ -50,6 +50,10 @@ const nextConfig = {
     staleTimes: {
       dynamic: 120,
     },
+    // Tree-shakes barrel imports (`@chakra-ui/react`, `react-icons`) so
+    // per-route bundles only include the specific modules actually used
+    // instead of the whole package graph.
+    optimizePackageImports: ["@chakra-ui/react", "react-icons"],
   },
 };
 

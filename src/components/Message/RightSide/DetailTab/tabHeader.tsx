@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon } from "../../../../assests/chakraIcons";
 import { Button } from "@chakra-ui/react";
 
 const ConversationTabHeader = ({

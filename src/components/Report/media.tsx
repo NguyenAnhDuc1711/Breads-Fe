@@ -1,4 +1,4 @@
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "../../assests/chakraIcons";
 import { Container, Flex, Image } from "@chakra-ui/react";
 import { Constants } from "../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";

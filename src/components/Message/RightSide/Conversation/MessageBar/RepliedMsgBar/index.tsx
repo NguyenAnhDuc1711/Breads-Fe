@@ -1,4 +1,4 @@
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "../../../../../../assests/chakraIcons";
 import { Flex, Text } from "@chakra-ui/react";
 import { MdOutlineAttachFile, MdOutlineReply } from "react-icons/md";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/redux";

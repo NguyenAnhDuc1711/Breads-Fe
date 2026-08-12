@@ -1,4 +1,4 @@
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "../../assests/chakraIcons";
 import {
   Box,
   Button,

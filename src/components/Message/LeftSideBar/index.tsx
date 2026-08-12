@@ -1,4 +1,4 @@
-import { SearchIcon } from "@chakra-ui/icons";
+import { SearchIcon } from "../../../assests/chakraIcons";
 import { Button, Flex, Input, Text, useColorModeValue } from "@chakra-ui/react";
 import Conversations from "./Conversations";
 import { useState } from "react";

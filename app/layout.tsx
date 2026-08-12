@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ReactNode } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "../src/index.css";
 import "../src/animations.css";
 import { getCurrentUser } from "./lib/getCurrentUser";

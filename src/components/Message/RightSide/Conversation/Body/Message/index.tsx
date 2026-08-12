@@ -7,7 +7,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "../../../../../../util/dayjs";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Constants } from "../../../../../../Breads-Shared/Constants";
@@ -74,7 +74,7 @@ const Message = ({
     } else {
       format = "LT";
     }
-    return moment(createdAt).format(format);
+    return dayjs(createdAt).format(format);
   };
 
   const getUserSeenTooltip = () => {
@@ -87,7 +87,7 @@ const Message = ({
     } else {
       format = "LT";
     }
-    return `Seen by ${participant?.username} at ${moment(createdAt).format(
+    return `Seen by ${participant?.username} at ${dayjs(createdAt).format(
       format
     )}`;
   };

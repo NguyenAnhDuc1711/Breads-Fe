@@ -1,4 +1,4 @@
-import { SmallAddIcon } from "@chakra-ui/icons";
+import { SmallAddIcon } from "../../../../../../assests/chakraIcons";
 import { Input } from "@chakra-ui/react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";

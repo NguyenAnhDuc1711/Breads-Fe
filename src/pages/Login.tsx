@@ -1,6 +1,6 @@
 "use client";
 
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "../assests/chakraIcons";
 import {
   Avatar,
   Box,

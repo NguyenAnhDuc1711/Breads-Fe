@@ -1,4 +1,4 @@
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "../../../../../../assests/chakraIcons";
 import {
   Button,
   Flex,

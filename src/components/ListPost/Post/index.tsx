@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import { ChevronRightIcon } from "../../../assests/chakraIcons";
 import {
   Button,
   Card,
@@ -12,7 +12,7 @@ import {
   Tooltip,
   useColorMode,
 } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "../../../util/dayjs";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
@@ -141,7 +141,7 @@ const Post = ({
                 fontSize={"sm"}
                 color={colorMode === "dark" ? "gray.100" : "gray.light"}
               >
-                {moment(post?.createdAt).fromNow()}
+                {dayjs(post?.createdAt).fromNow()}
               </Text>
               {!isParentPost && !isAdmin && (
                 <div className="btn-more-action">

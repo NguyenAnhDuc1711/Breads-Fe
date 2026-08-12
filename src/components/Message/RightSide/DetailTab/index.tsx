@@ -1,6 +1,6 @@
 "use client";
 
-import { LinkIcon } from "@chakra-ui/icons";
+import { LinkIcon } from "../../../../assests/chakraIcons";
 import {
   Accordion,
   AccordionButton,

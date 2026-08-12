@@ -1,5 +1,6 @@
 "use client";
 
+import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { Constants } from "../../../src/Breads-Shared/Constants";

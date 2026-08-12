@@ -1,4 +1,4 @@
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "../../assests/chakraIcons";
 import { Box, Button, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";

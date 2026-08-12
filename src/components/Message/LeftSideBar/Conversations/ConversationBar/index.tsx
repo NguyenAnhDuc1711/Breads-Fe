@@ -9,7 +9,7 @@ import {
   useBreakpointValue,
   WrapItem,
 } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "../../../../../util/dayjs";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import { AppState } from "../../../../../store";
 import { selectConversation } from "../../../../../store/MessageSlice";
@@ -70,7 +70,7 @@ const ConversationBar = ({
             minWidth: "50px",
           }}
         >
-          {" • " + moment(lastMsg?.createdAt).fromNow(true)}
+          {" • " + dayjs(lastMsg?.createdAt).fromNow(true)}
         </span>
       </div>
     );
