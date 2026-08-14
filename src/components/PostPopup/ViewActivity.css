@@ -1,0 +1,85 @@
+.view-activity-modal {
+  position: relative;
+  box-sizing: border-box;
+  background-color: white;
+  color: gray;
+  padding-right: 4px;
+  border-radius: 16px;
+}
+
+.view-activity-modal__spacer {
+  padding: 4px;
+}
+
+.view-activity-modal__header {
+  text-align: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.view-activity-modal__summary {
+  display: flex;
+  border: 1px solid #999;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  margin-bottom: 24px;
+  background-color: #f7fafc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.view-activity-modal__summary-body {
+  width: 100%;
+  margin: 0;
+  padding-left: 16px;
+  padding-right: 0;
+}
+
+.view-activity-modal__summary-username {
+  color: black;
+  font-weight: 600;
+  margin: 0;
+}
+
+.view-activity-modal__summary-content {
+  margin: 0;
+}
+
+.view-activity-modal__stat-row-wrap {
+  margin: 4px;
+}
+
+.view-activity-modal__stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.view-activity-modal__stat-label-box {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.view-activity-modal__stat-label {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.view-activity-modal__stat-name {
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0;
+}
+
+.view-activity-modal__stat-num {
+  padding: 0 12px;
+  margin: 0;
+}
+
+.view-activity-modal__divider-wrap {
+  padding-left: 30px;
+}

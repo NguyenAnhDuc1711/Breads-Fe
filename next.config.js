@@ -29,14 +29,9 @@ const nextConfig = {
       { protocol: "https", hostname: "media.istockphoto.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "plus.unsplash.com" },
-      // TEMPORARY (epic mobile-cwv-responsive, task 001): production image
-      // host domain isn't known yet, so this wildcards every https hostname
-      // to unblock next/image instead of guessing a domain. This disables
-      // remotePatterns' role as a security boundary — next/image's
-      // optimizer runs server-side and will fetch whatever URL it's given,
-      // so an open wildcard is an SSRF surface. Replace with the real
-      // production domain(s) and delete this entry before shipping to
-      // production.
+      { protocol: "http", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "http", hostname: "**" },
       { protocol: "https", hostname: "**" },
     ],
   },

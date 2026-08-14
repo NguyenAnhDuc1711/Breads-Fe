@@ -1,0 +1,15 @@
+.post-survey-option {
+  border: 1px solid gray;
+  margin: 6px 0;
+  font-weight: 600;
+  outline: 1px solid gray;
+  color: #000000;
+}
+
+[data-theme="dark"] .post-survey-option {
+  color: #f3f5f7;
+}
+
+.post-survey-option::placeholder {
+  color: gray;
+}

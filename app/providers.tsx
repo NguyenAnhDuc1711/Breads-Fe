@@ -1,25 +1,36 @@
 "use client";
 
-import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { ReactNode, useRef } from "react";
 import { Provider } from "react-redux";
 // Side-effect import: initialises the i18next singleton exactly once per
 // client bundle load, same as the retired src/main.tsx did.
 import "../languages/i18n";
+import { ColorModeScript, ThemeProvider } from "../src/context/ThemeContext";
+import { ToastViewport } from "../src/components/ui/primitives";
 import { AppState, AppStore, makeStore } from "../src/store";
 import { initialUserState, IUser } from "../src/store/UserSlice";
-import theme from "../theme";
 
 import { useEffect } from "react";
 import { useAppDispatch } from "../src/hooks/redux";
 import { getMe } from "../src/store/UserSlice/asyncThunk";
 
-const AuthSessionInit = ({ children }: { children: ReactNode }) => {
+const AuthSessionInit = ({
+  children,
+  hasInitialUser,
+}: {
+  children: ReactNode;
+  hasInitialUser: boolean;
+}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // Restore session via /users/me using HTTP-only cookie
-    dispatch(getMe());
+    // Server already resolved the user from the jwt cookie (app/layout.tsx)
+    // and seeded it into the store below — only hit /users/me here when that
+    // resolution didn't happen (e.g. cookie missing/expired), instead of
+    // always re-fetching what we already have on first paint.
+    if (!hasInitialUser) {
+      dispatch(getMe());
+    }
 
     // Multi-tab logout sync listener
     const handleStorageChange = (e: StorageEvent) => {
@@ -29,7 +40,7 @@ const AuthSessionInit = ({ children }: { children: ReactNode }) => {
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, [dispatch]);
+  }, [dispatch, hasInitialUser]);
 
   return <>{children}</>;
 };
@@ -55,13 +66,14 @@ const Providers = ({
 
   return (
     <Provider store={storeRef.current}>
-      <AuthSessionInit>
-        <ChakraProvider theme={theme}>
+      <AuthSessionInit hasInitialUser={!!initialUser}>
+        <ThemeProvider>
           {/* Written into the HTML before paint so a hard refresh never flashes
               the wrong colour mode (Vite's client-only render never needed this). */}
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+          <ColorModeScript />
           {children}
-        </ChakraProvider>
+          <ToastViewport />
+        </ThemeProvider>
       </AuthSessionInit>
     </Provider>
   );

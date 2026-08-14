@@ -1,4 +1,4 @@
-import { Avatar, Container, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Text } from "../../../../ui/primitives";
 import { useEffect, useState } from "react";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
@@ -10,6 +10,7 @@ import {
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatItemDate } from "../../../../../util";
+import "./msgSearch.css";
 
 const MessageSearchItem = ({ msg }: { msg: IMessage }) => {
   const dispatch = useAppDispatch();
@@ -70,29 +71,15 @@ const MessageSearchItem = ({ msg }: { msg: IMessage }) => {
   };
 
   return (
-    <Container
-      position={"relative"}
-      margin={0}
-      p={2}
-      border={"1px solid gray"}
-      borderRadius={4}
-      width={"100%"}
-      cursor={"pointer"}
-      _hover={{
-        bg: "gray",
-      }}
-      overflowX={"hidden"}
-      onClick={() => clickSeeDetailMsg()}
-    >
-      <Flex gap={2} alignItems={"center"}>
+    <div className="msg-search-item" onClick={() => clickSeeDetailMsg()}>
+      <div className="msg-search-item__row">
         <Avatar src={userData?.avatar} size={"sm"} />
-        <Flex
-          flexDir={"column"}
-          justifyContent={"center"}
-          textOverflow={"ellipsis"}
-          whiteSpace={"nowrap"}
-          overflow={"hidden"}
-          maxW={currentYear === msgYear ? "60%" : "50%"}
+        <div
+          className={`msg-search-item__text-col${
+            currentYear === msgYear
+              ? " msg-search-item__text-col--wide"
+              : " msg-search-item__text-col--narrow"
+          }`}
         >
           <Text fontSize={"14px"} fontWeight={600}>
             {userData?.username}
@@ -100,17 +87,12 @@ const MessageSearchItem = ({ msg }: { msg: IMessage }) => {
           <Text fontSize={"11px"} fontWeight={400}>
             {msg?.content}
           </Text>
-        </Flex>
-      </Flex>
-      <Text
-        position={"absolute"}
-        bottom={"8px"}
-        right={"12px"}
-        fontSize={"11px"}
-      >
+        </div>
+      </div>
+      <Text className="msg-search-item__date">
         {formatItemDate(msg?.createdAt)}
       </Text>
-    </Container>
+    </div>
   );
 };
 

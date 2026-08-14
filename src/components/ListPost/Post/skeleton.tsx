@@ -1,26 +1,13 @@
-import {
-  Skeleton,
-  SkeletonCircle,
-  SkeletonText,
-  Box,
-  Flex,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Skeleton, SkeletonCircle, SkeletonText } from "../../ui/primitives";
+import "./skeleton.css";
 
 const SkeletonPost = () => {
-  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   return (
-    <Box
-      padding="6"
-      boxShadow="lg"
-      bg={bgColor}
-      mb={"12px"}
-      borderRadius={"12px"}
-    >
-      <Flex gap={"12px"}>
+    <div className="post-skeleton">
+      <div className="post-skeleton__header">
         <SkeletonCircle size="10" />
         <Skeleton height="16px" width={"88px"} />
-      </Flex>
+      </div>
       <SkeletonText mt="4" noOfLines={2} spacing="4" skeletonHeight="3" />
       <Skeleton
         width={"100%"}
@@ -28,7 +15,7 @@ const SkeletonPost = () => {
         mt={"4"}
         borderRadius={"10px"}
       />
-    </Box>
+    </div>
   );
 };
 

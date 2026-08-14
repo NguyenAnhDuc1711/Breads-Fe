@@ -1,17 +1,18 @@
 import { SearchIcon } from "../../../../../../assests/chakraIcons";
 import {
   Button,
-  Flex,
   Input,
   InputGroup,
   InputLeftElement,
+} from "../../../../../ui/primitives";
+import {
   Popover,
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-} from "@chakra-ui/react";
+} from "../../../../../ui/primitives";
 import { memo, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { MdEmojiEmotions } from "react-icons/md";
@@ -19,6 +20,7 @@ import { ACTIONS, iconStyle } from "..";
 import { replaceEmojis } from "../../../../../../util";
 import IconWrapper from "../IconWrapper";
 import EmojiBox from "./EmojiBox";
+import "./index.css";
 
 const EmojiMsgBtn = ({
   popup,
@@ -57,31 +59,22 @@ const EmojiMsgBtn = ({
         >
           <PopoverTrigger>
             <Button
-              padding={0}
-              style={{ ...iconStyle, width: "fit-content" }}
-              bg={"transparent"}
-              _hover={{
-                bg: "transparent",
-              }}
+              className="emoji-btn-trigger"
               onClick={() => onOpen(ACTIONS.EMOJI)}
             >
               <MdEmojiEmotions
                 style={{
                   ...iconStyle,
                   width: "fit-content",
-                  color: color ? color : "",
+                  color: color ? color : undefined,
                 }}
               />
             </Button>
           </PopoverTrigger>
-          <PopoverContent width={"fit-content"}>
-            <PopoverHeader
-              fontWeight="semibold"
-              textAlign={"center"}
-              padding={"8px 4px"}
-            >
-              <Flex alignItems={"center"} justifyContent={"space-between"}>
-                <InputGroup maxWidth={"160px"} height={"32px"}>
+          <PopoverContent className="emoji-popover-content">
+            <PopoverHeader className="emoji-popover-header">
+              <div className="emoji-popover-header-row">
+                <InputGroup className="emoji-search-group">
                   <InputLeftElement pointerEvents="none" height={"32px"}>
                     <SearchIcon
                       color="gray.300"
@@ -90,19 +83,18 @@ const EmojiMsgBtn = ({
                     />
                   </InputLeftElement>
                   <Input
+                    className="emoji-search-input"
                     type="text"
                     placeholder="Search emoji"
-                    height={"32px"}
-                    fontSize={"14px"}
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                   />
                 </InputGroup>
                 <IconWrapper icon={<IoMdClose onClick={() => onClose()} />} />
-              </Flex>
+              </div>
             </PopoverHeader>
             <PopoverArrow />
-            <PopoverBody padding={"8px 4px"} width={"fit-content"}>
+            <PopoverBody className="emoji-popover-body">
               <EmojiBox
                 searchValue={searchValue}
                 onClick={(emojiIcon) => handleAddEmojiToInput(emojiIcon)}

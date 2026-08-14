@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
 import { getLocaleId, worldAtlasData } from "./map";
-import { Skeleton } from "@chakra-ui/react";
+import { Skeleton } from "../../../ui/primitives";
 
 Chart.register(ChoroplethController, GeoFeature, ColorScale, ProjectionScale);
 

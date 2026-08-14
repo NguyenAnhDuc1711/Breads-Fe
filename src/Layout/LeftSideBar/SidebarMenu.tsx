@@ -1,14 +1,12 @@
+import { Button, useColorMode } from "../../components/ui/primitives";
 import {
-  Box,
-  Button,
   ButtonGroup,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
-  useColorMode,
-} from "@chakra-ui/react";
+} from "../../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,7 +19,7 @@ import { useAppDispatch } from "../../hooks/redux";
 import { openPopup } from "../../store/ReportSlice";
 import { logout } from "../../store/UserSlice/asyncThunk";
 import { showToast } from "../../store/UtilSlice";
-import ClickOutsideComponent from "../../util/ClickoutCPN";
+import "./SidebarMenu.css";
 
 const SidebarMenu = () => {
   const { t, i18n } = useTranslation();
@@ -30,11 +28,7 @@ const SidebarMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [isSubMenuOpen1, setIsSubMenuOpen1] = useState(false);
-  const { colorMode, toggleColorMode, setColorMode } = useColorMode();
-  const bgk = {
-    bg: colorMode === "dark" ? "#0a0a0a" : "#ffffff",
-    color: "100",
-  };
+  const { setColorMode } = useColorMode();
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem("language");
@@ -49,7 +43,7 @@ const SidebarMenu = () => {
   };
   const menuItems = [
     {
-      style: { ...bgk, justifyContent: "space-between" },
+      spread: true,
       onClick: () => {
         setIsSubMenuOpen(true);
         setIsSubMenuOpen1(false);
@@ -57,22 +51,14 @@ const SidebarMenu = () => {
       name: t("interface"),
     },
     {
-      style: { ...bgk, justifyContent: "space-between" },
+      spread: true,
       onClick: () => {
         setIsSubMenuOpen1(true);
         setIsSubMenuOpen(false);
       },
       name: t("language"),
     },
-    // {
-    //   style: { ...bgk },
-    //   onClick: () => {
-    //     navigate("/" + PageConstant.SETTING.DEFAULT);
-    //   },
-    //   name: t("settings"),
-    // },
     {
-      style: { ...bgk },
       onClick: () => {
         dispatch(openPopup());
         handleCloseMenu();
@@ -80,7 +66,6 @@ const SidebarMenu = () => {
       name: t("report_issue"),
     },
     {
-      style: { ...bgk },
       onClick: () => {
         handleLogout();
       },
@@ -92,18 +77,18 @@ const SidebarMenu = () => {
     {
       name: "Light",
       icon: <BsBrightnessHigh />,
-      boxShadowFocus: "0 0 0 3px rgba(66, 153, 225, 0.6)",
+      focusClass: "sidebar-menu__theme-btn--blue",
       onClick: () => setColorMode("light"),
     },
     {
       name: "Dark",
       icon: <MdOutlineBrightness2 />,
-      boxShadowFocus: "0 0 0 3px rgba(72, 187, 120, 0.6)",
+      focusClass: "sidebar-menu__theme-btn--green",
       onClick: () => setColorMode("dark"),
     },
     {
-      name: t("automatic"),
-      boxShadowFocus: "0 0 0 3px rgba(229, 62, 62, 0.6)",
+      name: "Auto",
+      focusClass: "sidebar-menu__theme-btn--red",
       onClick: () => {},
     },
   ];
@@ -111,12 +96,12 @@ const SidebarMenu = () => {
   const languageBtns = [
     {
       name: t("english"),
-      boxShadowFocus: "0 0 0 3px rgba(66, 153, 225, 0.6)",
+      focusClass: "sidebar-menu__theme-btn--blue",
       onClick: () => handleLanguageChange("en"),
     },
     {
       name: t("vietnamese"),
-      boxShadowFocus: "0 0 0 3px rgba(66, 153, 225, 0.6)",
+      focusClass: "sidebar-menu__theme-btn--blue",
       onClick: () => handleLanguageChange("vn"),
     },
   ];
@@ -149,170 +134,108 @@ const SidebarMenu = () => {
   };
 
   return (
-    <Box>
+    <div>
       {!isMenuOpen && (
-        <Button
-          onClick={handleMenuOpen}
-          bg={"none"}
-          color={colorMode === "dark" ? "#f3f5f7" : "#a0a0a0"}
-          _hover={{ color: colorMode === "dark" ? "#f3f5f7" : "#000000" }}
-          _focus={{
-            color: colorMode === "dark" ? "#f3f5f7" : "#000000",
-          }}
-        >
+        <Button className="sidebar-menu__toggle" onClick={handleMenuOpen}>
           <HiMenuAlt4 size={24} />
         </Button>
       )}
       {isMenuOpen && !isSubMenuOpen && !isSubMenuOpen1 && (
-        <ClickOutsideComponent onClose={handleCloseMenu}>
-          <Menu isOpen={isMenuOpen}>
-            <MenuButton as={Box} onClick={handleCloseMenu} py={2} px={4}>
-              <HiMenuAlt4 size={24} />
-            </MenuButton>
-            <MenuList
-              {...bgk}
-              bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-            >
-              {menuItems.map((item) => (
-                <React.Fragment key={item.name}>
-                  {(item.name === "Báo cáo sự cố" ||
-                    item.name === "Report a problem") && <MenuDivider />}
-                  <MenuItem
-                    {...item.style}
-                    onClick={item.onClick}
-                    bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-                    color={colorMode === "dark" ? "gray.white" : "gray.dark"}
-                    ml={"0.5rem"}
-                    width={"calc(100% - 1rem)"}
-                    padding={"12px"}
-                    borderRadius="10px"
-                    _hover={{
-                      bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    {item.name === "Giao diện" ||
-                    item.name === "Ngôn ngữ" ||
-                    item.name === "Interface" ||
-                    item.name === "Language" ? (
-                      <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        width="100%"
-                      >
-                        <Box>{item.name}</Box>
-                        <FaChevronRight />
-                      </Box>
-                    ) : (
-                      item.name
-                    )}
-                  </MenuItem>
-                </React.Fragment>
-              ))}
-            </MenuList>
-          </Menu>
-        </ClickOutsideComponent>
+        <Menu isOpen={isMenuOpen} placement="top-start">
+          <MenuButton onClick={handleCloseMenu} py={2} px={4}>
+            <HiMenuAlt4 size={24} />
+          </MenuButton>
+          <MenuList className="sidebar-menu__list">
+            {menuItems.map((item) => (
+              <React.Fragment key={item.name}>
+                {(item.name === "Báo cáo sự cố" ||
+                  item.name === "Report a problem") && <MenuDivider />}
+                <MenuItem
+                  className={`sidebar-menu__item${
+                    item.spread ? " sidebar-menu__item--spread" : ""
+                  }`}
+                  onClick={item.onClick}
+                >
+                  {item.name === "Giao diện" ||
+                  item.name === "Ngôn ngữ" ||
+                  item.name === "Interface" ||
+                  item.name === "Language" ? (
+                    <div className="sidebar-menu__item-row">
+                      <div>{item.name}</div>
+                      <FaChevronRight />
+                    </div>
+                  ) : (
+                    item.name
+                  )}
+                </MenuItem>
+              </React.Fragment>
+            ))}
+          </MenuList>
+        </Menu>
       )}
       {isSubMenuOpen && (
-        <ClickOutsideComponent onClose={handleCloseMenu}>
-          <Menu isOpen={isSubMenuOpen}>
-            <MenuButton as={Box} onClick={handleCloseMenu} py={2} px={4}>
-              <HiMenuAlt4 size={24} />
-            </MenuButton>
-            <MenuList
-              {...bgk}
-              bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-              px={3}
+        <Menu isOpen={isSubMenuOpen} placement="top-start">
+          <MenuButton onClick={handleCloseMenu} py={2} px={4}>
+            <HiMenuAlt4 size={24} />
+          </MenuButton>
+          <MenuList className="sidebar-menu__list sidebar-menu__list--sub">
+            <MenuItem
+              className="sidebar-menu__back-item"
+              onClick={() => setIsSubMenuOpen(false)}
             >
-              <MenuItem
-                {...bgk}
-                onClick={() => setIsSubMenuOpen(false)}
-                bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-                color={colorMode === "dark" ? "gray.100" : "gray.dark"}
-                mb={"4px"}
-              >
-                <FaChevronLeft />
-                <Box width={"100%"} textAlign={"center"}>
-                  {t("interface")}
-                </Box>
-              </MenuItem>
-              <ButtonGroup isAttached ml={1}>
-                {themeBtns.map((btn) => (
-                  <Button
-                    key={btn.name}
-                    flex={1}
-                    onClick={btn.onClick}
-                    width={"80px"}
-                    _focus={{
-                      boxShadow: btn.boxShadowFocus,
-                      outline: "none",
-                    }}
-                  >
-                    {btn?.icon ? (
-                      btn.icon
-                    ) : (
-                      <Box
-                        boxSizing="border-box"
-                        padding={"0 16px"}
-                        fontSize={"12px"}
-                      >
-                        {btn.name}
-                      </Box>
-                    )}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </MenuList>
-          </Menu>
-        </ClickOutsideComponent>
+              <FaChevronLeft />
+              <div className="sidebar-menu__back-label">{t("interface")}</div>
+            </MenuItem>
+            <ButtonGroup isAttached className="sidebar-menu__theme-group">
+              {themeBtns.map((btn) => (
+                <Button
+                  key={btn.name}
+                  className={`sidebar-menu__theme-btn ${btn.focusClass}`}
+                  onClick={btn.onClick}
+                >
+                  {btn?.icon ? (
+                    btn.icon
+                  ) : (
+                    <div className="sidebar-menu__theme-btn-label">
+                      {btn.name}
+                    </div>
+                  )}
+                </Button>
+              ))}
+            </ButtonGroup>
+          </MenuList>
+        </Menu>
       )}
       {isSubMenuOpen1 && (
-        <ClickOutsideComponent onClose={handleCloseMenu}>
-          <Menu isOpen={isSubMenuOpen1}>
-            <MenuButton as={Box} onClick={handleCloseMenu} py={2} px={4}>
-              <HiMenuAlt4 size={24} />
-            </MenuButton>
-            <MenuList
-              {...bgk}
-              bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-              px={3}
+        <Menu isOpen={isSubMenuOpen1} placement="top-start">
+          <MenuButton onClick={handleCloseMenu} py={2} px={4}>
+            <HiMenuAlt4 size={24} />
+          </MenuButton>
+          <MenuList className="sidebar-menu__list sidebar-menu__list--sub">
+            <MenuItem
+              className="sidebar-menu__back-item"
+              onClick={() => setIsSubMenuOpen1(false)}
             >
-              <MenuItem
-                {...bgk}
-                onClick={() => setIsSubMenuOpen1(false)}
-                bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-                color={colorMode === "dark" ? "gray.100" : "gray.dark"}
-                mb={"4px"}
-              >
-                <FaChevronLeft />
-                <Box width={"100%"} textAlign={"center"}>
-                  {t("language")}
-                </Box>
-              </MenuItem>
-              <ButtonGroup isAttached ml={1}>
-                {languageBtns.map((btn) => (
-                  <Button
-                    key={btn.name}
-                    flex={1}
-                    onClick={btn.onClick}
-                    width={"120px"}
-                    _focus={{
-                      boxShadow: btn.boxShadowFocus,
-                      outline: "none",
-                    }}
-                  >
-                    <Box padding={"0 16px"} fontSize={"12px"}>
-                      {btn.name}
-                    </Box>
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </MenuList>
-          </Menu>
-        </ClickOutsideComponent>
+              <FaChevronLeft />
+              <div className="sidebar-menu__back-label">{t("language")}</div>
+            </MenuItem>
+            <ButtonGroup isAttached className="sidebar-menu__theme-group">
+              {languageBtns.map((btn) => (
+                <Button
+                  key={btn.name}
+                  className={`sidebar-menu__theme-btn--lang ${btn.focusClass}`}
+                  onClick={btn.onClick}
+                >
+                  <div className="sidebar-menu__theme-btn-label">
+                    {btn.name}
+                  </div>
+                </Button>
+              ))}
+            </ButtonGroup>
+          </MenuList>
+        </Menu>
       )}
-    </Box>
+    </div>
   );
 };
 

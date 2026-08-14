@@ -1,7 +1,7 @@
-import { Button, Container, Flex, Image, Text } from "@chakra-ui/react";
+import { Image, Text } from "../../../../../../ui/primitives";
 import { addEvent, FILE_TYPES } from "../../../../../../../util";
 import { formatItemDate } from "../../../../../../../util";
-import { FaFileDownload } from "react-icons/fa";
+import "./index.css";
 
 const FileMsg = ({
   file,
@@ -51,57 +51,20 @@ const FileMsg = ({
 
   const fileDisplay = () => {
     return (
-      <Container
-        position={"relative"}
-        border={"1px solid gray"}
-        borderRadius={3}
-        padding={3}
-        cursor={"pointer"}
-        bg={bg ? bg : ""}
-        color={color ? color : ""}
-        _hover={{
-          opacity: 0.8,
-        }}
+      <div
+        className="msg-file"
+        style={{ backgroundColor: bg || undefined, color: color || undefined }}
       >
-        <Flex gap={3}>
+        <div className="msg-file__row">
           <Image src={getImgByType()} width="32px" height="32px" alt={`${fileType ?? "file"} icon`} />
-          <Text
-            fontWeight={500}
-            fontSize={"14px"}
-            textOverflow={"ellipsis"}
-            overflow={"hidden"}
-            whiteSpace={"nowrap"}
-            flex={1}
-          >
-            {file.name}
-          </Text>
-          {/* <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              const link = getLinkByType();
-              const a = document.createElement("a");
-              a.href = link;
-              a.download = `${file.name}`;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              console.log("install");
-            }}
-          >
-            <FaFileDownload />
-          </Button> */}
-        </Flex>
+          <Text className="msg-file__name">{file.name}</Text>
+        </div>
         {inMsgTab && (
-          <Text
-            position={"absolute"}
-            bottom={"8px"}
-            right={"12px"}
-            fontSize={"11px"}
-          >
+          <Text className="msg-file__date">
             {formatItemDate(file?.createdAt)}
           </Text>
         )}
-      </Container>
+      </div>
     );
   };
 

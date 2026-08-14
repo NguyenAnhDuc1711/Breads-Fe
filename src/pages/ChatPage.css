@@ -1,0 +1,42 @@
+.chat-page {
+  display: flex;
+  position: absolute;
+  left: 50%;
+  width: 100%;
+  padding-left: 24px;
+  padding-right: 12px;
+  transform: translateX(-50%);
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .chat-page {
+    width: 80%;
+  }
+}
+
+@media (min-width: 992px) {
+  .chat-page {
+    width: 90%;
+  }
+}
+
+.chat-page__pane--left-full {
+  width: 100%;
+}
+
+.chat-page__pane--left-partial {
+  width: 30%;
+}
+
+.chat-page__pane--right {
+  width: 100%;
+}
+
+.chat-page__pane--hidden {
+  display: none;
+}
+
+.chat-page__pane--visible {
+  display: block;
+}

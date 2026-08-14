@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
+import { useBreakpointValue } from "../components/ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import LeftSideBarMsg from "../components/Message/LeftSideBar";
@@ -12,6 +12,7 @@ import { selectConversation } from "../store/MessageSlice";
 import { getConversationById } from "../store/MessageSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
+import "./ChatPage.css";
 
 const ChatPage = ({ conversationId }: { conversationId?: string }) => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,6 @@ const ChatPage = ({ conversationId }: { conversationId?: string }) => {
     base: true,
     md: false,
   });
-  const marginBottom = useBreakpointValue({ base: "50px", md: "0" });
 
   useEffect(() => {
     addEvent({
@@ -59,39 +59,36 @@ const ChatPage = ({ conversationId }: { conversationId?: string }) => {
   };
 
   return (
-    <Flex
+    <div
+      className="chat-page"
       id={"chat-page"}
-      position="absolute"
-      top={`${HeaderHeight + 12}px`}
-      left="50%"
-      w={{
-        base: "100%",
-        md: "80%",
-        lg: "90%",
-      }}
-      pl="24px"
-      pr={3}
-      transform="translateX(-50%)"
-      gap="24px"
+      style={{ top: `${HeaderHeight + 12}px` }}
     >
       {!isMobile || !showRightSide ? (
-        <Box
-          w={isMobile ? "100%" : "30%"}
-          display={showRightSide && isMobile ? "none" : "block"}
+        <div
+          className={`${
+            isMobile ? "chat-page__pane--left-full" : "chat-page__pane--left-partial"
+          }${
+            showRightSide && isMobile ? " chat-page__pane--hidden" : " chat-page__pane--visible"
+          }`}
         >
           <LeftSideBarMsg onSelectConversation={() => setShowRightSide(true)} />
-        </Box>
+        </div>
       ) : null}
 
       {!isMobile || showRightSide ? (
-        <Box w="100%" display={!showRightSide && isMobile ? "none" : "block"}>
+        <div
+          className={`chat-page__pane--right${
+            !showRightSide && isMobile ? " chat-page__pane--hidden" : " chat-page__pane--visible"
+          }`}
+        >
           <RightSideMsg
             onBack={handleBackToLeft}
             onDetailBack={() => setShowRightSide(true)}
           />
-        </Box>
+        </div>
       ) : null}
-    </Flex>
+    </div>
   );
 };
 

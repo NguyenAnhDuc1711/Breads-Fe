@@ -1,4 +1,4 @@
-import { Input, useColorModeValue } from "@chakra-ui/react";
+import { Input } from "../ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import useDebounce from "../../hooks/useDebounce";
@@ -8,6 +8,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { replaceEmojis } from "../../util";
+import "./survey-option.css";
 
 const SurveyOption = ({
   option,
@@ -20,7 +21,6 @@ const SurveyOption = ({
   selectedOption: number;
   setSelectedOption: Function;
 }) => {
-  const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const dispatch = useAppDispatch();
   const postInfo = useAppSelector((state) => state.post.postInfo);
   const [optionContent, setOptionContent] = useState(option?.value ?? "");
@@ -70,15 +70,8 @@ const SurveyOption = ({
 
   return (
     <Input
+      className="post-survey-option"
       id={`option-${index}`}
-      border={"1px solid gray"}
-      margin={"6px 0"}
-      color={textColor}
-      fontWeight={600}
-      outline={"1px solid gray"}
-      _placeholder={{
-        color: "gray",
-      }}
       placeholder={option.placeholder}
       value={optionContent}
       onClick={() => setSelectedOption(index)}

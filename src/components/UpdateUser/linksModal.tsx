@@ -1,17 +1,14 @@
 import { AddIcon, DeleteIcon } from "../../assests/chakraIcons";
+import { Button, Input, Text } from "../ui/primitives";
 import {
-  Box,
-  Button,
-  Flex,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Text,
-} from "@chakra-ui/react";
+} from "../ui/primitives";
+import "./linksModal.css";
 
 const LinksModal = ({
   inputs,
@@ -43,47 +40,22 @@ const LinksModal = ({
     >
       <ModalOverlay />
       <ModalContent
-        position={"relative"}
-        boxSizing="border-box"
-        width="460px"
-        maxWidth={"620px"}
-        bg={"white"}
-        color={"gray"}
-        borderRadius={"16px"}
+        className="links-modal"
+        style={{ width: "460px", maxWidth: "620px" }}
         id="modal"
-        padding={"4px 8px"}
       >
-        <Box p={1}></Box>
-        <Text
-          position={"absolute"}
-          top={"-36px"}
-          left={"50%"}
-          transform={"translateX(-50%)"}
-          color={"white"}
-          zIndex={4000}
-          textTransform={"capitalize"}
-          fontWeight={600}
-          fontSize={"18px"}
-        >
-          Add links
-        </Text>
-        <ModalCloseButton
-          position={"absolute"}
-          top={"-36px"}
-          left={"0"}
-          color={"white"}
-        />
+        <div className="links-modal__spacer"></div>
+        <Text className="links-modal__title">Add links</Text>
+        <ModalCloseButton className="links-modal__close" />
         <ModalBody>
-          <Flex mt={"10px"} flexDirection={"column"} gap={"8px"}>
+          <div className="links-modal__list">
             {inputs.links.map((link, index) => (
-              <Flex key={`link-${index}`} gap={"12px"} alignItems={"center"}>
+              <div className="links-modal__row" key={`link-${index}`}>
                 <Input
+                  className="links-modal__input"
                   placeholder="Your link"
-                  _placeholder={{ color: "gray.500" }}
                   type="text"
-                  border={"1px solid gray"}
                   value={link}
-                  height={"36px"}
                   onChange={(e) => {
                     const value = e.target.value;
                     inputs.links[index] = value;
@@ -95,36 +67,21 @@ const LinksModal = ({
                   }}
                 />
                 <DeleteIcon
-                  border={"1px solid gray"}
-                  borderRadius={"6px"}
-                  width={"36px"}
-                  height={"36px"}
-                  padding={"8px"}
-                  cursor={"pointer"}
-                  _hover={{
-                    color: "red",
-                  }}
+                  className="links-modal__delete-icon"
                   onClick={() => {
                     handleDeleteLink(index);
                   }}
                 />
-              </Flex>
+              </div>
             ))}
-            <Flex
-              alignItems={"center"}
-              justifyContent={"center"}
-              gap="12px"
-              mt={3}
-              border={"1px solid gray"}
-              borderRadius={"10px"}
-              padding={"6px"}
-              cursor={"pointer"}
+            <div
+              className="links-modal__add-row"
               onClick={() => handleAddMoreLink()}
             >
               <AddIcon />
               <Text>Add more links</Text>
-            </Flex>
-          </Flex>
+            </div>
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button

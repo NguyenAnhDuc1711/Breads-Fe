@@ -1,0 +1,12 @@
+.conversations__skeleton-list {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.conversations__empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,31 +1,30 @@
 "use client";
 
 import { ChevronDownIcon } from "../assests/chakraIcons";
-import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
+import { Text } from "../components/ui/primitives";
 import { usePathname, useRouter } from "next/navigation";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HeaderHeight } from ".";
 import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import { containerBoxWidth } from "../components/MainBoxLayout";
 import { useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import ClickOutsideComponent from "../util/ClickoutCPN";
 import { getCurrentPage, getDisplayPageData } from "../util/route";
 import { BtnLike, BtnMess } from "./LeftSideBar/ActionsBtns";
+import "./Header.css";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { colorMode } = useColorMode();
   const { t } = useTranslation();
 
   // Active section / tab now comes from the URL, not from Redux (AD-4).
   const currentPage = getCurrentPage(pathname);
   const displayPageData = getDisplayPageData(pathname);
   const { userInfo, userSelected } = useAppSelector(
-    (state: AppState) => state.user
+    (state: AppState) => state.user,
   );
   const [openBox, setOpenBox] = useState(false);
   const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
@@ -114,7 +113,7 @@ const Header = () => {
       router.push(
         targetPage
           ? `/${PageConstant.ACTIVITY}/${targetPage}`
-          : `/${PageConstant.ACTIVITY}`
+          : `/${PageConstant.ACTIVITY}`,
       );
     } else {
       const pageMap = {
@@ -129,67 +128,26 @@ const Header = () => {
   };
 
   return (
-    <Flex
-      display={"flex"}
-      position={"fixed"}
-      left={0}
-      top={0}
-      width={"100vw"}
-      maxWidth={"100vw"}
-      height={`${HeaderHeight}px`}
-      zIndex={999}
-      justifyContent={["space-between", "space-between", "center"]}
-      alignItems={"center"}
-      bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
-    >
-      <BtnLike />
-      <Flex
-        width={containerBoxWidth}
-        maxWidth={containerBoxWidth}
-        height={"100%"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        gap={"12px"}
-        position={"relative"}
-        fontWeight={600}
-        fontSize={"17px"}
-      >
+    <div className="app-header" style={{ height: `${HeaderHeight}px` }}>
+      <div className="app-header__mobile-only">
+        <BtnLike />
+      </div>
+      <div className="app-header__center">
         {getHeaderContent()}
         {[PageConstant.HOME, PageConstant.ACTIVITY].includes(currentPage) && (
           <ClickOutsideComponent onClose={() => setOpenBox(false)}>
             <ChevronDownIcon
-              width={"32px"}
-              height={"32px"}
-              padding={"4px"}
-              borderRadius={"50%"}
-              cursor={"pointer"}
-              transform={openBox ? "rotate(180deg)" : ""}
-              _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
+              className={`app-header__chevron${
+                openBox ? " app-header__chevron--open" : ""
+              }`}
               onClick={() => setOpenBox(!openBox)}
             />
             {openBox && (
-              <Container
-                position={"absolute"}
-                top={"calc(100% - 12px)"}
-                left={"50%"}
-                width={"200px"}
-                height={"fit-content"}
-                borderRadius={"12px"}
-                padding="8px 12px"
-                overflow={"hidden"}
-                bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-                boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
-              >
+              <div className="app-header__dropdown">
                 {getBoxItems()?.map((item) => (
                   <Text
-                    width={"100%"}
+                    className="app-header__dropdown-item"
                     key={item}
-                    padding="8px 12px"
-                    cursor={"pointer"}
-                    borderRadius={"8px"}
-                    _hover={{
-                      bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
-                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleNavigate(item);
@@ -199,13 +157,15 @@ const Header = () => {
                     {item[0].toUpperCase() + item.slice(1)}
                   </Text>
                 ))}
-              </Container>
+              </div>
             )}
           </ClickOutsideComponent>
         )}
-      </Flex>
-      <BtnMess />
-    </Flex>
+      </div>
+      <div className="app-header__mobile-only">
+        <BtnMess />
+      </div>
+    </div>
   );
 };
 

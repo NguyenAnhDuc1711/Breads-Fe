@@ -1,22 +1,17 @@
 "use client";
 
 import { LinkIcon } from "../../../../assests/chakraIcons";
+import { Avatar, Box, Text, useBreakpointValue } from "../../../ui/primitives";
 import {
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Avatar,
-  Box,
-  Container,
-  Flex,
   Modal,
   ModalContent,
   ModalOverlay,
-  Text,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+} from "../../../ui/primitives";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CgProfile } from "react-icons/cg";
@@ -33,6 +28,7 @@ import EmojiModal from "./ConfigModal/EmojiModal";
 import ThemeModal from "./ConfigModal/ThemeModal";
 import ConversationDataTab from "./DataTab";
 import ConversationSearchTab from "./SearchMsgTab";
+import "./index.css";
 
 export const useTabItems = () => {
   const { t } = useTranslation();
@@ -126,7 +122,10 @@ const DetailConversationTab = ({
         return (
           <Modal isOpen={true} onClose={() => setItemSelected("")}>
             <ModalOverlay />
-            <ModalContent width={"fit-content"} p={4}>
+            <ModalContent
+              className="detail-tab__modal-content"
+              style={{ width: "fit-content" }}
+            >
               {itemSelected === EMOJI ? (
                 <EmojiModal setItemSelected={setItemSelected} />
               ) : (
@@ -141,60 +140,51 @@ const DetailConversationTab = ({
   };
   const isMobile = useBreakpointValue({ base: true, md: false });
   return (
-    <Container
-      width={"100%"}
-      p={0}
-      margin={0}
-      border={`1px solid ${borderColor ? borderColor : "gray"}`}
-      height={"fit-content"}
-      borderRadius={"12px"}
-      bg={conversationBackground?.backgroundColor}
-      backgroundBlendMode={conversationBackground?.backgroundBlendMode}
-      color={borderColor ? borderColor : ""}
+    <div
+      className="detail-tab"
+      style={{
+        border: `1px solid ${borderColor ? borderColor : "gray"}`,
+        backgroundColor: conversationBackground?.backgroundColor,
+        backgroundBlendMode: conversationBackground?.backgroundBlendMode,
+        color: borderColor || undefined,
+      }}
     >
       {displaySubTab()}
       {(!itemSelected || [EMOJI, THEME].includes(itemSelected)) && (
         <>
-          <Flex
-            justifyContent={"center"}
-            alignItems={"center"}
-            flexDirection={"column"}
-            p={isMobile ? 2 : 8}
-            gap={3}
+          <div
+            className={`detail-tab__profile${
+              isMobile ? " detail-tab__profile--mobile" : " detail-tab__profile--desktop"
+            }`}
           >
             {isMobile && (
-              <Flex width={"100%"} justifyContent={"start"} mt={2}>
+              <div className="detail-tab__back-row">
                 <IoIosArrowBack
                   onClick={() => {
                     setOpenDetailTab(!openDetailTab);
                     // onCloseTab();
                   }}
                 />
-              </Flex>
+              </div>
             )}
 
             <Avatar src={participant?.avatar} size={"xl"} />
-            <Text fontWeight={"500"} fontSize={"20px"}>
+            <Text className="detail-tab__username">
               {participant?.username}
             </Text>
-            <Flex gap={4} alignItems={"center"}>
+            <div className="detail-tab__actions">
               {actions.map(({ name, icon, onClick }) => (
-                <Flex
+                <div
+                  className="detail-tab__action-item"
                   key={name}
-                  flexDir={"column"}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                  gap={1}
                   onClick={onClick}
                 >
                   <IconWrapper label={name} icon={icon} />
-                  <Text fontSize={"12px"} fontWeight={600}>
-                    {name}
-                  </Text>
-                </Flex>
+                  <Text className="detail-tab__action-label">{name}</Text>
+                </div>
               ))}
-            </Flex>
-          </Flex>
+            </div>
+          </div>
           <Accordion defaultIndex={isMobile ? [0, 1] : [0]} allowMultiple>
             {Object.keys(menu).map((itemName) => {
               const subItems = menu[itemName];
@@ -208,24 +198,24 @@ const DetailConversationTab = ({
                       <AccordionIcon />
                     </AccordionButton>
                   </h2>
-                  <AccordionPanel py={isMobile ? 0 : 1} px={4}>
+                  <AccordionPanel
+                    className={`detail-tab__accordion-panel${
+                      isMobile
+                        ? " detail-tab__accordion-panel--mobile"
+                        : " detail-tab__accordion-panel--desktop"
+                    }`}
+                  >
                     {subItems.map(({ name, icon }) => (
-                      <Flex
+                      <div
+                        className="detail-tab__menu-item"
                         key={name}
-                        py={2}
-                        gap={2}
-                        alignItems={"center"}
-                        cursor={"pointer"}
-                        _hover={{
-                          bg: "lightgray",
-                        }}
                         onClick={() => {
                           setItemSelected(name);
                         }}
                       >
                         <div>{icon}</div>
                         <Text>{name}</Text>
-                      </Flex>
+                      </div>
                     ))}
                   </AccordionPanel>
                 </AccordionItem>
@@ -234,7 +224,7 @@ const DetailConversationTab = ({
           </Accordion>
         </>
       )}
-    </Container>
+    </div>
   );
 };
 

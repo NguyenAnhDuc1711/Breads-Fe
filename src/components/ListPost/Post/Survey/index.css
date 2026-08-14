@@ -1,39 +1,51 @@
-.survey-container {
+.survey {
   width: 100%;
   height: fit-content;
-
   display: flex;
   flex-direction: column;
   gap: 8px;
-  .survey-opt {
-    position: relative;
-    width: 100%;
-    height: 40px;
-    padding: 8px 16px;
+}
 
-    border: 1px solid gray;
-    border-radius: 10px;
+.survey__option {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  padding: 8px 16px;
+  border: 1px solid gray;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.survey__option-value {
+  margin: 0;
+}
 
-    overflow: hidden;
-    p {
-      margin: 0;
-    }
-    .action-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      z-index: 200;
-    }
-    .opt-bg {
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      background-color: rgba(230, 230, 230, 0.61);
-    }
-  }
+.survey__option-value--admin {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+.survey__option-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 200;
+}
+
+.survey__option-percent {
+  margin: 0;
+}
+
+.survey__option-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: rgba(230, 230, 230, 0.61);
+  transition: width 0.5s ease-in-out;
 }

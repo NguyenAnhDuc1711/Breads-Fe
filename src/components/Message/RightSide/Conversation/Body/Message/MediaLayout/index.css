@@ -1,0 +1,98 @@
+.msg-media-single {
+  margin-right: 8px;
+  height: auto;
+  max-height: 200px;
+  max-width: 35vw;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.msg-media-pair {
+  display: flex;
+  gap: 8px;
+  height: auto;
+  max-height: 180px;
+  max-width: 35vw;
+  margin-right: 8px;
+}
+
+.msg-media-pair__item {
+  max-width: 15vw;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.msg-media-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-right: 8px;
+  max-width: 35vw;
+}
+
+.msg-media-grid__item {
+  height: auto;
+  max-height: 140px;
+  flex: 1;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.msg-media-grid__item--quad {
+  width: 20vw;
+}
+
+.msg-media-grid__item--many {
+  width: 10vw;
+}
+
+.msg-media-grid__overlay-wrap {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  height: auto;
+  max-height: 140px;
+  flex: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.msg-media-grid__overlay-wrap--quad {
+  width: 20vw;
+}
+
+.msg-media-grid__overlay-wrap--many {
+  width: 10vw;
+}
+
+.msg-media-grid__overlay-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+}
+
+.msg-media-grid__overlay-count {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.msg-media-grid__overlay-count-text {
+  font-size: 24px;
+  color: white;
+  font-weight: 700;
+}

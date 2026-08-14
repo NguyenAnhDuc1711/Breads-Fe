@@ -1,0 +1,16 @@
+.emoji-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.emoji-modal__search-group {
+  max-width: 160px;
+  height: 32px;
+}
+
+.emoji-modal__search-input {
+  height: 32px;
+  font-size: 14px;
+}

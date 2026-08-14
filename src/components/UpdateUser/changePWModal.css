@@ -1,0 +1,56 @@
+.change-pw-modal {
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 16px;
+  padding: 4px 8px;
+}
+
+.change-pw-modal__spacer {
+  padding: 4px;
+}
+
+.change-pw-modal__title {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4000;
+  text-transform: capitalize;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.change-pw-modal__close {
+  position: absolute;
+  top: -36px;
+  left: 0;
+}
+
+.change-pw-modal__field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid gray;
+  border-radius: 6px;
+  padding: 0 12px;
+}
+
+.change-pw-modal__input {
+  padding: 0;
+  border: none;
+  outline: none;
+}
+
+.change-pw-modal__input:focus {
+  box-shadow: none;
+}
+
+.change-pw-modal__input::placeholder {
+  color: #718096;
+}
+
+.change-pw-modal__eye-icon {
+  width: 24px;
+  height: 18px;
+  cursor: pointer;
+}

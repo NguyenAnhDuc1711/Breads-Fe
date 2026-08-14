@@ -1,10 +1,11 @@
 import { CloseIcon } from "../../../../../../assests/chakraIcons";
-import { Flex, Text } from "@chakra-ui/react";
+import { Text } from "../../../../../ui/primitives";
 import { MdOutlineAttachFile, MdOutlineReply } from "react-icons/md";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/redux";
 import { AppState } from "../../../../../../store";
 import { selectMsg } from "../../../../../../store/MessageSlice";
 import { getCurrentTheme } from "../../../../../../util/Themes";
+import "./index.css";
 
 const RepliedMsgBar = () => {
   const dispatch = useAppDispatch();
@@ -23,61 +24,41 @@ const RepliedMsgBar = () => {
     const file = selectedMsg?.file;
     if (media?.length || file?._id) {
       return (
-        <Flex alignItems={"center"}>
+        <div className="replied-msg-bar__attach-row">
           <MdOutlineAttachFile />
           <Text ml={1}>Attached {media?.length ? media[0].type : "file"}</Text>
-        </Flex>
+        </div>
       );
     }
     return (
-      <Text
-        maxW={"30vw"}
-        textOverflow={"ellipsis"}
-        overflow={"hidden"}
-        whiteSpace={"nowrap"}
-      >
+      <Text className="replied-msg-bar__content-text">
         {selectedMsg?.content}
       </Text>
     );
   };
 
   return (
-    <Flex
-      width={"100%"}
-      pos={"relative"}
-      bg={bg}
-      color={textColor}
-      py={1}
-      px={4}
-      alignItems={"center"}
-      gap={4}
+    <div
+      className="replied-msg-bar"
+      style={{ backgroundColor: bg, color: textColor }}
     >
       <MdOutlineReply />
-      <Flex flexDir={"column"} maxW={"80%"}>
+      <div className="replied-msg-bar__content-col">
         <Text>
           Reply to{" "}
-          <span
-            style={{
-              fontWeight: 600,
-            }}
-          >
+          <span className="replied-msg-bar__username">
             {participant?.username}
           </span>
         </Text>
         {handleMsgContent()}
-      </Flex>
+      </div>
       <CloseIcon
-        pos={"absolute"}
-        right={"24px"}
-        cursor={"pointer"}
-        _hover={{
-          opacity: 0.7,
-        }}
+        className="replied-msg-bar__close"
         onClick={() => {
           dispatch(selectMsg(null));
         }}
       />
-    </Flex>
+    </div>
   );
 };
 

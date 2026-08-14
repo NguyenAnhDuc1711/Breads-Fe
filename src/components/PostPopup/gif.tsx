@@ -1,20 +1,18 @@
+import { Image } from "../ui/primitives";
 import {
-  Box,
   Fade,
-  Flex,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  Text,
-} from "@chakra-ui/react";
+} from "../ui/primitives";
 import { Constants, gif } from "../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { updatePostInfo } from "../../store/PostSlice";
 import { addEvent } from "../../util";
+import "./gif.css";
 
 const GifBox = ({ isOpen, onClose }) => {
   const dispatch = useAppDispatch();
@@ -46,73 +44,29 @@ const GifBox = ({ isOpen, onClose }) => {
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent
-          position={"relative"}
-          boxSizing="border-box"
-          width="620px"
-          maxWidth={"620px"}
-          bg={"white"}
-          color={"gray"}
-          pr={1}
-          borderRadius={"16px"}
+          className="gif-modal"
+          style={{ width: "620px", maxWidth: "620px" }}
           id="modal"
         >
-          <Box p={1}></Box>
-          <Text
-            position={"absolute"}
-            top={"-36px"}
-            left={"50%"}
-            transform={"translateX(-50%)"}
-            color={"white"}
-            zIndex={4000}
-            textTransform={"capitalize"}
-            fontWeight={600}
-            fontSize={"18px"}
-          >
-            Chọn file Gif
-          </Text>
-          <ModalCloseButton
-            position={"absolute"}
-            top={"-36px"}
-            left={"0"}
-            color={"white"}
-          />
+          <div className="gif-modal__spacer-top"></div>
+          <div className="gif-modal__title">Chọn file Gif</div>
+          <ModalCloseButton className="gif-modal__close" />
 
-          <ModalBody
-            p={0}
-            overflowY={"auto"}
-            maxHeight={"400px"}
-            sx={{
-              "&::-webkit-scrollbar": {
-                width: "12px",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "white",
-                borderRadius: "8px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "gray",
-                borderRadius: "8px",
-                border: "3px solid white",
-              },
-            }}
-          >
-            <Flex wrap="wrap" ml={"10px"}>
+          <ModalBody className="gif-modal__body">
+            <div className="gif-modal__grid">
               {gif.map((link, index) => (
                 <Image
+                  className="gif-modal__item"
                   loading="lazy"
                   key={link}
                   src={link}
                   alt={`GIF ${index + 1}`}
-                  maxWidth="48%"
-                  height="auto" // Maintain the original height of the GIF
-                  borderRadius={"9px"}
-                  m={1}
                   onClick={() => handleAddGif(link)}
                 />
               ))}
-            </Flex>
+            </div>
           </ModalBody>
-          <Box p={2}></Box>
+          <div className="gif-modal__spacer-bottom"></div>
         </ModalContent>
       </Modal>
     </Fade>

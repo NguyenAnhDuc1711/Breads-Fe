@@ -1,6 +1,5 @@
 "use client";
 
-import { Flex } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { REPORT_PATH, Route } from "../../Breads-Shared/APIConfig";
@@ -14,6 +13,7 @@ import { GET } from "../../config/API";
 import { useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { EmptyContentSvg } from "../../assests/icons";
+import "./ReportPage.css";
 
 const ReportPage = () => {
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
@@ -43,7 +43,7 @@ const ReportPage = () => {
     }
   };
   return (
-    <Flex flexDir={"column"} px={8} gap={4} alignItems={"center"}>
+    <div className="report-page">
       <InfiniteScroll
         queryFc={(page) => {
           handleGetReports({ page });
@@ -62,11 +62,11 @@ const ReportPage = () => {
         preloadIndex={10}
       />
       {firstLoad && reports?.length === 0 && (
-        <Flex justifyContent={"center"} padding={"16px"}>
+        <div className="report-page__empty">
           <EmptyContentSvg />
-        </Flex>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };
 

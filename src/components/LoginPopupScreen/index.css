@@ -1,0 +1,14 @@
+.login-popup__content {
+  border-radius: 10px;
+  max-width: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+}
+
+.login-popup__body {
+  max-height: 100vh;
+  max-width: 100%;
+  background-color: transparent;
+}

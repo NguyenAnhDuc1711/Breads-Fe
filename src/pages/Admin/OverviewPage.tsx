@@ -1,17 +1,17 @@
 "use client";
 
-import { Container, Flex } from "@chakra-ui/react";
 import LeftSideBarOverview from "../../components/Admin/Overview/LeftSideBar";
 import RightSideContentOverview from "../../components/Admin/Overview/RightSideContent";
+import "./OverviewPage.css";
 
 const OverviewPage = () => {
   return (
-    <Flex>
+    <div className="overview-page">
       <LeftSideBarOverview />
-      <Container flex={1} margin={0} p={0} maxWidth={"100vw"}>
+      <div className="overview-page__content">
         <RightSideContentOverview />
-      </Container>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

@@ -1,20 +1,15 @@
 import { ViewIcon, ViewOffIcon } from "../../assests/chakraIcons";
+import { Button, Input, Text, useColorMode } from "../ui/primitives";
 import {
-  Box,
-  Button,
-  Flex,
   FormControl,
   FormLabel,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Text,
-  useColorMode,
-} from "@chakra-ui/react";
+} from "../ui/primitives";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
@@ -23,6 +18,7 @@ import { PUT } from "../../config/API";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { showToast } from "../../store/UtilSlice";
+import "./changePWModal.css";
 
 export const handleUpdatePW = async ({
   currentPWValue,
@@ -117,6 +113,11 @@ const ChangePWModal = ({ setPopup }) => {
     return colorMode === "dark" ? "#4d4d4d" : "#a0a0a0";
   };
 
+  const titleColor = getButtonColor(
+    currentPage === PageConstant.ACTIVITY,
+    colorMode
+  );
+
   return (
     <Modal
       isOpen={true}
@@ -129,118 +130,64 @@ const ChangePWModal = ({ setPopup }) => {
     >
       <ModalOverlay />
       <ModalContent
-        position={"relative"}
-        boxSizing="border-box"
-        width={["420px", "460px"]}
-        maxWidth={"620px"}
-        borderRadius={"16px"}
+        className="change-pw-modal"
+        style={{ width: "clamp(420px, 90vw, 460px)", maxWidth: "620px" }}
         id="modal"
-        padding={"4px 8px"}
       >
-        <Box p={1}></Box>
-        <Text
-          position={"absolute"}
-          top={"-36px"}
-          left={"50%"}
-          transform={"translateX(-50%)"}
-          color={getButtonColor(
-            currentPage === PageConstant.ACTIVITY,
-            colorMode
-          )}
-          zIndex={4000}
-          textTransform={"capitalize"}
-          fontWeight={600}
-          fontSize={"18px"}
-        >
+        <div className="change-pw-modal__spacer"></div>
+        <Text className="change-pw-modal__title" style={{ color: titleColor }}>
           {t("changePassword")}
         </Text>
         <ModalCloseButton
-          position={"absolute"}
-          top={"-36px"}
-          left={"0"}
-          color={getButtonColor(
-            currentPage === PageConstant.ACTIVITY,
-            colorMode
-          )}
+          className="change-pw-modal__close"
+          style={{ color: titleColor }}
         />
         <ModalBody>
           <FormControl>
             <FormLabel>Current password</FormLabel>
-            <Flex
-              alignItems={"center"}
-              gap={"6px"}
-              border={"1px solid gray"}
-              borderRadius={"6px"}
-              padding={"0 12px"}
-            >
+            <div className="change-pw-modal__field">
               <Input
+                className="change-pw-modal__input"
                 placeholder="Your current password"
-                _placeholder={{ color: "gray.500" }}
-                padding="0"
-                border={"none"}
-                outline={"none"}
-                _focus={{
-                  boxShadow: "none",
-                }}
                 type={passwordInfo.currentPW.hidden ? "password" : "text"}
                 value={passwordInfo.currentPW.value}
                 onChange={(e) => updateFieldValue(e.target.value, true)}
               />
               {passwordInfo.currentPW.hidden ? (
                 <ViewIcon
-                  width={"24px"}
-                  height={"18px"}
-                  cursor={"pointer"}
+                  className="change-pw-modal__eye-icon"
                   onClick={() => visiblePW(true)}
                 />
               ) : (
                 <ViewOffIcon
-                  width={"24px"}
-                  height={"18px"}
-                  cursor={"pointer"}
+                  className="change-pw-modal__eye-icon"
                   onClick={() => visiblePW(true)}
                 />
               )}
-            </Flex>
+            </div>
           </FormControl>
           <FormControl>
             <FormLabel>New password</FormLabel>
-            <Flex
-              alignItems={"center"}
-              gap={"6px"}
-              border={"1px solid gray"}
-              borderRadius={"6px"}
-              padding={"0 12px"}
-            >
+            <div className="change-pw-modal__field">
               <Input
+                className="change-pw-modal__input"
                 placeholder="New password"
-                _placeholder={{ color: "gray.500" }}
-                padding="0"
-                border={"none"}
-                outline={"none"}
-                _focus={{
-                  boxShadow: "none",
-                }}
                 type={passwordInfo.newPW.hidden ? "password" : "text"}
                 value={passwordInfo.newPW.value}
                 onChange={(e) => updateFieldValue(e.target.value, false)}
               />
               {passwordInfo.newPW.hidden ? (
                 <ViewIcon
-                  width={"24px"}
-                  height={"18px"}
-                  cursor={"pointer"}
+                  className="change-pw-modal__eye-icon"
                   onClick={() => visiblePW(false)}
                 />
               ) : (
                 <ViewOffIcon
-                  width={"24px"}
-                  height={"18px"}
-                  cursor={"pointer"}
+                  className="change-pw-modal__eye-icon"
                   onClick={() => visiblePW(false)}
                 />
               )}
-            </Flex>
+            </div>
           </FormControl>
         </ModalBody>
         <ModalFooter>

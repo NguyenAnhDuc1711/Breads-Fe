@@ -1,16 +1,8 @@
-import {
-  Flex,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
-  Text,
-  Input,
-  Button,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Button, Input, Text } from "../ui/primitives";
+import { Modal, ModalBody, ModalContent, ModalOverlay } from "../ui/primitives";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import "./index.css";
 
 const CodePopup = ({
   isOpen,
@@ -31,26 +23,19 @@ const CodePopup = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent w={"320px"} borderRadius={"10px"}>
-        <ModalBody
-          pb={6}
-          bg={useColorModeValue("white", "gray.dark")}
-          border={`1px solid ${useColorModeValue("gray.dark", "white")}`}
-          borderRadius={6}
-        >
-          <Flex flexDir={"column"}>
-            <Text textAlign={"center"} fontWeight={600} fontSize={18} py={3}>
-              {title}
-            </Text>
-            <Text fontSize={14}>{description}</Text>
+      <ModalContent className="code-popup__content">
+        <ModalBody className="code-popup__body">
+          <div className="code-popup__form">
+            <Text className="code-popup__title">{title}</Text>
+            <Text className="code-popup__description">{description}</Text>
             <Input
+              className="code-popup__input"
               placeholder="Type your code here ..."
-              my={4}
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
-            <Button onClick={() => onSubmit(code)}>{t("submit")}</Button>
-          </Flex>
+            <Button className="btn-subtle" onClick={() => onSubmit(code)}>{t("submit")}</Button>
+          </div>
         </ModalBody>
       </ModalContent>
     </Modal>

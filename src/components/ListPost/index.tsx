@@ -1,4 +1,3 @@
-import { Flex } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { EmptyContentSvg } from "../../assests/icons";
@@ -10,6 +9,7 @@ import { getIsAdminPage } from "../../util";
 import InfiniteScroll from "../InfiniteScroll";
 import Post from "./Post";
 import SkeletonPost from "./Post/skeleton";
+import "./index.css";
 
 const ListPost = () => {
   const pathname = usePathname();
@@ -79,13 +79,7 @@ const ListPost = () => {
             cpnFc={(post, index) => (
               <Fragment>
                 <Post post={post} isFirst={index === 0} />
-                <hr
-                  style={{
-                    borderColor: "transparent",
-                    height: "12px",
-                    margin: "0px",
-                  }}
-                />
+                <hr className="list-post__gap" />
               </Fragment>
             )}
             condition={!!userInfo._id}
@@ -97,19 +91,15 @@ const ListPost = () => {
       ) : (
         <>
           {isLoading ? (
-            <Flex
-              gap={"12px"}
-              flexDirection={"column"}
-              justifyContent={"center"}
-            >
+            <div className="list-post__skeletons">
               {[1, 2, 3, 4, 5].map((num) => (
                 <SkeletonPost key={`skeleton-post-${num}`} />
               ))}
-            </Flex>
+            </div>
           ) : (
-            <Flex justifyContent={"center"} alignItems={"center"}>
+            <div className="list-post__empty">
               <EmptyContentSvg />
-            </Flex>
+            </div>
           )}
         </>
       )}

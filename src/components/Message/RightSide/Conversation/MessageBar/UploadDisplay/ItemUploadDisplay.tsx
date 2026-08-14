@@ -1,58 +1,38 @@
 import { CloseIcon } from "../../../../../../assests/chakraIcons";
-import { Flex, Image, Text } from "@chakra-ui/react";
+import { Image, Text } from "../../../../../ui/primitives";
+import "./ItemUploadDisplay.css";
 
 const ItemUploadDisplay = ({ item, imgSrc, onClick, isPost = false }) => {
+  const previewInsetHeight = item?.name && !isPost;
+
   return (
-    <Flex
+    <div
       key={item?.name}
-      height={isPost ? "50px" : "100%"}
-      minWidth={"72px"}
-      width={"fit-content"}
-      p={"6px"}
-      border={"1px solid gray"}
-      margin={0}
-      flexDirection={isPost ? "row" : "column"}
-      justifyContent={item?.name ? "space-between" : "center"}
-      alignItems={"center"}
-      position={"relative"}
-      gap={isPost ? "6px" : ""}
+      className={`upload-item${isPost ? " upload-item--post" : " upload-item--msg"}${
+        item?.name ? " upload-item--named" : " upload-item--unnamed"
+      }`}
     >
       <CloseIcon
-        position={"absolute"}
-        top={"-7px"}
-        right={"-7px"}
-        width={"14px"}
-        height={"14px"}
-        borderRadius={"50%"}
-        bg={"gray"}
-        p={"2px"}
-        cursor={"pointer"}
-        _hover={{
-          opacity: 0.8,
-        }}
+        className="upload-item__close"
         onClick={() => {
           onClick();
         }}
       />
       <Image
+        className={`upload-item__preview${
+          isPost ? " upload-item__preview--post" : " upload-item__preview--msg"
+        }${
+          previewInsetHeight
+            ? " upload-item__preview--inset-height"
+            : " upload-item__preview--full-height"
+        }`}
         src={imgSrc}
-        width={isPost ? "fit-content" : "60px"}
-        maxHeight={item?.name && !isPost ? "calc(100% - 16px)" : "100%"}
-        objectFit={"cover"}
         alt={item?.name ? `Preview of ${item.name}` : "Upload preview"}
       />
       {item?.name && (
-        <Text
-          maxWidth={"120px"}
-          fontSize={"11px"}
-          textOverflow={"ellipsis"}
-          overflow={"hidden"}
-          whiteSpace={"nowrap"}
-        >
-          {item?.name}
-        </Text>
+        <Text className="upload-item__name">{item?.name}</Text>
       )}
-    </Flex>
+    </div>
   );
 };
 

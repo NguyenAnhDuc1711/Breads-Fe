@@ -1,7 +1,5 @@
+import { Button, useColorModeValue } from "../../ui/primitives";
 import {
-  Box,
-  Button,
-  Flex,
   Menu,
   MenuButton,
   MenuItem,
@@ -11,8 +9,8 @@ import {
   PopoverContent,
   PopoverTrigger,
   Portal,
-  useColorModeValue,
-} from "@chakra-ui/react";
+} from "../../ui/primitives";
+import "./Actions.css";
 import { usePathname } from "next/navigation";
 import { Fragment, memo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -197,10 +195,9 @@ const Actions = ({ post }: { post: IPost }) => {
 
   if (isAdmin) {
     return (
-      <Flex alignItems={"center"} gap={3} width={"100%"} mt={1}>
+      <div className="post-actions post-actions--admin">
         <Button
-          flex={1}
-          bg="green"
+          className="post-actions__admin-btn post-actions__admin-btn--accept"
           onClick={() => {
             handleUpdatePostStatus(Constants.POST_STATUS.PUBLIC);
           }}
@@ -208,20 +205,20 @@ const Actions = ({ post }: { post: IPost }) => {
           Accept
         </Button>
         <Button
-          flex={1}
+          className="post-actions__admin-btn btn-subtle"
           onClick={() => {
             handleUpdatePostStatus(Constants.POST_STATUS.DELETED);
           }}
         >
           Reject
         </Button>
-      </Flex>
+      </div>
     );
   }
 
   return (
     <>
-      <Flex onClick={(e) => e.preventDefault()} mb={0}>
+      <div className="post-actions" onClick={(e) => e.preventDefault()}>
         {listActions.map(({ name, statistic, icon, onClick }, index) => {
           if (name === ACTIONS_NAME.SHARE) {
             return (
@@ -231,36 +228,16 @@ const Actions = ({ post }: { post: IPost }) => {
                 onClose={() => setOpenSubBox(!openSubBox)}
               >
                 <PopoverTrigger>
-                  <Button
-                    onClick={onClick}
-                    width={"32px"}
-                    height={"32px"}
-                    padding={"6px 10px"}
-                    bg={"transparent"}
-                    borderRadius={"16px"}
-                    position={"relative"}
-                    zIndex={0}
-                  >
+                  <Button className="post-actions__btn" onClick={onClick}>
                     {icon}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
-                  width={"fit-content"}
-                  borderRadius={"8px"}
+                  className="post-actions__share-popover"
                   bg={useColorModeValue("gray.300", "gray.dark")}
-                  padding={"8px 10px"}
                 >
                   <PopoverBody
-                    cursor={"pointer"}
-                    padding={"2px 10px"}
-                    borderRadius={"6px"}
-                    display={"flex"}
-                    gap={"12px"}
-                    alignItems={"center"}
-                    _hover={{
-                      bg: "gray",
-                      opacity: "0.7",
-                    }}
+                    className="post-actions__share-item"
                     onClick={() => {
                       copyURL(post);
                       setOpenSubBox(false);
@@ -281,33 +258,10 @@ const Actions = ({ post }: { post: IPost }) => {
           } else {
             return (
               <Fragment key={name}>
-                <Button
-                  onClick={onClick}
-                  width={"32px"}
-                  height={"32px"}
-                  padding={"6px 10px"}
-                  bg={"transparent"}
-                  borderRadius={"16px"}
-                  _active={{
-                    bg: "rgba(0, 0, 0, 0.1)",
-                    boxShadow: "none",
-                    transform: "none",
-                  }}
-                  zIndex={0}
-                >
-                  <Box
-                    width={"20px"}
-                    height={"20px"}
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                  >
-                    {icon}
-                  </Box>
+                <Button className="post-actions__btn" onClick={onClick}>
+                  <div className="post-actions__icon">{icon}</div>
                   {!!statistic && (
-                    <Flex alignItems={"center"} fontSize={"14px"} pl={1}>
-                      {statistic}
-                    </Flex>
+                    <div className="post-actions__stat">{statistic}</div>
                   )}
                 </Button>
               </Fragment>
@@ -316,14 +270,7 @@ const Actions = ({ post }: { post: IPost }) => {
         })}
         {isAuthor && (
           <Menu>
-            <MenuButton
-              width={"32px"}
-              height={"32px"}
-              padding={"6px 10px"}
-              bg={"transparent"}
-              borderRadius={"16px"}
-              zIndex={0}
-            >
+            <MenuButton className="post-actions__btn">
               <MdPublic size={20} />
             </MenuButton>
             <Portal>
@@ -340,7 +287,7 @@ const Actions = ({ post }: { post: IPost }) => {
             </Portal>
           </Menu>
         )}
-      </Flex>
+      </div>
     </>
   );
 };

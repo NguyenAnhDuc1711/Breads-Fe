@@ -1,8 +1,9 @@
-import { Box, Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react";
+import { Skeleton, SkeletonCircle } from "../../../ui/primitives";
 import { ArcElement, Chart } from "chart.js";
 import { useEffect } from "react";
 import { useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
+import "./DonutGraph.css";
 
 Chart.register(ArcElement);
 
@@ -50,16 +51,12 @@ const DoughnutGraph = ({
 
   if (isLoading) {
     return (
-      <Box width="100%" height="30vh" padding="4px">
-        <Flex
-          flexDir={"column"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-        >
+      <div className="donut-graph-skeleton">
+        <div className="donut-graph-skeleton__inner">
           <Skeleton height="15px" width="20%" mb={2} />
           <SkeletonCircle size="210" />
-        </Flex>
-      </Box>
+        </div>
+      </div>
     );
   }
 

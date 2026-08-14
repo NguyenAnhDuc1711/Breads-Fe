@@ -1,10 +1,11 @@
 import { AddIcon } from "../assests/chakraIcons";
-import { Button } from "@chakra-ui/react";
+import { Button } from "./ui/primitives";
 import { useTranslation } from "react-i18next";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch } from "../hooks/redux";
 import { updatePostAction } from "../store/PostSlice";
 import { addEvent } from "../util";
+import "./CreatePostBtn.css";
 
 const CreatePostBtn = () => {
   const dispatch = useAppDispatch();
@@ -13,14 +14,7 @@ const CreatePostBtn = () => {
   return (
     <>
       <Button
-        display={["none", "none", "flex"]}
-        padding={"25px"}
-        opacity={0.8}
-        position={"fixed"}
-        bottom={10}
-        right={10}
-        bg={"#444444"}
-        zIndex={1000}
+        className="create-post-btn"
         onClick={() => {
           addEvent({
             event: "click_create_post_btn",

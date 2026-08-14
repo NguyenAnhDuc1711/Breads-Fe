@@ -1,6 +1,7 @@
 "use client";
 
-import { Container, Fade, Flex, Text, useColorMode } from "@chakra-ui/react";
+import { MenuItem, Text } from "../../../ui/primitives";
+import "./index.css";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { CiBookmark } from "react-icons/ci";
@@ -38,7 +39,6 @@ const PostMoreActionBox = ({
 }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { colorMode } = useColorMode();
   const { t } = useTranslation();
   const { copyURL } = useCopyLink();
 
@@ -188,40 +188,20 @@ const PostMoreActionBox = ({
 
   return (
     <>
-      <Container
-        width={"180px"}
-        position={"absolute"}
-        top={"calc(100% + 12px)"}
-        right={"50%"}
-        borderRadius={"12px"}
-        padding={"12px"}
-        bg={colorMode === "dark" ? "#1c1e21" : "gray.100"}
-        zIndex={1000}
-        animation={"fadeIn ease 0.3s"}
-      >
-        {actions.map(({ name, icon, onClick }) => (
-          <Flex
-            key={name}
-            justifyContent={"space-between"}
-            height={"36px"}
-            cursor={"pointer"}
-            alignItems={"center"}
-            padding={"0 10px"}
-            borderRadius={"8px"}
-            _hover={{
-              bg: "gray",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick && onClick();
-              setOpenPostBox(false);
-            }}
-          >
-            <Text>{name}</Text>
-            {icon}
-          </Flex>
-        ))}
-      </Container>
+      {actions.map(({ name, icon, onClick }) => (
+        <MenuItem
+          key={name}
+          className="more-action-menu__item"
+          onClick={(e: any) => {
+            e.stopPropagation();
+            onClick && onClick();
+            setOpenPostBox?.(false);
+          }}
+        >
+          <Text>{name}</Text>
+          {icon}
+        </MenuItem>
+      ))}
     </>
   );
 };

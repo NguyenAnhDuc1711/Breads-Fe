@@ -1,0 +1,160 @@
+.user-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 4px;
+}
+
+.user-header__top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.user-header__name {
+  font-size: 1.5rem;
+}
+
+.user-header__username-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.user-header__username {
+  font-size: 0.875rem;
+}
+
+.user-header__badge {
+  font-size: 0.75rem;
+  background-color: #0a0a0a;
+  color: #616161;
+  padding: 4px;
+  border-radius: 9999px;
+}
+
+.user-header__update-btn {
+  width: 100%;
+}
+
+.user-header__actions-row {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
+.user-header__stats-row {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.user-header__followers-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.user-header__followers-text {
+  color: #616161;
+  cursor: pointer;
+}
+
+.user-header__followers-text:hover {
+  text-decoration: underline;
+}
+
+.user-header__menu-item {
+  background-color: #0a0a0a;
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  border-radius: 10px;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-header__menu-item-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-header__about-modal {
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .user-header__about-modal {
+  background-color: #202020;
+}
+
+.user-header__about-modal-body {
+  padding-bottom: 24px;
+}
+
+.user-header__about-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.user-header__about-row--spaced {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.user-header__about-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-header__tab {
+  flex: 1;
+  justify-content: center;
+  padding-bottom: 12px;
+}
+
+.user-header__tab-panel {
+  padding: 0;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.user-header__skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-header__follow-modal-content {
+  overflow: hidden;
+}
+
+.user-header__follow-tab {
+  width: 50%;
+  text-transform: capitalize;
+}
+
+.user-header__follow-tab-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-header__follow-tab-count {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.user-header__follow-panels {
+  padding: 0;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.user-header__follow-empty {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}

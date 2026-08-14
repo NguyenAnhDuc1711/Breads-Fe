@@ -1,9 +1,5 @@
-import {
-  Container,
-  Flex,
-  SkeletonCircle,
-  SkeletonText,
-} from "@chakra-ui/react";
+import { SkeletonCircle, SkeletonText } from "../../ui/primitives";
+import "./skeleton.css";
 
 const UserBoxSekeleton = ({
   smallAvatar = false,
@@ -11,13 +7,13 @@ const UserBoxSekeleton = ({
   smallAvatar?: boolean;
 }) => {
   return (
-    <Flex alignItems={"center"}>
+    <div className="user-box-skeleton">
       <SkeletonCircle size={smallAvatar ? "8" : "12"} />
-      <Container width={"fit-content"}>
+      <div className="user-box-skeleton__text-col">
         <SkeletonText mt="2" noOfLines={1} skeletonHeight="3" width={"80px"} />
         <SkeletonText mt="2" noOfLines={1} skeletonHeight="3" width={"140px"} />
-      </Container>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

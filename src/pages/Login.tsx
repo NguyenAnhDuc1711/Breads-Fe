@@ -1,23 +1,19 @@
 "use client";
 
-import { ViewIcon, ViewOffIcon } from "../assests/chakraIcons";
 import {
   Avatar,
-  Box,
   Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   Input,
   InputGroup,
   InputRightElement,
-  Link,
-  Stack,
   Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+} from "../components/ui/primitives";
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+} from "../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -31,6 +27,7 @@ import { useAppDispatch } from "../hooks/redux";
 import { IUser } from "../store/UserSlice";
 import { login } from "../store/UserSlice/asyncThunk";
 import { showToast } from "../store/UtilSlice";
+import "./Login.css";
 
 type LoginInput = {
   email: string;
@@ -319,20 +316,11 @@ const Login = () => {
 
   if (countClickGetFullAcc >= 5) {
     return (
-      <Flex
-        flexDir={"column"}
-        width={"100vw"}
-        height={"100vh"}
-        alignItems={"center"}
-        justifyContent={"center"}
-        gap={5}
-      >
-        <Text fontSize={"24px"} fontWeight={600}>
-          Select user to login
-        </Text>
+      <div className="login-debug">
+        <Text className="login-debug__title">Select user to login</Text>
         <Input
+          className="login-debug__search"
           placeholder={"Search user..."}
-          width={"320px"}
           onChange={(e) => {
             const searchValue = e.target.value;
             const searchResult = users?.filter(({ username }) => {
@@ -347,85 +335,82 @@ const Login = () => {
             setDisplayUsers(searchResult);
           }}
         />
-        <Flex
-          maxHeight={"60vh"}
-          width={"60vw"}
-          overflowY={"scroll"}
-          flexWrap={"wrap"}
-          alignContent={"start"}
-        >
+        <div className="login-debug__list">
           {displayUsers?.map((user) => (
-            <Flex
+            <div
+              className="login-debug__item"
               key={user._id}
-              p={2}
-              px={4}
-              borderRadius={8}
-              gap={2}
-              alignItems={"center"}
-              cursor={"pointer"}
-              _hover={{
-                bg: "lightgray",
-              }}
-              width={"33%"}
-              height={"64px"}
               onClick={() => loginForTest(user?._id)}
             >
               <Avatar src={user?.avatar} />
               <Text>{user?.username}</Text>
-            </Flex>
+            </div>
           ))}
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Flex align={"center"} justify={"center"}>
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} my={6}>
-        <Stack align={"center"}>
-          <Heading
-            fontSize={"4xl"}
-            textAlign={"center"}
-            onClick={() => setCountClick((prev) => prev + 1)}
-          >
-            {t("SignIn")}
-          </Heading>
-        </Stack>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.dark")}
-          boxShadow={"lg"}
-          p={8}
-          w={{ base: "full", sm: "400px" }}
-        >
-          <Stack spacing={4}>
+    <div className="login-page">
+      <div className="login-page__container">
+        <div className="login-page__card">
+          <div className="login-page__header">
+            <Heading
+              className="login-page__heading"
+              onClick={() => setCountClick((prev) => prev + 1)}
+            >
+              {t("SignIn")}
+            </Heading>
+            <Text className="login-page__subtitle">Welcome back to Breads</Text>
+          </div>
+
+          <div className="login-page__form-stack">
             <FormControl isRequired isInvalid={!!errors?.email}>
               <FormLabel
+                className="login-page__label"
                 onClick={() => setCountClickGetFullAcc((prev) => prev + 1)}
               >
                 Email
               </FormLabel>
               <Input
                 type="email"
+                className="login-page__input"
+                placeholder="name@example.com"
                 onChange={(e) =>
                   setInputs((prev) => ({ ...prev, email: e.target.value }))
                 }
-                // Fix #4: onKeyDown on input instead of global window listener
                 onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                 onBlur={() => validateField("email")}
                 value={inputs.email}
               />
-              <FormErrorMessage>{errors?.email}</FormErrorMessage>
+              <FormErrorMessage className="login-page__error-msg">
+                {errors?.email}
+              </FormErrorMessage>
             </FormControl>
+
             <FormControl isRequired isInvalid={!!errors?.password}>
-              <FormLabel>{t("password")}</FormLabel>
-              <InputGroup>
+              <div className="login-page__password-header">
+                <FormLabel className="login-page__label">
+                  {t("password")}
+                </FormLabel>
+                <span
+                  className="login-page__forgot-link"
+                  onClick={() => {
+                    handleForgotPassword();
+                  }}
+                >
+                  {t("forgotPW")}
+                </span>
+              </div>
+              <InputGroup className="login-page__input-group">
                 <Input
                   type={showPassword ? "text" : "password"}
+                  className="login-page__input"
+                  placeholder="••••••••"
                   onChange={(e) =>
                     setInputs((prev) => ({ ...prev, password: e.target.value }))
                   }
-                  // Fix #4: onKeyDown on input instead of global window listener
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   onBlur={() => validateField("password")}
                   value={inputs.password}
@@ -433,55 +418,77 @@ const Login = () => {
                 <InputRightElement h={"full"}>
                   <Button
                     variant={"ghost"}
+                    className="login-page__eye-btn"
                     onClick={() =>
                       setShowPassword((showPassword) => !showPassword)
                     }
                   >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    {showPassword ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
+                    )}
                   </Button>
                 </InputRightElement>
               </InputGroup>
-              <FormErrorMessage>{errors?.password}</FormErrorMessage>
+              <FormErrorMessage className="login-page__error-msg">
+                {errors?.password}
+              </FormErrorMessage>
             </FormControl>
-            <Stack spacing={10} pt={2}>
-              {/* Fix #7: isLoading prop wired up so loadingText actually shows */}
+
+            <div className="login-page__submit-stack">
               <Button
+                className="login-page__submit-btn"
                 isLoading={isLoading}
-                loadingText="Đang gửi"
+                loadingText="Logging in..."
                 size="lg"
-                bg={useColorModeValue("gray.600", "gray.700")}
-                color={"white"}
-                _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
                 onClick={() => handleLogin()}
               >
                 {t("SignIn")}
               </Button>
-            </Stack>
-            <Stack pt={6}>
-              <Text align={"center"}>
-                <Link
-                  color={"blue.400"}
-                  onClick={() => {
-                    handleForgotPassword();
-                  }}
-                >
-                  {t("forgotPW")}
-                </Link>
-              </Text>
-              <Text align={"center"}>
+            </div>
+
+            <div className="login-page__footer">
+              <Text className="login-page__footer-text">
                 {t("dontHaveAccount")}{" "}
-                {/* Fix #1: Route to /signup not /auth/signup */}
-                <Link
-                  color={"blue.400"}
+                <span
+                  className="login-page__link"
                   onClick={() => router.push(`/${PageConstant.SIGNUP}`)}
                 >
                   {t("SignUp")}
-                </Link>
+                </span>
               </Text>
-            </Stack>
-          </Stack>
-        </Box>
-      </Stack>
+            </div>
+          </div>
+        </div>
+      </div>
       <CodePopup
         isOpen={openCodeBox}
         title={t("forgotCode")}
@@ -489,7 +496,7 @@ const Login = () => {
         onClose={() => setOpenCodeBox(false)}
         onSubmit={(code) => handleSubmitCode(code)}
       />
-    </Flex>
+    </div>
   );
 };
 

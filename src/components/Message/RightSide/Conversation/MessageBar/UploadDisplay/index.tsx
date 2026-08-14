@@ -1,4 +1,4 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Button } from "../../../../../ui/primitives";
 import { memo } from "react";
 import { fileTypes } from "../../../../../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/redux";
@@ -10,6 +10,7 @@ import { getCurrentTheme } from "../../../../../../util/Themes";
 import FileMsg from "../../Body/Message/Files";
 import ItemUploadDisplay from "./ItemUploadDisplay";
 import LoadingUploadMsg from "./loading";
+import "./index.css";
 
 const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
   //Max 5 files / folders
@@ -28,31 +29,7 @@ const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
     : isPost
     ? postInfo.files
     : msgInfo.files;
-  const baseStyles = !isPost
-    ? {
-        width: "100%",
-        px: 2,
-        py: 3,
-        gap: "10px",
-        justifyContent: "start",
-        bg: loadingUploadMsg ? "gray" : bg ? bg : "",
-      }
-    : {};
-  const postStyles = {
-    position: "relative",
-    height: "fit-content",
-    justifyContent: "start",
-    alignItems: "flex-start",
-    gap: "8px",
-    flexWrap: "wrap",
-  };
-  const nonPostStyles = {
-    borderTop: "1px solid gray",
-    height: "100px",
-    justifyContent: "start",
-    alignItems: "center",
-    flexDirection: "row",
-  };
+  const msgBg = loadingUploadMsg ? "gray" : bg || undefined;
 
   const getImgByType = (inputType) => {
     let fileType = "";
@@ -129,7 +106,12 @@ const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
   };
 
   return (
-    <Flex {...baseStyles} {...(isPost ? postStyles : nonPostStyles)}>
+    <div
+      className={`upload-display${
+        isPost ? " upload-display--post" : " upload-display--msg"
+      }`}
+      style={!isPost ? { backgroundColor: msgBg } : undefined}
+    >
       <>
         {media?.map((item, index) => (
           <ItemUploadDisplay
@@ -158,14 +140,17 @@ const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
         })}
       </>
       {!isPost ? (
-        <Button padding={"8px 12px"} onClick={() => handleRemoveAll()}>
+        <Button
+          className="upload-display__clear-btn"
+          onClick={() => handleRemoveAll()}
+        >
           Clear all
         </Button>
       ) : (
         <></>
       )}
       {loadingUploadMsg && <LoadingUploadMsg />}
-    </Flex>
+    </div>
   );
 };
 

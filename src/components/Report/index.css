@@ -1,0 +1,28 @@
+.report-popup__content {
+  border-radius: 10px;
+}
+
+.report-popup__body {
+  padding-bottom: 24px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+[data-theme="dark"] .report-popup__body {
+  background-color: #202020;
+}
+
+.report-popup__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+}
+
+.report-popup__title {
+  text-align: center;
+}
+
+.report-popup__submit-btn {
+  float: right;
+}

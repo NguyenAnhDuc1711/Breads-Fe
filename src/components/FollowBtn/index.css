@@ -1,0 +1,7 @@
+.follow-btn-wrap--full {
+  flex: 1;
+}
+
+.follow-btn-wrap--full .follow-btn {
+  width: 100%;
+}

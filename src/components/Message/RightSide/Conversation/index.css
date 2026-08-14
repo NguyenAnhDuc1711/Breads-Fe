@@ -1,0 +1,22 @@
+.conv-screen {
+  display: flex;
+  flex: 1;
+  background-color: #e2e8f0;
+  border-radius: 0.375rem;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+[data-theme="dark"] .conv-screen {
+  background-color: #181818;
+}
+
+.conv-screen__input-wrap {
+  left: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  min-height: 56px;
+  height: fit-content;
+}

@@ -1,4 +1,5 @@
-import { Flex, Input, ScaleFade, useDisclosure } from "@chakra-ui/react";
+import { Input } from "../ui/primitives";
+import { ScaleFade, useDisclosure } from "../ui/primitives";
 import { useRef } from "react";
 import { RiFileGifLine } from "react-icons/ri";
 
@@ -11,6 +12,7 @@ import { TbLibraryPhoto } from "react-icons/tb";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import GifBox from "./gif";
+import "./action.css";
 
 const PostPopupAction = ({ setFilesData }: { setFilesData: Function }) => {
   const dispatch = useAppDispatch();
@@ -87,8 +89,8 @@ const PostPopupAction = ({ setFilesData }: { setFilesData: Function }) => {
           handleAddMedia(e.target.files);
         }}
       />
-      <Flex gap="10px" padding="8px 0" direction={"column"} position="relative">
-        <Flex maxWidth="100%" gap="10px">
+      <div className="post-popup-action">
+        <div className="post-popup-action__row">
           <FileUpload setFilesData={setFilesData} isPost={true} />
           <TbLibraryPhoto
             cursor="pointer"
@@ -103,8 +105,8 @@ const PostPopupAction = ({ setFilesData }: { setFilesData: Function }) => {
             cursor="pointer"
             onClick={() => handleAddSurvey()}
           />
-        </Flex>
-      </Flex>
+        </div>
+      </div>
 
       <GifBox isOpen={isOpen} onClose={onClose} />
     </ScaleFade>

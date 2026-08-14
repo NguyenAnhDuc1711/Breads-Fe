@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Flex, Text, useColorModeValue } from "@chakra-ui/react";
+import { Text } from "../components/ui/primitives";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
@@ -18,11 +18,11 @@ import { IUser } from "../store/UserSlice";
 import { updateHasMoreData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
+import "./SearchPage.css";
 
 const SearchPage = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [users, setUsers] = useState<IUser[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -101,47 +101,26 @@ const SearchPage = () => {
   return (
     <>
       <ContainerLayout>
-        <Container
-          width="100%"
-          maxWidth={"100%"}
-          height={"40px"}
-          borderRadius={"12px"}
-          bg={bgColor}
-          margin={0}
-          marginBottom={"12px"}
-          padding={0}
-        >
+        <div className="search-page__search-bar-wrap">
           <SearchBar
             value={searchValue}
             setValue={setSearchValue}
             placeholder={t("search")}
           />
-        </Container>
-        <Text
-          color={"gray"}
-          fontWeight={"500"}
-          mb={"12px"}
-          position={"relative"}
-          left={"4px"}
-        >
+        </div>
+        <Text className="search-page__suggested-label">
           {t("Suggested_follow_up")}
         </Text>
         {loading ? (
-          <Flex direction="column" gap={3} width="100%">
+          <div className="search-page__skeleton-list">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
               <UserFollowBoxSkeleton key={`search-skeleton-${num}`} />
             ))}
-          </Flex>
+          </div>
         ) : users.length === 0 ? (
-          <Flex
-            flex={1}
-            justifyContent="center"
-            alignItems="center"
-            width="100%"
-            py={6}
-          >
+          <div className="search-page__empty">
             <EmptyContentSvg />
-          </Flex>
+          </div>
         ) : (
           <InfiniteScroll
             queryFc={(page) => {

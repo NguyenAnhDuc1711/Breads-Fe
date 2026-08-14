@@ -1,6 +1,5 @@
 "use client";
 
-import { Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostsFilterBar from "../../components/Admin/PostsValidation/PostsFilterBar";
@@ -8,6 +7,7 @@ import PostsValidationData from "../../components/Admin/PostsValidation/PostsVal
 import { useAppDispatch } from "../../hooks/redux";
 import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
+import "./PostsValidationPage.css";
 
 const PostsValidationPage = () => {
   const dispatch = useAppDispatch();
@@ -18,10 +18,10 @@ const PostsValidationPage = () => {
   }, []);
 
   return (
-    <Flex width={"100%"} height={"fit-content"} minH={"100vh"}>
+    <div className="posts-validation-page">
       <PostsFilterBar />
       <PostsValidationData />
-    </Flex>
+    </div>
   );
 };
 

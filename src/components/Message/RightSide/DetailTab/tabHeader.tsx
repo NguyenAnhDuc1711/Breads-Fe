@@ -1,5 +1,6 @@
 import { ArrowBackIcon } from "../../../../assests/chakraIcons";
-import { Button } from "@chakra-ui/react";
+import { Button } from "../../../ui/primitives";
+import "./tabHeader.css";
 
 const ConversationTabHeader = ({
   setItemSelected,
@@ -9,7 +10,7 @@ const ConversationTabHeader = ({
   color?: string;
 }) => {
   return (
-    <Button mb={3} padding={0} onClick={() => setItemSelected("")}>
+    <Button className="conv-tab-header-btn" onClick={() => setItemSelected("")}>
       <ArrowBackIcon color={color ? color : ""} />
     </Button>
   );

@@ -1,29 +1,10 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalOverlay,
-  Portal,
-  Text,
-  VStack,
-  useColorMode,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import { CheckIcon, ChevronDownIcon } from "../../assests/chakraIcons";
-import { MdLock, MdPeopleAlt, MdPublic } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MdLock, MdPeopleAlt, MdPublic } from "react-icons/md";
+import { CheckIcon, ChevronDownIcon } from "../../assests/chakraIcons";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
@@ -41,7 +22,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
-import { openNewPostNotify, showToast } from "../../store/UtilSlice";
+import { showToast } from "../../store/UtilSlice";
 import {
   addEvent,
   generateObjectId,
@@ -53,33 +34,40 @@ import TextArea from "../../util/TextArea";
 import Post from "../ListPost/Post";
 import UploadDisplay from "../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import OptimizedAvatar from "../OptimizedAvatar";
+import {
+  Button,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalOverlay,
+  Portal,
+  Text,
+  useColorModeValue,
+  VStack,
+} from "../ui/primitives";
 import PostPopupAction from "./action";
 import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
+import "./index.css";
 
 const PostPopup = () => {
   const MAX_CONTENT_LENGTH = 500;
   const pathname = usePathname();
   const postId = pathname?.split("/")?.[2];
   const { t } = useTranslation();
-  const { colorMode } = useColorMode();
-  const bgColor = useColorModeValue("cbg.light", "cbg.dark");
-  const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const iconColor = useColorModeValue("gray.600", "gray.300");
-  const btnBg = useColorModeValue("cuse.light", "cuse.dark");
-  const btnHoverBg = useColorModeValue("gray.100", "#2a2a2a");
-  const btnBorder = useColorModeValue("gray.300", "gray.700");
-  const menuBg = useColorModeValue("cuse.light", "cuse.dark");
-  const menuBorder = useColorModeValue("gray.200", "gray.700");
-  const itemHoverBg = useColorModeValue("gray.100", "#2a2a2a");
   const itemDescColor = useColorModeValue("gray.500", "gray.400");
-  const iconBoxBg = useColorModeValue("gray.100", "whiteAlpha.100");
   const checkColor = useColorModeValue("gray.800", "gray.100");
 
   const dispatch = useAppDispatch();
   const { postInfo, postAction, postSelected, postReply } = useAppSelector(
-    (state: AppState) => state.post
+    (state: AppState) => state.post,
   );
   const isEditing = postAction === PostConstants.ACTIONS.EDIT;
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
@@ -90,7 +78,7 @@ const PostPopup = () => {
   const [clickPost, setClickPost] = useState(false);
   const [filesData, setFilesData] = useState([]);
   const [visibility, setVisibility] = useState<number>(
-    Constants.POST_VISIBILITY.PUBLIC
+    Constants.POST_VISIBILITY.PUBLIC,
   );
   const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
@@ -126,27 +114,66 @@ const PostPopup = () => {
   useEffect(() => {
     if (debounceContent !== postInfo.content) {
       dispatch(
-        updatePostInfo({ ...postInfo, content: replaceEmojis(debounceContent) })
+        updatePostInfo({
+          ...postInfo,
+          content: replaceEmojis(debounceContent),
+        }),
       );
     }
   }, [debounceContent, dispatch, postInfo]);
 
+  const initialStateRef = useRef<{
+    content: string;
+    visibility: number;
+    mediaCount: number;
+    surveyCount: number;
+    filesCount: number;
+  } | null>(null);
+
   useEffect(() => {
-    if (
-      isEditing &&
-      postInfo?._id &&
-      postInfo.content !== content &&
-      init.current
-    ) {
-      setContent(postInfo.content);
+    if (isEditing && postInfo?._id && init.current) {
+      const initialContent = postInfo.content || "";
+      const initialVis =
+        postInfo.visibility ?? Constants.POST_VISIBILITY.PUBLIC;
+      setContent(initialContent);
+      setVisibility(initialVis);
+      initialStateRef.current = {
+        content: initialContent,
+        visibility: initialVis,
+        mediaCount: postInfo.media?.length || 0,
+        surveyCount: postInfo.survey?.length || 0,
+        filesCount: postInfo.files?.length || 0,
+      };
+      init.current = false;
+    } else if (!isEditing && postAction && init.current) {
+      setContent("");
+      setVisibility(Constants.POST_VISIBILITY.PUBLIC);
+      initialStateRef.current = {
+        content: "",
+        visibility: Constants.POST_VISIBILITY.PUBLIC,
+        mediaCount: 0,
+        surveyCount: 0,
+        filesCount: 0,
+      };
       init.current = false;
     }
-  }, [isEditing, postInfo, content]);
+  }, [isEditing, postAction, postInfo]);
 
   const closePostAction =
     !!postInfo.media?.length ||
     postInfo.survey.length !== 0 ||
     postInfo.files.length !== 0;
+
+  const resetAndClose = useCallback(() => {
+    init.current = true;
+    initialStateRef.current = null;
+    setContent("");
+    dispatch(updatePostAction(null));
+    dispatch(updatePostInfo(defaultPostInfo));
+    postAction === PostConstants.ACTIONS.REPLY
+      ? dispatch(selectPostReply(null))
+      : postId !== postSelected?._id && dispatch(selectPost(null));
+  }, [dispatch, postAction, postId, postSelected]);
 
   const checkUploadCondition = useCallback(() => {
     let checkResult = true;
@@ -161,7 +188,7 @@ const PostPopup = () => {
       const optionsValue = postInfo.survey.map(({ value }) => value);
       const setValue = new Set(optionsValue);
       const postSurvey = postInfo.survey.filter(
-        (option) => !!option.value.trim()
+        (option) => !!option.value.trim(),
       );
 
       if ([...setValue].length < postSurvey.length) {
@@ -204,6 +231,7 @@ const PostPopup = () => {
         payload.files = filesId;
       }
       const socket = Socket.getInstant();
+      payload.visibility = visibility;
       if (isEditing) {
         dispatch(editPost(payload));
         addEvent({
@@ -271,7 +299,7 @@ const PostPopup = () => {
           });
         }
         const uploadPost = await dispatch(
-          createPost({ postPayload: payload, action: postAction })
+          createPost({ postPayload: payload, action: postAction }),
         ).unwrap();
         if (!!notificationPayload?.toUsers?.length) {
           notificationPayload = {
@@ -281,10 +309,11 @@ const PostPopup = () => {
           };
           socket.emit(
             Route.NOTIFICATION + NOTIFICATION_PATH.CREATE,
-            notificationPayload
+            notificationPayload,
           );
         }
       }
+      resetAndClose();
     } catch (err: any) {
       console.error("err: ", err);
       dispatch(
@@ -292,15 +321,44 @@ const PostPopup = () => {
           title: "Error",
           description: err.message,
           status: "error",
-        })
+        }),
       );
     }
   };
 
   const handleClose = () => {
-    const { media, survey, content } = postInfo;
+    let isDirty = false;
 
-    if (media.length || survey.length || content.length) {
+    if (isEditing && initialStateRef.current) {
+      const initial = initialStateRef.current;
+      const currentContent = content.trim();
+      const initialContent = initial.content.trim();
+
+      const contentChanged = currentContent !== initialContent;
+      const visChanged = visibility !== initial.visibility;
+      const mediaChanged =
+        (postInfo.media?.length || 0) !== initial.mediaCount;
+      const surveyChanged =
+        (postInfo.survey?.length || 0) !== initial.surveyCount;
+      const filesChanged =
+        (postInfo.files?.length || 0) !== initial.filesCount;
+
+      isDirty =
+        contentChanged ||
+        visChanged ||
+        mediaChanged ||
+        surveyChanged ||
+        filesChanged;
+    } else if (!isEditing) {
+      isDirty = !!(
+        content.trim().length ||
+        postInfo.media?.length ||
+        postInfo.survey?.length ||
+        postInfo.files?.length
+      );
+    }
+
+    if (isDirty) {
       setPopupCancelInfo({
         open: true,
         title: isEditing ? t("stopediting") : t("stopcreating"),
@@ -315,18 +373,12 @@ const PostPopup = () => {
         rightBtnText: t("Discard"),
         leftBtnAction: closePopupCancel,
         rightBtnAction: () => {
-          dispatch(updatePostAction(null));
-          dispatch(updatePostInfo(defaultPostInfo));
-          postAction === PostConstants.ACTIONS.REPLY
-            ? dispatch(selectPostReply(null))
-            : postId !== postSelected?._id && dispatch(selectPost(null));
+          closePopupCancel();
+          resetAndClose();
         },
       });
     } else {
-      dispatch(updatePostAction(null));
-      postAction === PostConstants.ACTIONS.REPLY
-        ? dispatch(selectPostReply(null))
-        : postId !== postSelected?._id && dispatch(selectPost(null));
+      resetAndClose();
     }
   };
 
@@ -339,7 +391,7 @@ const PostPopup = () => {
           title: "Error",
           description: t("maxforpost"),
           status: "error",
-        })
+        }),
       );
     }
   };
@@ -351,44 +403,24 @@ const PostPopup = () => {
       <Modal isOpen={true} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent
-          position="relative"
-          boxSizing="border-box"
-          width="94%"
-          maxWidth="620px"
-          bg={bgColor}
-          color={textColor}
-          padding="24px"
-          marginRight={1}
-          borderRadius="16px"
-          zIndex={3000}
+          className="post-popup__modal"
+          style={{ width: "94%", maxWidth: "620px" }}
         >
-          <div
-            style={{
-              maxHeight: "70vh",
-              overflowY: "auto",
-            }}
-          >
+          <div className="post-popup__scroll">
             {postReply?._id && postAction === PostConstants.ACTIONS.REPLY && (
-              <div style={{ marginBottom: "12px" }}>
+              <div className="post-popup__reply-wrap">
                 <PostReplied />
               </div>
             )}
-            <Text
-              position="absolute"
-              top="-36px"
-              left="50%"
-              transform="translateX(-50%)"
-              color={textColor}
-              textTransform="capitalize"
-              fontWeight={600}
-              fontSize="18px"
-            >
-              {postAction + " Bread"}
-            </Text>
-            <Flex width={"100%"} gap={4}>
-              <OptimizedAvatar src={userInfo.avatar} width="40px" height="40px" />
-              <Flex flexDir={"column"} flex={1} transition={"auto"}>
-                <Text color={textColor} fontWeight="600" m={0}>
+            <Text className="post-popup__title">{postAction + " Bread"}</Text>
+            <div className="post-popup__body">
+              <OptimizedAvatar
+                src={userInfo.avatar}
+                width="40px"
+                height="40px"
+              />
+              <div className="post-popup__author-col">
+                <Text className="post-popup__username">
                   {userInfo.username}
                 </Text>
                 <TextArea
@@ -399,24 +431,10 @@ const PostPopup = () => {
                 />
                 {!isEditing && postAction !== PostConstants.ACTIONS.REPLY && (
                   <Menu placement="bottom-start">
-                    <MenuButton
-                      as={Button}
-                      size="sm"
-                      variant="outline"
-                      borderRadius="full"
-                      width="fit-content"
-                      mb="10px"
-                      bg={btnBg}
-                      borderColor={btnBorder}
-                      _hover={{ bg: btnHoverBg }}
-                      _active={{ bg: btnHoverBg }}
-                      px={3}
-                      py={1}
-                      height="32px"
-                    >
+                    <MenuButton className="post-popup__visibility-trigger">
                       <HStack spacing={1.5} alignItems="center">
                         <SelectedIcon size={15} color={iconColor} />
-                        <Text fontSize="13px" fontWeight="600" color={textColor}>
+                        <Text className="post-popup__visibility-label">
                           {selectedVisibilityOption.label}
                         </Text>
                         <ChevronDownIcon boxSize={4} color={itemDescColor} />
@@ -424,13 +442,8 @@ const PostPopup = () => {
                     </MenuButton>
                     <Portal>
                       <MenuList
+                        className="post-popup__visibility-list"
                         zIndex={3100}
-                        bg={menuBg}
-                        borderColor={menuBorder}
-                        borderRadius="16px"
-                        shadow="xl"
-                        p={1.5}
-                        minW="290px"
                       >
                         {VISIBILITY_OPTIONS.map((option) => {
                           const OptionIcon = option.icon;
@@ -438,54 +451,30 @@ const PostPopup = () => {
                           return (
                             <MenuItem
                               key={option.value}
+                              className="post-popup__visibility-item"
                               onClick={() => setVisibility(option.value)}
-                              borderRadius="12px"
-                              py={2.5}
-                              px={3}
-                              my={0.5}
-                              bg={menuBg}
-                              _hover={{ bg: itemHoverBg }}
-                              _focus={{ bg: itemHoverBg }}
                             >
-                              <Flex
-                                width="100%"
-                                alignItems="center"
-                                justifyContent="space-between"
-                              >
+                              <div className="post-popup__visibility-row">
                                 <HStack spacing={3} alignItems="center">
-                                  <Flex
-                                    w="34px"
-                                    h="34px"
-                                    borderRadius="10px"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    bg={iconBoxBg}
-                                    color={iconColor}
-                                    flexShrink={0}
-                                  >
+                                  <div className="post-popup__visibility-icon-box">
                                     <OptionIcon size={18} />
-                                  </Flex>
+                                  </div>
                                   <VStack align="start" spacing={0}>
-                                    <Text
-                                      fontSize="14px"
-                                      fontWeight="600"
-                                      color={textColor}
-                                    >
+                                    <Text className="post-popup__visibility-option-label">
                                       {option.label}
                                     </Text>
-                                    <Text
-                                      fontSize="11px"
-                                      color={itemDescColor}
-                                      maxW="190px"
-                                    >
+                                    <Text className="post-popup__visibility-option-desc">
                                       {option.desc}
                                     </Text>
                                   </VStack>
                                 </HStack>
                                 {isSelected && (
-                                  <CheckIcon color={checkColor} boxSize={3.5} ml={2} />
+                                  <CheckIcon
+                                    className="post-popup__visibility-check"
+                                    color={checkColor}
+                                  />
                                 )}
-                              </Flex>
+                              </div>
                             </MenuItem>
                           );
                         })}
@@ -502,7 +491,7 @@ const PostPopup = () => {
                     {postInfo.survey.length !== 0 && <PostSurvey />}
                     {postSelected?._id &&
                       postAction === PostConstants.ACTIONS.REPOST && (
-                        <div style={{ margin: "12px 0" }}>
+                        <div className="post-popup__quote-wrap">
                           <Post post={postSelected} isParentPost={true} />
                         </div>
                       )}
@@ -511,27 +500,25 @@ const PostPopup = () => {
                 {postInfo.files && postInfo.files?.length !== 0 && (
                   <UploadDisplay isPost={true} />
                 )}
-              </Flex>
-            </Flex>
+              </div>
+            </div>
           </div>
-          <ModalFooter padding="0">
+          <ModalFooter className="post-popup__footer">
             {content.length >= 450 && (
               <Text
-                color={content.length > MAX_CONTENT_LENGTH ? "red" : textColor}
-                fontSize="12px"
-                mt="6px"
-                mr="16px"
+                className={`post-popup__count${
+                  content.length > MAX_CONTENT_LENGTH
+                    ? " post-popup__count--over"
+                    : ""
+                }`}
               >
                 {MAX_CONTENT_LENGTH - content.length}
               </Text>
             )}
             <Button
+              className="post-popup__submit-btn"
               isLoading={clickPost}
               loadingText={isEditing ? "Saving" : "Posting"}
-              mt="6px"
-              mr="16px"
-              color={textColor}
-              borderRadius="6px"
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();
                 if (!checkCondition) {
@@ -540,7 +527,7 @@ const PostPopup = () => {
                       title: "Error",
                       description: msg,
                       status: "error",
-                    })
+                    }),
                   );
                   return;
                 }

@@ -1,5 +1,5 @@
 import { SmallAddIcon } from "../../../../../../assests/chakraIcons";
-import { Input } from "@chakra-ui/react";
+import { Input } from "../../../../../ui/primitives";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AiOutlineFileAdd } from "react-icons/ai";

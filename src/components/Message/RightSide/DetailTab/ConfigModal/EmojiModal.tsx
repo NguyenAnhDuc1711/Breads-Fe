@@ -1,5 +1,5 @@
 import { SearchIcon } from "../../../../../assests/chakraIcons";
-import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
+import { Input, InputGroup, InputLeftElement } from "../../../../ui/primitives";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
@@ -17,6 +17,7 @@ import {
 } from "../../../../../util";
 import EmojiBox from "../../Conversation/MessageBar/Emoji/EmojiBox";
 import IconWrapper from "../../Conversation/MessageBar/IconWrapper";
+import "./EmojiModal.css";
 
 const EmojiModal = ({ setItemSelected }) => {
   const dispatch = useAppDispatch();
@@ -69,22 +70,21 @@ const EmojiModal = ({ setItemSelected }) => {
 
   return (
     <>
-      <Flex alignItems={"center"} justifyContent={"space-between"} mb={3}>
-        <InputGroup maxWidth={"160px"} height={"32px"}>
+      <div className="emoji-modal__header">
+        <InputGroup className="emoji-modal__search-group">
           <InputLeftElement pointerEvents="none" height={"32px"}>
             <SearchIcon color="gray.300" height={"16px"} width={"16px"} />
           </InputLeftElement>
           <Input
+            className="emoji-modal__search-input"
             type="text"
             placeholder="Search emoji"
-            height={"32px"}
-            fontSize={"14px"}
             value={searchEmojiValue}
             onChange={(e) => setSearchEmojiValue(e.target.value)}
           />
         </InputGroup>
         <IconWrapper icon={<IoMdClose onClick={() => setItemSelected("")} />} />
-      </Flex>
+      </div>
       <EmojiBox
         searchValue={searchEmojiValue}
         currentEmoji={getEmojiIcon(selectedConversation?.emoji)}

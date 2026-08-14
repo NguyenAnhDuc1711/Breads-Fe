@@ -1,0 +1,32 @@
+.msg-file {
+  position: relative;
+  border: 1px solid gray;
+  border-radius: 3px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.msg-file:hover {
+  opacity: 0.8;
+}
+
+.msg-file__row {
+  display: flex;
+  gap: 12px;
+}
+
+.msg-file__name {
+  font-weight: 500;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.msg-file__date {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 11px;
+}

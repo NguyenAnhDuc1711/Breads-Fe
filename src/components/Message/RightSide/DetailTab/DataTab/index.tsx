@@ -1,14 +1,11 @@
+import { Image, Text } from "../../../../ui/primitives";
 import {
-  Container,
-  Flex,
-  Image,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
-} from "@chakra-ui/react";
+} from "../../../../ui/primitives";
 import { useEffect, useState } from "react";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../Breads-Shared/Constants";
@@ -20,6 +17,7 @@ import { getCurrentTheme } from "../../../../../util/Themes";
 import FileMsg from "../../Conversation/Body/Message/Files";
 import LinkBox from "../../Conversation/Body/Message/Links";
 import ConversationTabHeader from "../tabHeader";
+import "./index.css";
 
 const TABS = {
   MEDIA: "Media",
@@ -102,7 +100,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
   };
 
   return (
-    <Container margin={0} padding={2} height={"70vh"}>
+    <div className="data-tab">
       <ConversationTabHeader
         setItemSelected={setItemSelected}
         color={textColor}
@@ -111,11 +109,8 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
         <TabList w={"full"}>
           {Object.entries(TABS).map(([_, value]) => (
             <Tab
-              flex={1}
-              borderBottom={"1.5px solid white"}
-              justifyContent={"center"}
-              pb={3}
-              cursor={"pointer"}
+              key={value}
+              className="data-tab__tab"
               onClick={() => {
                 setItemSelected(value);
               }}
@@ -127,9 +122,9 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
           ))}
         </TabList>
 
-        <TabPanels overflowY={"auto"} maxHeight={"calc(70vh - 120px)"} pr={2}>
+        <TabPanels className="data-tab__panels">
           <TabPanel p={0} mt={4}>
-            <Flex gap={2} wrap={"wrap"}>
+            <div className="data-tab__grid">
               {tabData?.map((item: any, index) => {
                 const type = item.type;
                 const url = item.url;
@@ -144,36 +139,34 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
                 } else {
                   return (
                     <Image
+                      className="data-tab__media-item"
                       key={url}
                       src={url}
-                      w={"30%"}
-                      objectFit={"cover"}
-                      cursor={"pointer"}
                       alt={`Shared media ${index + 1}`}
                       onClick={() => handleSeeMedia(index)}
                     />
                   );
                 }
               })}
-            </Flex>
+            </div>
           </TabPanel>
           <TabPanel p={0} mt={4}>
-            <Flex gap={2} wrap={"wrap"}>
-              {tabData?.map((item) => (
-                <FileMsg file={item} inMsgTab={true} />
+            <div className="data-tab__grid">
+              {tabData?.map((item, index) => (
+                <FileMsg key={index} file={item} inMsgTab={true} />
               ))}
-            </Flex>
+            </div>
           </TabPanel>
           <TabPanel p={0} mt={4}>
-            <Flex gap={2} wrap={"wrap"}>
-              {tabData?.map((item) => (
-                <LinkBox link={item} color={textColor} />
+            <div className="data-tab__grid">
+              {tabData?.map((item, index) => (
+                <LinkBox key={index} link={item} color={textColor} />
               ))}
-            </Flex>
+            </div>
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </Container>
+    </div>
   );
 };
 

@@ -1,20 +1,19 @@
-import { Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react";
+import { Skeleton, SkeletonCircle } from "../../../../../ui/primitives";
+import "./skeleton.css";
 
 const MessagesSkeleton = () => {
   return [...Array(5)].map((_, i) => (
-    <Flex
+    <div
       key={i}
-      gap={2}
-      alignItems={"center"}
-      p={1}
-      borderRadius={"md"}
-      alignSelf={i % 2 === 0 ? "flex-start" : "flex-end"}
+      className={`message-skeleton${
+        i % 2 === 0 ? " message-skeleton--start" : " message-skeleton--end"
+      }`}
     >
       {i % 2 === 0 && <SkeletonCircle size={7} />}
-      <Flex flexDir={"column"} gap={2}>
+      <div className="message-skeleton__bubble-col">
         <Skeleton h={"32px"} w={"240px"} />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   ));
 };
 

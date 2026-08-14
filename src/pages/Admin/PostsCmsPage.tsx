@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Container, Flex, Image, Box, Text } from "@chakra-ui/react";
+import { Button, Image, Text } from "../../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { IPost } from "../../store/PostSlice";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
+import "./PostsCmsPage.css";
 
 const PostsCmsPage = () => {
   const dispatch = useAppDispatch();
@@ -141,16 +142,17 @@ const PostsCmsPage = () => {
 
   return (
     <div className="container-fluid mt-2">
-      <Flex justifyContent={"space-between"} my={2}>
+      <div className="posts-cms-page__header">
         <h2>Posts CMS</h2>
         <Button
+          className="btn-subtle"
           onClick={() => {
             router.push(`/${PageConstants.ADMIN.POSTS_VALIDATION}`);
           }}
         >
           Validation
         </Button>
-      </Flex>
+      </div>
 
       {/* Search bar */}
       <div className="mb-3">
@@ -167,7 +169,7 @@ const PostsCmsPage = () => {
       </div>
 
       {/* Table container with responsive scrolling */}
-      <Box overflowX="auto" maxHeight="70vh" overflowY="auto">
+      <div className="posts-cms-page__table-wrap">
         <table className="table table-striped table-bordered table-responsive">
           <thead
             className="thead-dark"
@@ -208,14 +210,7 @@ const PostsCmsPage = () => {
                   </td>
                   <td style={{ minWidth: "100px", width: "12%" }}>
                     {row.media.length > 0 && (
-                      <Container
-                        p={0}
-                        style={{
-                          position: "relative",
-                          width: "100%",
-                          cursor: "pointer",
-                        }}
-                      >
+                      <div className="posts-cms-page__media-cell">
                         {row.media?.[0]?.type === Constants.MEDIA_TYPE.VIDEO ? (
                           <video
                             src={row.media?.[0]?.url}
@@ -237,9 +232,6 @@ const PostsCmsPage = () => {
                             maxHeight={"80px"}
                             cursor={"pointer"}
                             alt="Post media preview"
-                            _hover={{
-                              opacity: 0.7,
-                            }}
                             onClick={(e) => {
                               handleSeeMedia(row.media, 0);
                               e.stopPropagation();
@@ -265,18 +257,18 @@ const PostsCmsPage = () => {
                             + {row.media.length - 1}
                           </div>
                         )}
-                      </Container>
+                      </div>
                     )}
                   </td>
                   <td style={{ minWidth: "150px", maxWidth: "15%" }}>
-                    <Flex flexDir={"column"} gap={1}>
+                    <div className="posts-cms-page__files-cell">
                       {row.files.map((file, index) => (
                         <FileMsg
                           key={`row-${row._id}-file-${index}`}
                           file={file}
                         />
                       ))}
-                    </Flex>
+                    </div>
                   </td>
                   <td style={{ minWidth: "150px", width: "15%" }}>
                     <Survey post={row} />
@@ -325,7 +317,7 @@ const PostsCmsPage = () => {
             )}
           </tbody>
         </table>
-      </Box>
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (

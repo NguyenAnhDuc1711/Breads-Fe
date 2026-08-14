@@ -1,5 +1,5 @@
-import { Flex, Text } from "@chakra-ui/react";
 import PageConstant from "../../../../Breads-Shared/Constants/PageConstants";
+import "./index.css";
 
 export const overviewTabs = [
   {
@@ -18,11 +18,11 @@ export const overviewTabs = [
 
 const LeftSideBarOverview = () => {
   return (
-    <Flex flexDir={"column"} width={"240px"} height={"100vh"} p={4}>
+    <div className="admin-overview-sidebar">
       {/* {overviewTabs.map(({ name }) => (
         <Text key={name}>{name}</Text>
       ))} */}
-    </Flex>
+    </div>
   );
 };
 

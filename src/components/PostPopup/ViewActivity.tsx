@@ -1,18 +1,13 @@
 // ViewActivity.jsx
+import { Avatar, Divider, Text } from "../ui/primitives";
 import {
-  Avatar,
-  Box,
-  Container,
-  Divider,
-  Flex,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
-} from "@chakra-ui/react";
+} from "../ui/primitives";
 import { useEffect } from "react";
 import { BsChatRightQuote } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
@@ -20,6 +15,7 @@ import { TbMessageReply } from "react-icons/tb";
 import { addEvent } from "../../util";
 import { IPost } from "../../store/PostSlice";
 import { useTranslation } from "react-i18next";
+import "./ViewActivity.css";
 
 const ViewActivity = ({
   post,
@@ -63,69 +59,53 @@ const ViewActivity = ({
     <Modal isOpen={isOpen} onClose={() => onClose()}>
       <ModalOverlay />
       <ModalContent
-        position={"relative"}
-        boxSizing="border-box"
-        width="500px"
-        maxWidth={"620px"}
-        bg={"white"}
-        color={"gray"}
-        pr={1}
-        borderRadius={"16px"}
+        className="view-activity-modal"
+        style={{ width: "500px", maxWidth: "620px" }}
         id="modal"
       >
-        <Box p={1}></Box>
-        <ModalHeader textAlign={"center"} py={3}>
+        <div className="view-activity-modal__spacer"></div>
+        <ModalHeader className="view-activity-modal__header">
           {t("viewActTitle")}
         </ModalHeader>
 
         <ModalBody>
-          <Flex
-            border="1px solid #999"
-            borderRadius="8px"
-            p={4}
-            m={2}
-            mb={6}
-            bg="gray.50"
-            boxShadow="md"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+          <div className="view-activity-modal__summary">
             <Avatar
               src={post.authorInfo?.avatar}
               width={"40px"}
               height={"40px"}
             />
-            <Container margin="0" paddingRight={0}>
-              <Text color="black" fontWeight={"600"} m={0}>
+            <div className="view-activity-modal__summary-body">
+              <Text className="view-activity-modal__summary-username">
                 {post.authorInfo?.username}
               </Text>
-              <Text m={0}>{post.content}</Text>
-            </Container>
-          </Flex>
-          <Box>
+              <Text className="view-activity-modal__summary-content">
+                {post.content}
+              </Text>
+            </div>
+          </div>
+          <div>
             {actionsArray.map((item, index) => (
-              <Box key={index} m={1}>
-                <Flex justifyContent={"space-between"} alignItems="center">
-                  <Box display="flex" alignItems="center" borderRadius="8px">
-                    <Flex alignItems="center" px={2}>
+              <div className="view-activity-modal__stat-row-wrap" key={index}>
+                <div className="view-activity-modal__stat-row">
+                  <div className="view-activity-modal__stat-label-box">
+                    <div className="view-activity-modal__stat-label">
                       <item.action
                         style={{ marginRight: "8px", padding: "0" }}
                       />
-                      <Text fontWeight="semibold" fontSize="lg" m={0}>
+                      <p className="view-activity-modal__stat-name">
                         {item.name}
-                      </Text>
-                    </Flex>
-                  </Box>
-                  <Text alignItems="center" px={3} m={0}>
-                    {item.num}
-                  </Text>
-                </Flex>
-                <Box pl={"30px"}>
+                      </p>
+                    </div>
+                  </div>
+                  <p className="view-activity-modal__stat-num">{item.num}</p>
+                </div>
+                <div className="view-activity-modal__divider-wrap">
                   <Divider borderColor="gray.300" />
-                </Box>
-              </Box>
+                </div>
+              </div>
             ))}
-          </Box>
+          </div>
         </ModalBody>
         <ModalFooter></ModalFooter>
       </ModalContent>

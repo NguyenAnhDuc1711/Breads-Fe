@@ -1,16 +1,17 @@
-import { Box, Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react";
+import { Skeleton, SkeletonCircle } from "../../../../ui/primitives";
+import "./skeleton.css";
 
 const ConversationSkeleton = () => {
   return (
-    <Flex gap={4} alignItems={"center"} p={"1"} borderRadius={"md"}>
-      <Box>
+    <div className="conversation-bar-skeleton">
+      <div>
         <SkeletonCircle size={"10"} />
-      </Box>
-      <Flex w={"full"} flexDirection={"column"} gap={3}>
+      </div>
+      <div className="conversation-bar-skeleton__text-col">
         <Skeleton h={"10px"} w={"80px"} />
         <Skeleton h={"8px"} w={"90%"} />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

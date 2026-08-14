@@ -1,4 +1,4 @@
-import { Container, Flex, Input } from "@chakra-ui/react";
+import { Input } from "../../../../ui/primitives";
 import { useEffect, useState } from "react";
 import { EmptyContentSvg } from "../../../../../assests/icons";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
@@ -11,6 +11,7 @@ import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import ConversationTabHeader from "../tabHeader";
 import MessageSearchItem from "./msgSearch";
+import "./index.css";
 
 const ConversationSearchTab = ({
   setItemSelected,
@@ -61,20 +62,20 @@ const ConversationSearchTab = ({
   };
 
   return (
-    <Container margin={0} padding={2} height={"70vh"} overflowY={"auto"}>
+    <div className="search-tab">
       <ConversationTabHeader
         setItemSelected={setItemSelected}
         color={textColor}
       />
-      <Flex alignItems={"center"} gap={4} flexDir={"column"} px={2}>
+      <div className="search-tab__form">
         <Input
           placeholder="Search a message"
-          border={borderColor ? `1px solid ${borderColor}` : ""}
+          style={{ border: borderColor ? `1px solid ${borderColor}` : undefined }}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
         {data?.length > 0 ? (
-          <Flex flexDir={"column"} gap={2} width={"100%"} overflowY={"hidden"}>
+          <div className="search-tab__results">
             <InfiniteScroll
               queryFc={(page) => {
                 handleSearch({ page: page });
@@ -84,12 +85,12 @@ const ConversationSearchTab = ({
               condition={!!debounceValue.trim()}
               reloadPageDeps={[debounceValue]}
             />
-          </Flex>
+          </div>
         ) : (
           <EmptyContentSvg />
         )}
-      </Flex>
-    </Container>
+      </div>
+    </div>
   );
 };
 

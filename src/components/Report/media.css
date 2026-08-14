@@ -1,0 +1,30 @@
+.report-media {
+  display: flex;
+  gap: 8px;
+}
+
+.report-media__item {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  max-height: 150px;
+  max-width: 150px;
+}
+
+.report-media__image {
+  max-height: 150px;
+  max-width: 150px;
+}
+
+.report-media__remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+}
+
+.report-media__video {
+  max-height: 150px;
+}

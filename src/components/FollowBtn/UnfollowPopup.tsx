@@ -1,15 +1,14 @@
+import { Avatar, Button, Flex } from "../ui/primitives";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Avatar,
-  Button,
-  Flex,
-} from "@chakra-ui/react";
+} from "../ui/primitives";
 import { useRef } from "react";
 import { IUserShortInfo } from "../../store/PostSlice";
+import "./UnfollowPopup.css";
 
 const UnFollowPopup = ({
   user,
@@ -31,51 +30,28 @@ const UnFollowPopup = ({
       leastDestructiveRef={cancelRef}
     >
       <AlertDialogOverlay>
-        <AlertDialogContent
-          width={"fit-content"}
-          height={"fit-content"}
-          borderRadius={"12px"}
-          overflow={"hidden"}
-        >
+        <AlertDialogContent className="unfollow-dialog">
           <Flex
+            className="unfollow-dialog__body"
             flexDirection={"column"}
             alignItems={"center"}
-            padding="28px"
-            width={"280px"}
           >
             <Avatar src={user?.avatar} />
-            <AlertDialogHeader
-              fontWeight="semibold"
-              fontSize={"16px"}
-              marginTop={"12px"}
-              padding={"4px"}
-              flexWrap={"wrap"}
-              textAlign={"center"}
-            >
+            <AlertDialogHeader className="unfollow-dialog__title">
               Unfollow {user?.name} ?
             </AlertDialogHeader>
           </Flex>
-          <AlertDialogFooter
-            width={"100%"}
-            padding={0}
-            borderTop={"1px solid gray"}
-          >
+          <AlertDialogFooter className="unfollow-dialog__footer">
             <Button
               ref={cancelRef}
               onClick={() => onClose()}
-              width={"50%"}
-              borderRadius={0}
-              bg={"transparent"}
-              borderRight={"1px solid gray"}
+              className="unfollow-dialog__btn unfollow-dialog__btn--cancel"
             >
               Cancel
             </Button>
             <Button
-              bg={"transparent"}
-              color="red"
               onClick={() => onClick()}
-              width={"50%"}
-              borderRadius={0}
+              className="unfollow-dialog__btn unfollow-dialog__btn--danger"
             >
               Unfollow
             </Button>

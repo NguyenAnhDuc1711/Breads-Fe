@@ -1,7 +1,7 @@
 "use client";
 
 import { CloseIcon } from "../../assests/chakraIcons";
-import { Button, Flex } from "@chakra-ui/react";
+import { Button } from "../ui/primitives";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { IPost, selectPost, updatePostInfo } from "../../store/PostSlice";
 import { updateSeeMedia } from "../../store/UtilSlice";
+import "./mediaDisplay.css";
 
 const MediaDisplay = ({
   post,
@@ -106,21 +107,21 @@ const MediaDisplay = ({
 
   return (
     mediaDisplay?.length > 0 && (
-      <Flex
-        gap="10px"
-        mt="10px"
-        zIndex={1}
-        // bg={"red"}
-        // bg={colorMode === "dark" ? "#181818" : "#fafafa"}
-        wrap={mediaDisplay?.length <= 2 ? "wrap" : "nowrap"}
-        justifyContent="flex-start"
-        maxWidth="100%"
-        borderRadius="8px"
-        overflowX={mediaDisplay?.length > 2 ? "auto" : "hidden"}
-        padding="6px 0"
+      <div
+        className={`no-scrollbar post-media ${
+          mediaDisplay?.length <= 2 ? "post-media--wrap" : "post-media--nowrap"
+        } ${
+          mediaDisplay?.length > 2
+            ? "post-media--scroll"
+            : "post-media--hidden-x"
+        } ${
+          isDragging.current || momentum
+            ? "post-media--grabbing"
+            : "post-media--grab"
+        }`}
         onClick={() => {
-          const { REPOST, CREATE, REPLY } = PostConstants.ACTIONS;
-          if (![REPOST, CREATE, REPLY].includes(postAction) && !isDetail) {
+          const { REPOST, CREATE, REPLY, EDIT } = PostConstants.ACTIONS;
+          if (![REPOST, CREATE, REPLY, EDIT].includes(postAction) && !isDetail) {
             handleSeeDetail();
           }
         }}
@@ -129,36 +130,14 @@ const MediaDisplay = ({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
-        css={{
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
-          "&": {
-            msOverflowStyle: "none",
-            scrollbarWidth: "none",
-          },
-          cursor: isDragging.current || momentum ? "grabbing" : "grab",
-        }}
       >
         {mediaDisplay.map((media, index) => (
-          <Flex
-            key={index}
-            position="relative"
-            flexShrink={0}
-            gap="10px"
-            objectFit={mediaDisplay?.length === 1 ? "contain" : "cover"}
-          >
+          <div className="post-media__item" key={index}>
             {media.type === Constants.MEDIA_TYPE.VIDEO ? (
               <video
+                className="post-media__video"
                 src={media.url}
                 controls
-                style={{
-                  width: "auto",
-                  height: "250px",
-                  maxHeight: "300px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
                 onClick={() => {
                   if (!postAction) {
                     handleSeeFullMedia(mediaDisplay, index);
@@ -167,19 +146,13 @@ const MediaDisplay = ({
               />
             ) : (
               <NextImage
+                className="post-media__image"
                 src={media.url}
                 alt={`Post Media ${index}`}
                 width={350}
                 height={250}
                 priority={isFirst && index === 0}
                 loading={isFirst && index === 0 ? undefined : "lazy"}
-                style={{
-                  width: "auto",
-                  height: "250px",
-                  maxHeight: "300px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
                 onDragStart={(e) => e.preventDefault()}
                 onClick={(e) => {
                   if (!postAction) {
@@ -191,24 +164,19 @@ const MediaDisplay = ({
               />
             )}
 
-            {postAction === PostConstants.ACTIONS.CREATE && (
+            {(postAction === PostConstants.ACTIONS.CREATE ||
+              postAction === PostConstants.ACTIONS.EDIT) && (
               <Button
+                className="post-media__remove-btn"
                 onClick={() => handleRemoveMedia(index)}
                 size="sm"
-                position="absolute"
-                top="4px"
-                right="4px"
-                borderRadius="full"
-                color="white"
-                padding="4px"
-                zIndex={1}
               >
                 <CloseIcon boxSize="10px" />
               </Button>
             )}
-          </Flex>
+          </div>
         ))}
-      </Flex>
+      </div>
     )
   );
 };

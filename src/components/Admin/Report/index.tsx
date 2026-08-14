@@ -1,11 +1,5 @@
-import {
-  Button,
-  Container,
-  Fade,
-  Flex,
-  Text,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Button, Text } from "../../ui/primitives";
+import { Fade } from "../../ui/primitives";
 import MDEditor from "@uiw/react-md-editor";
 import * as marked from "marked";
 import { useState } from "react";
@@ -15,6 +9,7 @@ import { useAppSelector } from "../../../hooks/redux";
 import { AppState } from "../../../store";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import UserBox from "../../UserFollowBox/UserBox";
+import "./index.css";
 
 const ReportBox = ({
   report,
@@ -23,7 +18,6 @@ const ReportBox = ({
   reports,
   setReports,
 }) => {
-  const { colorMode } = useColorMode();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { content, media, userReport } = report;
   const [res, setRes] = useState("");
@@ -65,19 +59,12 @@ const ReportBox = ({
 
   const reportContainer = () => {
     return (
-      <Container
-        height={"fit-content"}
-        m={0}
-        p={4}
-        width={"30vw"}
-        border={`1px solid ${colorMode === "dark" ? "#ffffff" : "#202020"}`}
-        borderRadius={8}
-      >
+      <div className="admin-report__panel">
         <UserBox user={userReport} inFollowBox={true} />
-        <Text mt={2}>{content}</Text>
+        <Text className="admin-report__content">{content}</Text>
         {!!media && media?.length > 0 && <MediaDisplay media={media} />}
-        <Flex gap={3} mt={2}>
-          <Button flex={1} onClick={() => handleReject()}>
+        <div className="admin-report__actions">
+          <Button className="btn-subtle" flex={1} onClick={() => handleReject()}>
             Reject
           </Button>
           <Button
@@ -87,18 +74,18 @@ const ReportBox = ({
           >
             Response
           </Button>
-        </Flex>
-      </Container>
+        </div>
+      </div>
     );
   };
 
   return (
-    <Flex gap={6}>
+    <div className="admin-report">
       {selectedReport?._id === report?._id ? (
         <>
           {reportContainer()}
           <Fade in={true}>
-            <Container m={0} p={0} height={"fit-content"}>
+            <div className="admin-report__editor-wrap">
               <MDEditor
                 value={res}
                 onChange={(value) => setRes(value as string)}
@@ -113,21 +100,21 @@ const ReportBox = ({
                   disallowedElements: ["style"],
                 }}
               />
-              <Flex gap={3} mt={2} py={2}>
-                <Button flex={1} onClick={() => setSelectedReport(null)}>
+              <div className="admin-report__actions admin-report__actions--reply">
+                <Button className="btn-subtle" flex={1} onClick={() => setSelectedReport(null)}>
                   Close
                 </Button>
                 <Button flex={1} bg={"green"} onClick={() => handleSendMail()}>
                   Send mail
                 </Button>
-              </Flex>
-            </Container>
+              </div>
+            </div>
           </Fade>
         </>
       ) : (
         <>{reportContainer()}</>
       )}
-    </Flex>
+    </div>
   );
 };
 

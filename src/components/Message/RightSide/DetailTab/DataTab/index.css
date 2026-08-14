@@ -1,0 +1,29 @@
+.data-tab {
+  margin: 0;
+  padding: 8px;
+  height: 70vh;
+}
+
+.data-tab__tab {
+  flex: 1;
+  justify-content: center;
+  padding-bottom: 12px;
+}
+
+.data-tab__panels {
+  overflow-y: auto;
+  max-height: calc(70vh - 120px);
+  padding-right: 8px;
+}
+
+.data-tab__grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.data-tab__media-item {
+  width: 30%;
+  object-fit: cover;
+  cursor: pointer;
+}

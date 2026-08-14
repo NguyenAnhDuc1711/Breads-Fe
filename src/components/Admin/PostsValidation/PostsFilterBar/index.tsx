@@ -1,11 +1,5 @@
-import {
-  Button,
-  Checkbox,
-  Container,
-  Flex,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Stack, Text } from "../../../ui/primitives";
+import { Checkbox } from "../../../ui/primitives";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, USER_PATH } from "../../../../Breads-Shared/APIConfig";
@@ -18,6 +12,7 @@ import SearchBar from "../../../SearchBar";
 import UserBox from "../../../UserFollowBox/UserBox";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
+import "./index.css";
 
 export const filterPostWidth = 360;
 
@@ -168,63 +163,28 @@ const PostsFilterBar = () => {
   };
 
   return (
-    <Flex
-      width={`${filterPostWidth}px`}
-      borderX={"1px solid gray"}
-      flexDir={"column"}
-      pos={"fixed"}
-      height={"100vh"}
-    >
-      <Container borderBottom={"1px solid gray"}>
-        <Text m={3} fontSize={26} fontWeight={600}>
-          Filter
-        </Text>
-      </Container>
-      <Flex p={2} flexDir={"column"}>
-        <Container>
-          <Text my={2} fontSize={18} fontWeight={600}>
-            Users
-          </Text>
-          <Container
-            width={"100%"}
-            height={"40px"}
-            m={0}
-            p={0}
-            pos={"relative"}
-            zIndex={20000}
-          >
+    <div className="posts-filter-bar" style={{ width: `${filterPostWidth}px` }}>
+      <div className="posts-filter-bar__header">
+        <Text className="posts-filter-bar__title">Filter</Text>
+      </div>
+      <div className="posts-filter-bar__section">
+        <div>
+          <Text className="posts-filter-bar__section-title">Users</Text>
+          <div className="posts-filter-bar__search-wrap">
             <SearchBar
               value={userSearch}
               setValue={setUserSearch}
               placeholder={"Search an user"}
             />
             {suggestUserBox.open && suggestUserBox.users.length > 0 && (
-              <Flex
-                flexDir={"column"}
-                p={2}
-                mt={1}
-                border={"1px solid gray"}
-                borderRadius={4}
-                pos={"absolute"}
-                width={"calc(100% - 48px)"}
-                maxH={"200px"}
-                overflowY={"scroll"}
-                zIndex={1000}
-                bg="black"
-              >
+              <div className="posts-filter-bar__suggestions">
                 <InfiniteScroll
                   queryFc={(page) => {
                     handleSearchUsers({ page });
                   }}
                   data={suggestUserBox.users}
                   cpnFc={(user) => (
-                    <Container
-                      m={0}
-                      p={0}
-                      bg={"black"}
-                      width={"100%"}
-                      height={"fit-content"}
-                    >
+                    <div className="posts-filter-bar__suggestion-item">
                       <UserBox
                         user={user}
                         isTagBox={true}
@@ -232,20 +192,20 @@ const PostsFilterBar = () => {
                           selectUser(user);
                         }}
                       />
-                    </Container>
+                    </div>
                   )}
                   condition={!!userInfo._id}
                   deps={[userSearch]}
                   preloadIndex={2}
                 />
-              </Flex>
+              </div>
             )}
-          </Container>
-        </Container>
-      </Flex>
-      <Flex p={2} flexDir={"column"}>
-        <Container>
-          <Text my={2} fontSize={18} fontWeight={600}>
+          </div>
+        </div>
+      </div>
+      <div className="posts-filter-bar__section">
+        <div>
+          <Text className="posts-filter-bar__section-title">
             Post content includes:{" "}
           </Text>
           <Stack spacing={3} direction={"column"}>
@@ -263,12 +223,12 @@ const PostsFilterBar = () => {
               </Checkbox>
             ))}
           </Stack>
-        </Container>
-      </Flex>
-      <Flex p={2} flexDir={"column"}>
-        <Container>
-          <Text my={2} fontSize={18} fontWeight={600}>
-            Post's type:{" "}
+        </div>
+      </div>
+      <div className="posts-filter-bar__section">
+        <div>
+          <Text className="posts-filter-bar__section-title">
+            Post&apos;s type:{" "}
           </Text>
           <Stack spacing={3} direction={"column"}>
             {postType.map((type) => (
@@ -285,14 +245,17 @@ const PostsFilterBar = () => {
               </Checkbox>
             ))}
           </Stack>
-        </Container>
-      </Flex>
+        </div>
+      </div>
       {compareChange && (
-        <Button mx={6} my={4} onClick={() => handleFilter()}>
+        <Button
+          className="posts-filter-bar__submit-btn btn-subtle"
+          onClick={() => handleFilter()}
+        >
           Filter
         </Button>
       )}
-    </Flex>
+    </div>
   );
 };
 

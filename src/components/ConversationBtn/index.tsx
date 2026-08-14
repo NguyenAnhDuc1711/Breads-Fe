@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button } from "../ui/primitives";
 import { useRouter } from "next/navigation";
 import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
@@ -9,6 +9,7 @@ import { selectConversation } from "../../store/MessageSlice";
 import { IUser } from "../../store/UserSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { openLoginPopupAction } from "../../store/UtilSlice";
+import "./index.css";
 
 const ConversationBtn = ({ user }: { user: IUser }) => {
   const dispatch = useAppDispatch();
@@ -38,7 +39,11 @@ const ConversationBtn = ({ user }: { user: IUser }) => {
   };
 
   return (
-    <Button size={"md"} flex={1} onClick={() => handleClickChat()}>
+    <Button
+      className="conversation-btn btn-subtle"
+      size={"md"}
+      onClick={() => handleClickChat()}
+    >
       Chat
     </Button>
   );

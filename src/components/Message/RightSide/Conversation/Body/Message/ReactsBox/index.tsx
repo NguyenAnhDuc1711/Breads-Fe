@@ -1,6 +1,6 @@
 import { CloseIcon } from "../../../../../../../assests/chakraIcons";
+import { Text } from "../../../../../../ui/primitives";
 import {
-  Flex,
   Modal,
   ModalBody,
   ModalContent,
@@ -11,13 +11,12 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+} from "../../../../../../ui/primitives";
 import { useState } from "react";
 import { getEmojiIcon } from "../../../../../../../util";
 import IconWrapper from "../../../MessageBar/IconWrapper";
 import UserReactItem from "./UserReactItem";
+import "./index.css";
 
 const MessageReactsBox = ({
   reacts,
@@ -80,40 +79,25 @@ const MessageReactsBox = ({
 
   return (
     <>
-      <Flex
-        borderRadius={12}
-        bg="lightgray"
-        px={"6px"}
-        gap={"2px"}
-        onClick={() => setOpenDetailBox(true)}
-        cursor={"pointer"}
-        _hover={{
-          bg: "#ebebeb",
-        }}
-      >
-        <Flex>
+      <div className="reacts-summary" onClick={() => setOpenDetailBox(true)}>
+        <div className="reacts-summary__icons">
           {setEmoji?.map((react) => (
             <div key={`react-${react}`}>
               <Text fontSize={"12px"}>{getEmojiIcon(react)}</Text>
             </div>
           ))}
-        </Flex>
+        </div>
         <Text fontSize={"12px"} fontWeight={600} color={"black"}>
           {reacts?.length}
         </Text>
-      </Flex>
+      </div>
       <Modal isOpen={openDetailBox} onClose={() => setOpenDetailBox(false)}>
         <ModalOverlay />
-        <ModalContent bg={useColorModeValue("gray.200", "#181818")}>
-          <ModalHeader borderBottom={"1px solid gray"} pos={"relative"}>
-            <Flex alignItems={"center"} justifyContent={"center"}>
+        <ModalContent className="reacts-detail-modal">
+          <ModalHeader className="reacts-detail-modal__header">
+            <div className="reacts-detail-modal__header-row">
               <Text>Message reactions</Text>
-              <div
-                style={{
-                  position: "absolute",
-                  right: "20px",
-                }}
-              >
+              <div className="reacts-detail-modal__close-wrap">
                 <IconWrapper
                   icon={
                     <CloseIcon
@@ -125,7 +109,7 @@ const MessageReactsBox = ({
                   }
                 />
               </div>
-            </Flex>
+            </div>
           </ModalHeader>
           <ModalBody maxHeight={"520px"} overflowY={"auto"}>
             <Tabs>

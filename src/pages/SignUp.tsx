@@ -1,23 +1,18 @@
 "use client";
 
-import { ViewIcon, ViewOffIcon } from "../assests/chakraIcons";
 import {
-  Box,
   Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
-  HStack,
   Input,
   InputGroup,
   InputRightElement,
-  Link,
-  Stack,
   Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+} from "../components/ui/primitives";
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+} from "../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,6 +21,7 @@ import CodePopup from "../components/CodePopup";
 import { useAppDispatch } from "../hooks/redux";
 import { signUp, validateEmailByCode } from "../store/UserSlice/asyncThunk";
 import { showToast } from "../store/UtilSlice";
+import "./SignUp.css";
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -96,7 +92,7 @@ const Signup = () => {
               title: "Error",
               description: t("usernameexsists"),
               status: "error",
-            })
+            }),
           );
         }
         if (errorType === "EMAIL_EXISTS") {
@@ -105,7 +101,7 @@ const Signup = () => {
               title: "Error",
               description: t("emailexsists"),
               status: "error",
-            })
+            }),
           );
         }
       }
@@ -116,7 +112,7 @@ const Signup = () => {
           title: "Error",
           description: error.message || t("signupfail"),
           status: "error",
-        })
+        }),
       );
     } finally {
       setIsLoading(false);
@@ -129,7 +125,7 @@ const Signup = () => {
         validateEmailByCode({
           email: inputs.email,
           code,
-        })
+        }),
       );
       if (result?.meta?.requestStatus === "fulfilled") {
         dispatch(
@@ -137,7 +133,7 @@ const Signup = () => {
             title: "Success",
             description: t("signupsuccess"),
             status: "success",
-          })
+          }),
         );
         setTimeout(() => {
           // Fix #1: Route to /login not /auth/login
@@ -151,7 +147,7 @@ const Signup = () => {
               title: "Error",
               description: error,
               status: "error",
-            })
+            }),
           );
         }
         if (errorType === "EXPIRED_CODE") {
@@ -160,7 +156,7 @@ const Signup = () => {
               title: "Error",
               description: error,
               status: "error",
-            })
+            }),
           );
         }
       }
@@ -169,7 +165,10 @@ const Signup = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, nextField?: React.RefObject<HTMLInputElement>) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent,
+    nextField?: React.RefObject<HTMLInputElement>,
+  ) => {
     if (e.key === "Enter") {
       e.preventDefault();
       nextField?.current?.focus();
@@ -224,26 +223,27 @@ const Signup = () => {
   };
 
   return (
-    <Flex align={"center"} justify={"center"} height="100vh">
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-        <Stack align={"center"}>
-          <Heading fontSize={"4xl"} textAlign={"center"}>
-            {t("SignUp")}
-          </Heading>
-        </Stack>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.dark")}
-          boxShadow={"lg"}
-          p={8}
-        >
-          <Stack spacing={4}>
-            <HStack spacing={4}>
-              <Box flex="1">
+    <div className="signup-page">
+      <div className="signup-page__container">
+        <div className="signup-page__card">
+          <div className="signup-page__header">
+            <Heading className="signup-page__heading">{t("SignUp")}</Heading>
+            <Text className="signup-page__subtitle">
+              Join Breads — share your thoughts
+            </Text>
+          </div>
+
+          <div className="signup-page__form-stack">
+            <div className="signup-page__name-row">
+              <div className="signup-page__name-field">
                 <FormControl isRequired isInvalid={!!errors.name}>
-                  <FormLabel>{t("fullName")}</FormLabel>
+                  <FormLabel className="signup-page__label">
+                    {t("fullName")}
+                  </FormLabel>
                   <Input
+                    className="signup-page__input"
                     type="text"
+                    placeholder="John Doe"
                     onChange={(e) =>
                       setInputs({ ...inputs, name: e.target.value })
                     }
@@ -251,15 +251,21 @@ const Signup = () => {
                     onKeyDown={(e) => handleKeyDown(e, usernameRef)}
                     onBlur={() => handleBlur("name")}
                   />
-                  <FormErrorMessage>{errors.name}</FormErrorMessage>
+                  <FormErrorMessage className="signup-page__error-msg">
+                    {errors.name}
+                  </FormErrorMessage>
                 </FormControl>
-              </Box>
-              <Box flex="1">
+              </div>
+              <div className="signup-page__name-field">
                 <FormControl isRequired isInvalid={!!errors.username}>
-                  <FormLabel>{t("loginName")}</FormLabel>
+                  <FormLabel className="signup-page__label">
+                    {t("loginName")}
+                  </FormLabel>
                   <Input
                     ref={usernameRef}
+                    className="signup-page__input"
                     type="text"
+                    placeholder="@username"
                     onChange={(e) =>
                       setInputs({ ...inputs, username: e.target.value })
                     }
@@ -267,15 +273,20 @@ const Signup = () => {
                     onKeyDown={(e) => handleKeyDown(e, emailRef)}
                     onBlur={() => handleBlur("username")}
                   />
-                  <FormErrorMessage>{errors.username}</FormErrorMessage>
+                  <FormErrorMessage className="signup-page__error-msg">
+                    {errors.username}
+                  </FormErrorMessage>
                 </FormControl>
-              </Box>
-            </HStack>
+              </div>
+            </div>
+
             <FormControl id="email" isRequired isInvalid={!!errors.email}>
-              <FormLabel>{t("email")}</FormLabel>
+              <FormLabel className="signup-page__label">{t("email")}</FormLabel>
               <Input
                 ref={emailRef}
+                className="signup-page__input"
                 type="email"
+                placeholder="name@example.com"
                 onChange={(e) =>
                   setInputs({ ...inputs, email: e.target.value })
                 }
@@ -283,14 +294,21 @@ const Signup = () => {
                 onKeyDown={(e) => handleKeyDown(e, passwordRef)}
                 onBlur={() => handleBlur("email")}
               />
-              <FormErrorMessage>{errors.email}</FormErrorMessage>
+              <FormErrorMessage className="signup-page__error-msg">
+                {errors.email}
+              </FormErrorMessage>
             </FormControl>
+
             <FormControl id="password" isRequired isInvalid={!!errors.password}>
-              <FormLabel>{t("password")}</FormLabel>
+              <FormLabel className="signup-page__label">
+                {t("password")}
+              </FormLabel>
               <InputGroup>
                 <Input
                   ref={passwordRef}
+                  className="signup-page__input"
                   type={showPassword ? "text" : "password"}
+                  placeholder="Min. 6 characters"
                   onChange={handlePasswordChange}
                   value={inputs.password}
                   onKeyDown={(e) => handleKeyDown(e)}
@@ -299,43 +317,75 @@ const Signup = () => {
                 <InputRightElement h={"full"}>
                   <Button
                     variant={"ghost"}
+                    className="signup-page__eye-btn"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    {showPassword ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
+                    )}
                   </Button>
                 </InputRightElement>
               </InputGroup>
-              <FormErrorMessage>{errors.password}</FormErrorMessage>
+              <FormErrorMessage className="signup-page__error-msg">
+                {errors.password}
+              </FormErrorMessage>
             </FormControl>
-            <Stack spacing={10} pt={2}>
-              {/* Fix #7: isLoading prop wired up so loadingText actually shows */}
+
+            <div className="signup-page__submit-stack">
               <Button
+                className="signup-page__submit-btn"
                 isLoading={isLoading}
-                loadingText="Submitting"
+                loadingText="Creating account..."
                 size="lg"
-                bg={useColorModeValue("gray.600", "gray.700")}
-                color={"white"}
-                _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
                 onClick={() => handleSignup()}
               >
                 {t("SignUp")}
               </Button>
-            </Stack>
-            <Stack pt={6}>
-              <Text align={"center"}>
+            </div>
+
+            <div className="signup-page__footer">
+              <Text className="signup-page__footer-text">
                 {t("hadAccount")}{" "}
-                {/* Fix #1: Route to /login not /auth/login */}
-                <Link
-                  color={"blue.400"}
+                <span
+                  className="signup-page__link"
                   onClick={() => router.push(`/${PageConstant.LOGIN}`)}
                 >
                   {t("SignIn")}
-                </Link>
+                </span>
               </Text>
-            </Stack>
-          </Stack>
-        </Box>
-      </Stack>
+            </div>
+          </div>
+        </div>
+      </div>
       <CodePopup
         isOpen={openCodePopup}
         title="Validate Your Email"
@@ -343,7 +393,7 @@ const Signup = () => {
         onClose={() => setOpenCodePopup(false)}
         onSubmit={(code) => handleValidateEmail(code)}
       />
-    </Flex>
+    </div>
   );
 };
 

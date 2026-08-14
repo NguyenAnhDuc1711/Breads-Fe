@@ -6,3 +6,20 @@
   right: 0 !important;
   top: calc(100% + 8px);
 }
+
+.date-range-picker {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+  width: fit-content;
+}
+
+.date-range-picker__trigger {
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid white;
+  width: fit-content;
+  cursor: pointer;
+}

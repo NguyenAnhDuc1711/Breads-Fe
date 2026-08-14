@@ -1,0 +1,45 @@
+.unfollow-dialog {
+  height: fit-content;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.unfollow-dialog__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px;
+  width: 280px;
+}
+
+.unfollow-dialog__title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-top: 12px;
+  padding: 16px 24px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.unfollow-dialog__footer {
+  width: 100%;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid gray;
+}
+
+.unfollow-dialog__btn {
+  width: 50%;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.unfollow-dialog__btn--cancel {
+  border-right: 1px solid gray;
+}
+
+.unfollow-dialog__btn--danger {
+  color: red;
+}

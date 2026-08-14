@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, useBreakpointValue } from "@chakra-ui/react";
+import { useBreakpointValue } from "../../../ui/primitives";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EmptyContentSvg } from "../../../../assests/icons";
@@ -17,6 +17,7 @@ import { addEvent } from "../../../../util";
 import InfiniteScroll from "../../../InfiniteScroll";
 import ConversationBar from "./ConversationBar";
 import ConversationSkeleton from "./ConversationBar/skeleton";
+import "./index.css";
 
 const Conversations = ({
   searchValue,
@@ -127,19 +128,15 @@ const Conversations = ({
       ) : (
         <>
           {loadingConversations ? (
-            <Flex
-              gap={"12px"}
-              flexDirection={"column"}
-              justifyContent={"center"}
-            >
+            <div className="conversations__skeleton-list">
               {[1, 2, 3, 4, 5].map((num) => (
                 <ConversationSkeleton key={`skeleton-conversation-${num}`} />
               ))}
-            </Flex>
+            </div>
           ) : (
-            <Flex justifyContent={"center"} alignItems={"center"}>
+            <div className="conversations__empty">
               <EmptyContentSvg />
-            </Flex>
+            </div>
           )}
         </>
       )}

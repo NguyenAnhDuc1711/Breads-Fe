@@ -1,0 +1,46 @@
+.theme-modal {
+  margin: 0;
+  padding: 0;
+}
+
+.theme-modal__title {
+  padding: 8px;
+  border-bottom: 1px solid gray;
+}
+
+.theme-modal__list-wrap {
+  margin: 0;
+  padding: 0;
+  overflow-y: scroll;
+  max-height: 60vh;
+}
+
+.theme-modal__list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: fit-content;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.theme-modal__item {
+  position: relative;
+  width: 30%;
+  height: 160px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.theme-modal__item:hover {
+  opacity: 0.8;
+}
+
+.theme-modal__item-name {
+  position: absolute;
+  left: 8px;
+  bottom: 4px;
+}

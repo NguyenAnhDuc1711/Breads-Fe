@@ -1,26 +1,13 @@
-import {
-  Container,
-  Flex,
-  SkeletonCircle,
-  SkeletonText,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { SkeletonText } from "../ui/primitives";
 import UserBoxSekeleton from "./UserBox/skeleton";
+import "./skeleton.css";
 
 const UserFollowBoxSkeleton = ({ inFollowBox = false }) => {
-  const bgColor = useColorModeValue("cuse.light","cuse.dark");
-  const textColor = useColorModeValue("ccl.light","ccl.dark");
   return (
-    <Flex
-      width={"100%"}
-      height={"80px"}
-      justifyContent={"space-between"}
-      alignItems={"center"}
-      bg={bgColor}
-      padding={"0 12px"}
-      borderRadius={inFollowBox ? "" : "10px"}
-      mb={inFollowBox ? "" : "10px"}
-      borderBottom={inFollowBox ? "1px solid gray" : ""}
+    <div
+      className={`user-follow-box-skeleton${
+        inFollowBox ? " user-follow-box-skeleton--in-box" : ""
+      }`}
     >
       <UserBoxSekeleton />
       <SkeletonText
@@ -29,7 +16,7 @@ const UserFollowBoxSkeleton = ({ inFollowBox = false }) => {
         skeletonHeight="9"
         borderRadius={"20px"}
       />
-    </Flex>
+    </div>
   );
 };
 

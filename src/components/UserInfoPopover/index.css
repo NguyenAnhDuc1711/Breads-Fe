@@ -1,0 +1,80 @@
+.user-info-card {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: #fafafa;
+  color: black;
+}
+
+[data-theme="dark"] .user-info-card {
+  background-color: #0a0a0a;
+  color: white;
+}
+
+.user-info-card__body {
+  margin: 8px;
+}
+
+.user-info-card__header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 16px;
+}
+
+.user-info-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.user-info-card__username {
+  font-weight: 700;
+}
+
+.user-info-card__name {
+  font-size: 0.875rem;
+}
+
+.user-info-card__bio {
+  font-size: 0.875rem;
+}
+
+.user-info-card__followers {
+  color: #a0aec0;
+}
+
+.user-info-card__follow-btn {
+  width: 100%;
+  margin-top: 8px;
+  background-color: #0a0a0a;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+[data-theme="dark"] .user-info-card__follow-btn {
+  background-color: #fafafa;
+  color: black;
+}
+
+.user-info-card__follow-btn:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.user-info-card__follow-btn:active:not(:disabled) {
+  opacity: 0.6;
+}
+
+.user-info-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.user-info-trigger__username {
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.user-info-trigger__username:hover {
+  text-decoration: underline;
+}

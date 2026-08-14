@@ -1,19 +1,13 @@
 "use client";
 
+import { Avatar, Button } from "../ui/primitives";
 import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Link,
   Popover,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
-  Text,
   Tooltip,
-  useColorMode,
-} from "@chakra-ui/react";
+} from "../ui/primitives";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -27,6 +21,7 @@ import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { addEvent } from "../../util";
 import { handleFollow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
+import "./index.css";
 
 const CELEBRITY_FOLLOWERS_THRESHOLD = 50000;
 
@@ -35,19 +30,15 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
   const [openCancelPopup, setOpenCancelPopup] = useState(false);
   const { userInfo } = useAppSelector((state: AppState) => state.user);
   const isFollowing = userInfo?.following?.includes(user?._id);
-  const { colorMode } = useColorMode();
-
   return (
-    <PopoverBody
-      bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
-      color={colorMode === "dark" ? "white" : "black"}
-      borderRadius={"10px"}
-    >
-      <Box m={2}>
-        <Flex justifyContent={"space-between"} pb={4}>
-          <Box>
-            <Flex alignItems="center" gap={1}>
-              <Text fontWeight="bold">{user?.username}</Text>
+    <PopoverBody className="user-info-card">
+      <div className="user-info-card__body">
+        <div className="user-info-card__header">
+          <div>
+            <div className="user-info-card__name-row">
+              <span className="user-info-card__username">
+                {user?.username}
+              </span>
               {(user?.followersCount ?? 0) > CELEBRITY_FOLLOWERS_THRESHOLD && (
                 <Tooltip label="Celebrity">
                   <span>
@@ -55,29 +46,23 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
                   </span>
                 </Tooltip>
               )}
-            </Flex>
-            <Text fontSize={"sm"}>{user?.name}</Text>
-          </Box>
+            </div>
+            <p className="user-info-card__name">{user?.name}</p>
+          </div>
           <Avatar
             src={user?.avatar}
             size={"md"}
             name={user?.username}
             cursor={"pointer"}
           />
-        </Flex>
-        <Text fontSize={"sm"}> {user?.bio}</Text>
-        <Text color={"gray.400"}>
+        </div>
+        <p className="user-info-card__bio"> {user?.bio}</p>
+        <p className="user-info-card__followers">
           {user?.followersCount ?? 0} người theo dõi
-        </Text>
+        </p>
         {user?._id !== userInfo?._id && (
           <Button
-            w={"100%"}
-            bg={colorMode === "dark" ? "#fafafa" : "#0a0a0a"}
-            color={colorMode === "dark" ? "black" : "white"}
-            mt={"8px"}
-            _hover={{ opacity: 0.8 }}
-            _active={{ opacity: 0.6 }}
-            transition="opacity 0.2s"
+            className="user-info-card__follow-btn"
             onClick={() => {
               if (isFollowing) {
                 setOpenCancelPopup(true);
@@ -89,7 +74,7 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
             {isFollowing ? "Unfollow" : "Follow"}
           </Button>
         )}
-      </Box>
+      </div>
       <UnFollowPopup
         user={user}
         isOpen={openCancelPopup}
@@ -135,8 +120,7 @@ const UserInfoPopover = ({
   return (
     <Popover trigger="hover" placement="bottom-start">
       <PopoverTrigger>
-        <Link
-          as={NextLink}
+        <NextLink
           href={`/users/${user?._id}`}
           onClick={() => handleGoToUserPage()}
           onMouseEnter={() => {
@@ -151,15 +135,10 @@ const UserInfoPopover = ({
             }
           }}
         >
-          <Flex alignItems="center" gap={1}>
-            <Text
-              fontSize={"sm"}
-              fontWeight={"bold"}
-              cursor={"pointer"}
-              _hover={{ textDecoration: "underline" }}
-            >
+          <div className="user-info-trigger">
+            <span className="user-info-trigger__username">
               {user?.username}
-            </Text>
+            </span>
             {(user?.followersCount ?? 0) > CELEBRITY_FOLLOWERS_THRESHOLD && (
               <Tooltip label="Celebrity">
                 <span>
@@ -167,8 +146,8 @@ const UserInfoPopover = ({
                 </span>
               </Tooltip>
             )}
-          </Flex>
-        </Link>
+          </div>
+        </NextLink>
       </PopoverTrigger>
 
       {((!isParentPost &&

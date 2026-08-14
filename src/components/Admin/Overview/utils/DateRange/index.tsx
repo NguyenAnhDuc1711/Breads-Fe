@@ -1,4 +1,4 @@
-import { Container, Text } from "@chakra-ui/react";
+import { Text } from "../../../../ui/primitives";
 import { useState } from "react";
 import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css"; // main style file
@@ -44,18 +44,13 @@ const DateRangeView = () => {
 
   return (
     <ClickOutsideComponent onClose={() => setOpenDatePickle(false)}>
-      <Container pos="relative" m={0} p={0} zIndex={10} width={"fit-content"}>
-        <Container
-          m={0}
-          py={2}
-          px={4}
-          borderRadius={8}
-          border={"1px solid white"}
-          width={"fit-content"}
+      <div className="date-range-picker">
+        <div
+          className="date-range-picker__trigger"
           onClick={() => setOpenDatePickle(true)}
         >
           <Text>{displayDateRangeText()}</Text>
-        </Container>
+        </div>
         {openDatePickle && (
           <DateRangePicker
             onChange={(item) => {
@@ -81,7 +76,7 @@ const DateRangeView = () => {
             color="#000000"
           />
         )}
-      </Container>
+      </div>
     </ClickOutsideComponent>
   );
 };

@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Text } from "../../../../ui/primitives";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +26,7 @@ import Message from "./Message";
 import SendNextBox from "./SendNextBox";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import { AppState } from "../../../../../store";
+import "./index.css";
 
 const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
@@ -225,37 +226,22 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
     <>
       <div
         id="conversation-body"
+        className="conversation-body"
         ref={conversationScreenRef}
         style={{
-          overflowY: "auto",
-          flex: 1,
-          maxHeight: "calc(100% - 112px)",
-          position: "relative",
           backgroundBlendMode: conversationBackground?.backgroundBlendMode,
           backgroundImage: `url(${conversationBackground?.backgroundImage})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
         }}
       >
         <div
           ref={layerRef}
           id="chat-hidden-layer"
+          className="chat-hidden-layer"
           style={{
-            position: "fixed",
             backgroundColor: conversationBackground?.backgroundColor,
-            zIndex: 5000,
-            display: "none",
           }}
         ></div>
-        <Flex
-          flexDir={"column"}
-          gap={"6px"}
-          my={2}
-          height={"fit-content"}
-          py={2}
-          px={3}
-          id="list-msg"
-        >
+        <div className="conversation-body__list" id="list-msg">
           <InfiniteScroll
             queryFc={(page) => {
               handleGetMsgs({ page: page });
@@ -264,9 +250,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
             cpnFc={(date) => {
               const msgs = JSON.parse(JSON.stringify(messages[date]));
               const brStyle = {
-                height: "2px",
                 backgroundColor: user1Message?.backgroundColor,
-                flex: 1,
               };
               const allMsg = Object.values(messages)?.flat(Infinity);
               const participantSeen = allMsg?.filter((msg: any) =>
@@ -292,15 +276,16 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
               }
               return (
                 <Fragment key={date}>
-                  <Flex alignItems={"center"} justifyContent={"center"}>
-                    <div style={brStyle} />
+                  <div className="conversation-body__date-row">
+                    <div className="conversation-body__date-line" style={brStyle} />
                     <Text px={2} color={user1Message?.backgroundColor}>
                       {date === currentDateFormat ? "Today" : date}
                     </Text>
-                    <div style={brStyle} />
-                  </Flex>
+                    <div className="conversation-body__date-line" style={brStyle} />
+                  </div>
                   {msgs.map((msg, index) => (
                     <Message
+                      key={msg?._id ?? index}
                       msg={msg}
                       isLastSeen={lastUserSeen?._id === msg?._id}
                       displayUserAva={displayAvaIndex.includes(index)}
@@ -314,24 +299,25 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
             elementId={"conversation-body"}
             updatePageValue={currentPageMsg}
           />
-        </Flex>
+        </div>
       </div>
       {noticeNewMsgBox && (
         <Button
-          position={"fixed"}
-          right={openDetailTab ? "22vw" : "30px"}
-          bottom={"72px"}
+          className={`conversation-body__scroll-btn${
+            openDetailTab
+              ? " conversation-body__scroll-btn--detail"
+              : " conversation-body__scroll-btn--full"
+          }`}
           onClick={() => {
             scrollToBottom();
             setNoticeNewMsgBox(false);
             setScrollText("Move to current");
           }}
-          zIndex={3000}
         >
-          <Flex alignItems={"center"} gap={2}>
+          <div className="conversation-body__scroll-btn-inner">
             {scrollText}
             <FaAngleDown />
-          </Flex>
+          </div>
         </Button>
       )}
       <SendNextBox />

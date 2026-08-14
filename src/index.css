@@ -3,6 +3,44 @@ p {
   padding: 0;
 }
 
+/* Global font: Inter — consistent across entire Breads project */
+:root {
+  --font-inter: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Matches theme.ts's old Chakra `styles.global`: mode("gray.800","whiteAlpha.900") / mode("#fafafa","#0a0a0a") */
+body {
+  margin: 0;
+  color: #1a202c;
+  background-color: #fafafa;
+  font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-size: 15px;
+  line-height: 1.5;
+}
+:root[data-theme="dark"] body,
+:root:not([data-theme="light"]) body {
+  color: rgba(255, 255, 255, 0.92);
+  background-color: #0a0a0a;
+}
+
+*, *::before, *::after {
+  font-family: inherit;
+}
+
+
+a {
+  color: #000000;
+}
+:root[data-theme="dark"] a,
+:root:not([data-theme="light"]) a {
+  color: #ffffff;
+}
+
 .icon-container {
   border-radius: 50%;
   padding: 7px;
@@ -14,11 +52,14 @@ p {
   background-color: #1e1e1e;
 }
 
-:root {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
+
+
+
 
 #modal {
   position: fixed;
@@ -51,4 +92,37 @@ p {
 
 .chakra-slide {
   position: relative !important;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Shared "default" button treatment for actions that don't carry their own
+   component-scoped styling — a tone barely lifted off the surface behind
+   it, not a loud, unrelated accent color. */
+.btn-subtle {
+  background-color: rgba(0, 0, 0, 0.06);
+  color: inherit;
+  padding: 0 16px;
+  height: 40px;
+  border-radius: 6px;
+}
+
+.btn-subtle:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="dark"] .btn-subtle,
+:root:not([data-theme="light"]) .btn-subtle {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="dark"] .btn-subtle:hover:not(:disabled),
+:root:not([data-theme="light"]) .btn-subtle:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.14);
 }

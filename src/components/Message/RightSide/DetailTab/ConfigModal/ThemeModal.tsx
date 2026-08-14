@@ -1,4 +1,4 @@
-import { Container, Flex, Text } from "@chakra-ui/react";
+import { Text } from "../../../../ui/primitives";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import Socket from "../../../../../socket";
@@ -10,6 +10,7 @@ import {
 } from "../../../../../store/MessageSlice";
 import { addEvent } from "../../../../../util";
 import { messageThemes } from "../../../../../util/Themes/index";
+import "./ThemeModal.css";
 
 const ThemeModal = ({ setItemSelected }: { setItemSelected: Function }) => {
   const dispatch = useAppDispatch();
@@ -57,18 +58,10 @@ const ThemeModal = ({ setItemSelected }: { setItemSelected: Function }) => {
 
   return (
     <>
-      <Container p={0} m={0}>
-        <Text p={2} borderBottom={"1px solid gray"}>
-          Select your theme
-        </Text>
-        <Container p={0} m={0} overflowY={"scroll"} maxHeight={"60vh"}>
-          <Flex
-            flexWrap={"wrap"}
-            width={"100%"}
-            height={"fit-content"}
-            gap={2}
-            mt={3}
-          >
+      <div className="theme-modal">
+        <Text className="theme-modal__title">Select your theme</Text>
+        <div className="theme-modal__list-wrap">
+          <div className="theme-modal__list">
             {Object.keys(messageThemes).map((theme) => {
               const themeInfo = messageThemes[theme];
               const themeName = themeInfo.name;
@@ -76,47 +69,35 @@ const ThemeModal = ({ setItemSelected }: { setItemSelected: Function }) => {
               const textColor = themeInfo.user1Message.color;
               const borderColor = themeInfo.user1Message.borderColor;
               return (
-                <Container
-                  pos={"relative"}
-                  width={"30%"}
-                  height={"160px"}
-                  borderRadius={6}
-                  backgroundImage={`url(${themeBg})`}
-                  backgroundRepeat={"no-repeat"}
-                  backgroundSize={"cover"}
-                  backgroundColor={
-                    !themeBg
+                <div
+                  className="theme-modal__item"
+                  key={theme}
+                  style={{
+                    backgroundImage: `url(${themeBg})`,
+                    backgroundColor: !themeBg
                       ? themeInfo.conversationBackground.backgroundColor
-                      : ""
-                  }
-                  border={
-                    selectedConversation?.theme === theme
-                      ? `4px solid ${borderColor}`
-                      : ""
-                  }
-                  boxSizing="border-box"
-                  cursor={"pointer"}
-                  _hover={{
-                    opacity: 0.8,
+                      : undefined,
+                    border:
+                      selectedConversation?.theme === theme
+                        ? `4px solid ${borderColor}`
+                        : undefined,
                   }}
                   onClick={() => {
                     handleChangeTheme(theme);
                   }}
                 >
                   <Text
-                    color={textColor}
-                    position={"absolute"}
-                    left={"8px"}
-                    bottom={"4px"}
+                    className="theme-modal__item-name"
+                    style={{ color: textColor }}
                   >
                     {themeName}
                   </Text>
-                </Container>
+                </div>
               );
             })}
-          </Flex>
-        </Container>
-      </Container>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

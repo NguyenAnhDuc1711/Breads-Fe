@@ -1,0 +1,23 @@
+.header-icon-btn {
+  background-color: rgba(0, 0, 0, 0.04);
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  min-height: 60px;
+  border-radius: 12px;
+  display: block;
+}
+
+.header-icon-btn:hover:not(:disabled),
+.header-icon-btn:active:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .header-icon-btn {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .header-icon-btn:hover:not(:disabled),
+[data-theme="dark"] .header-icon-btn:active:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}

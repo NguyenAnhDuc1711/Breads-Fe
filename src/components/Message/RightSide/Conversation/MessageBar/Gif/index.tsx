@@ -1,19 +1,18 @@
+import { Button, Text } from "../../../../../ui/primitives";
 import {
-  Button,
-  Flex,
   Popover,
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Text,
-} from "@chakra-ui/react";
+} from "../../../../../ui/primitives";
 import { IoMdClose } from "react-icons/io";
 import { RiFileGifLine } from "react-icons/ri";
 import { ACTIONS, iconStyle } from "..";
 import IconWrapper from "../IconWrapper";
 import GifMsgBox from "./GifMsgBox";
+import "./index.css";
 
 const GifMsgBtn = ({ popup, onClose, onOpen, color = "" }) => {
   return (
@@ -23,36 +22,25 @@ const GifMsgBtn = ({ popup, onClose, onOpen, color = "" }) => {
       onClose={() => onClose()}
     >
       <PopoverTrigger>
-        <Button
-          padding={0}
-          style={iconStyle}
-          bg={"transparent"}
-          _hover={{
-            bg: "transparent",
-          }}
-        >
+        <Button className="gif-btn-trigger">
           <RiFileGifLine
             style={{
               ...iconStyle,
-              color: color ? color : "",
+              color: color ? color : undefined,
             }}
             onClick={() => onOpen(ACTIONS.GIF)}
           />
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <PopoverHeader
-          fontWeight="semibold"
-          textAlign={"center"}
-          padding={"12px 16px"}
-        >
-          <Flex alignItems={"center"} justifyContent={"space-between"}>
+        <PopoverHeader className="gif-popover-header">
+          <div className="gif-popover-header-row">
             <Text>Chọn file Gif</Text>
             <IconWrapper icon={<IoMdClose onClick={() => onClose()} />} />
-          </Flex>
+          </div>
         </PopoverHeader>
         <PopoverArrow />
-        <PopoverBody padding={"8px 4px"}>
+        <PopoverBody className="gif-popover-body">
           <GifMsgBox onClose={onClose} />
         </PopoverBody>
       </PopoverContent>

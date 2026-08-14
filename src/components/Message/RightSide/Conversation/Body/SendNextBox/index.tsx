@@ -1,17 +1,13 @@
 import { CloseIcon } from "../../../../../../assests/chakraIcons";
+import { Button, Input, Text } from "../../../../../ui/primitives";
 import {
-  Button,
-  Flex,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+} from "../../../../../ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyContentSvg } from "../../../../../../assests/icons";
@@ -26,6 +22,7 @@ import {
 import InfiniteScroll from "../../../../../InfiniteScroll";
 import IconWrapper from "../../MessageBar/IconWrapper";
 import SendNextItem from "./SendNextItem/item";
+import "./index.css";
 
 const SendNextBox = () => {
   const { t } = useTranslation();
@@ -122,16 +119,11 @@ const SendNextBox = () => {
     <div className="send-next-box">
       <Modal isOpen={sendNextBox.open} onClose={() => handleCloseBox()}>
         <ModalOverlay />
-        <ModalContent bg={useColorModeValue("gray.200", "#181818")}>
-          <ModalHeader borderBottom={"1px solid gray"} pos={"relative"}>
-            <Flex alignItems={"center"} justifyContent={"center"}>
+        <ModalContent className="send-next-modal">
+          <ModalHeader className="send-next-modal__header">
+            <div className="send-next-modal__header-row">
               <Text>Send message to</Text>
-              <div
-                style={{
-                  position: "absolute",
-                  right: "20px",
-                }}
-              >
+              <div className="send-next-modal__close-wrap">
                 <IconWrapper
                   icon={
                     <CloseIcon
@@ -143,15 +135,11 @@ const SendNextBox = () => {
                   }
                 />
               </div>
-            </Flex>
+            </div>
           </ModalHeader>
           <ModalBody maxHeight={"440px"} overflowY={"auto"} px={4} my={2}>
             <Input
-              fontSize={{
-                base: "lg",
-                md: "md",
-              }}
-              mb={3}
+              className="send-next-modal__search"
               placeholder={t("Searchforuser")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -173,14 +161,14 @@ const SendNextBox = () => {
                 preloadIndex={5}
               />
             ) : (
-              <Flex justifyContent={"center"} alignItems={"center"}>
+              <div className="send-next-modal__empty">
                 <EmptyContentSvg />
-              </Flex>
+              </div>
             )}
           </ModalBody>
           {selectedConversations?.length !== 0 && (
             <ModalFooter borderTop={"1px solid gray"}>
-              <Button onClick={() => handleSendNext()}>Send</Button>
+              <Button className="btn-subtle" onClick={() => handleSendNext()}>Send</Button>
             </ModalFooter>
           )}
         </ModalContent>

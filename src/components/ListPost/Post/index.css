@@ -1,7 +1,143 @@
-.post-container {
-  .btn-more-action {
-    position: relative;
-    width: fit-content;
-    height: fit-content;
-  }
+.post {
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  width: 100%;
+  transition: transform 0.2s ease;
+}
+
+[data-theme="dark"] .post {
+  background-color: #202020;
+}
+
+.post--parent {
+  border: 1px solid gray;
+}
+
+.post--reply {
+  box-shadow: none;
+  margin-top: 8px;
+}
+
+.post__body {
+  padding: 20px;
+}
+
+.post__header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.post__author-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post__meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.post__timestamp {
+  font-size: 0.875rem;
+  color: #616161;
+}
+
+[data-theme="dark"] .post__timestamp {
+  color: #edf2f7;
+}
+
+.post__more-action {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+}
+
+.post__more-action-btn {
+  background-color: #ffffff;
+  border-radius: 50%;
+  width: 32px;
+  height: 40px;
+  padding: 0;
+}
+
+[data-theme="dark"] .post__more-action-btn {
+  background-color: #181818;
+}
+
+.post__content-wrap {
+  padding: 0;
+  margin: 8px 0;
+  width: 100%;
+}
+
+.post__content-wrap--clickable {
+  cursor: pointer;
+}
+
+.post__content-wrap--static {
+  cursor: text;
+}
+
+.post__quote {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: lightgray;
+}
+
+.post__quote--clickable {
+  cursor: pointer;
+}
+
+.post__quote--static {
+  cursor: text;
+}
+
+.post__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.post__actions--detail {
+  margin-bottom: 10px;
+}
+
+.post__comment-header {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px;
+  margin-top: 16px;
+}
+
+.post__comment-label {
+  padding: 8px;
+}
+
+.post__view-activities {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.post__view-activities:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.post__replies {
+  width: 100%;
+  max-width: 100%;
+  padding: 12px 0;
+  margin: 0;
+  box-shadow: none;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
 }

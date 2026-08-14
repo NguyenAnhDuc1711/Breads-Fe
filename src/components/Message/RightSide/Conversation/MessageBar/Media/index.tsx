@@ -1,4 +1,4 @@
-import { Input } from "@chakra-ui/react";
+import { Input } from "../../../../../ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { iconStyle } from "..";

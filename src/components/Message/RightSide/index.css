@@ -1,0 +1,15 @@
+.msg-right-side {
+  display: flex;
+  width: 100%;
+  min-width: 300px;
+}
+
+.msg-right-side__detail-wrap {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .msg-right-side__detail-wrap {
+    width: 20vw;
+  }
+}

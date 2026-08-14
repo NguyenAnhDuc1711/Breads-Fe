@@ -1,8 +1,9 @@
 "use client";
 
-import { Avatar, Box } from "@chakra-ui/react";
+import { Avatar, Box } from "./ui/primitives";
 import NextImage from "next/image";
 import { CSSProperties, useState } from "react";
+import "./OptimizedAvatar.css";
 
 // Chakra's default avatar size tokens (theme/components/avatar.ts), in px.
 const SIZE_TOKEN_PX: Record<string, number> = {
@@ -87,12 +88,13 @@ const OptimizedAvatar = ({
   return (
     <Box
       as="span"
-      display="inline-block"
-      borderRadius="50%"
-      overflow="hidden"
-      lineHeight={0}
-      width={boxSize}
-      height={boxSize}
+      className="optimized-avatar"
+      style={{
+        width: typeof boxSize === "string" ? boxSize : undefined,
+        height: typeof boxSize === "string" ? boxSize : undefined,
+      }}
+      width={typeof boxSize === "object" ? boxSize : undefined}
+      height={typeof boxSize === "object" ? boxSize : undefined}
       cursor={cursor}
       position={position}
       onClick={onClick}

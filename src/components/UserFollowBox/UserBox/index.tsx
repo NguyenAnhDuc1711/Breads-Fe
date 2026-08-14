@@ -1,15 +1,10 @@
 "use client";
 
-import {
-  Avatar,
-  Container,
-  Flex,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Avatar, Container, Text } from "../../ui/primitives";
 import { useRouter } from "next/navigation";
 import UserInfoPopover from "../../UserInfoPopover";
 import { IUser } from "../../../store/UserSlice";
+import "./index.css";
 
 const UserBox = ({
   user,
@@ -27,24 +22,14 @@ const UserBox = ({
   onClick?: Function;
 }) => {
   const router = useRouter();
-  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
-  const textColor = useColorModeValue("ccl.light", "ccl.dark");
 
   const getToUserPage = () => {
     router.push(`/users/${user._id}`);
   };
 
   return (
-    <Flex
-      bg={isTagBox ? bgColor : ""}
-      alignItems={"center"}
-      padding={isTagBox ? "2px 8px" : ""}
-      borderRadius={isTagBox ? "6px" : ""}
-      cursor={isTagBox ? "pointer" : ""}
-      _hover={{
-        opacity: isTagBox ? "0.8" : "",
-      }}
-      mb={isTagBox ? "4px" : ""}
+    <div
+      className={`user-box${isTagBox ? " user-box--tag" : ""}`}
       onClick={(e) => {
         e.stopPropagation();
         !!onClick && onClick(user);
@@ -65,12 +50,7 @@ const UserBox = ({
           <UserInfoPopover user={user} />
         ) : (
           <Text
-            fontSize={"sm"}
-            fontWeight={"bold"}
-            cursor={"pointer"}
-            _hover={{
-              textTransform: inFollowBox ? "underlined" : "",
-            }}
+            className="user-box__username"
             onClick={(e) => {
               e.stopPropagation();
               if (inFollowBox) {
@@ -82,14 +62,12 @@ const UserBox = ({
           </Text>
         )}
         <Text
-          fontWeight={"400"}
-          fontSize={"14px"}
-          cursor={isTagBox ? "pointer" : ""}
+          className={`user-box__name${isTagBox ? " user-box__name--tag" : ""}`}
         >
           {user.name}
         </Text>
       </Container>
-    </Flex>
+    </div>
   );
 };
 

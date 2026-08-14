@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { GridItem } from "@chakra-ui/react";
+import { GridItem } from "../ui/primitives";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { updateHasMoreData } from "../../store/UtilSlice";
 

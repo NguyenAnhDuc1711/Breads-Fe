@@ -1,0 +1,74 @@
+.links-modal {
+  position: relative;
+  box-sizing: border-box;
+  background-color: white;
+  color: gray;
+  border-radius: 16px;
+  padding: 4px 8px;
+}
+
+.links-modal__spacer {
+  padding: 4px;
+}
+
+.links-modal__title {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  z-index: 4000;
+  text-transform: capitalize;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.links-modal__close {
+  position: absolute;
+  top: -36px;
+  left: 0;
+  color: white;
+}
+
+.links-modal__list {
+  display: flex;
+  margin-top: 10px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.links-modal__row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.links-modal__input {
+  border: 1px solid gray;
+  height: 36px;
+}
+
+.links-modal__input::placeholder {
+  color: #718096;
+}
+
+.links-modal__delete-icon {
+  border: 1px solid gray;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.links-modal__add-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  border: 1px solid gray;
+  border-radius: 10px;
+  padding: 6px;
+  cursor: pointer;
+}

@@ -1,5 +1,6 @@
-import { Flex, PlacementWithLogical, Tooltip } from "@chakra-ui/react";
+import { PlacementWithLogical, Tooltip } from "../../../../ui/primitives";
 import { memo } from "react";
+import "./IconWrapper.css";
 
 const IconWrapper = ({
   label = "",
@@ -12,30 +13,14 @@ const IconWrapper = ({
   placement?: any;
   addBg?: boolean;
 }) => {
-  const containerStyle = {
-    width: "24px",
-    height: "24px",
-    borderRadius: "50%",
-    padding: "4px",
-    cursor: "pointer",
-  };
-
   return (
     <>
       <Tooltip label={label} placement={placement}>
-        <Flex
-          padding={"2px"}
-          margin={0}
-          style={containerStyle}
-          alignItems={"center"}
-          justifyContent={"center"}
-          bg={addBg ? "gray" : ""}
-          _hover={{
-            bg: "gray",
-          }}
+        <div
+          className={`msg-icon-wrapper${addBg ? " msg-icon-wrapper--active" : ""}`}
         >
           {icon}
-        </Flex>
+        </div>
       </Tooltip>
     </>
   );

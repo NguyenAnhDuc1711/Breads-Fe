@@ -1,0 +1,40 @@
+.emoji-btn-trigger {
+  padding: 0;
+  width: fit-content;
+  background-color: transparent;
+}
+
+.emoji-btn-trigger:hover:not(:disabled) {
+  background-color: transparent;
+}
+
+.emoji-popover-content {
+  width: fit-content;
+}
+
+.emoji-popover-header {
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.emoji-popover-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.emoji-search-group {
+  max-width: 160px;
+  height: 32px;
+}
+
+.emoji-search-input {
+  height: 32px;
+  font-size: 14px;
+}
+
+.emoji-popover-body {
+  padding: 8px 4px;
+  width: fit-content;
+}

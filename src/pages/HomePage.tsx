@@ -10,7 +10,6 @@ import ContainerLayout from "../components/MainBoxLayout";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import { IPost, updateListPost } from "../store/PostSlice";
-import { getPosts } from "../store/PostSlice/asyncThunk";
 import { changeDisplayPageData, updateHasMoreData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
@@ -31,7 +30,6 @@ const HomePage = ({
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { currentPage } = useAppSelector((state: AppState) => state.util);
   const { FOR_YOU } = PageConstant;
-  const userId = userInfo?._id;
 
   useEffect(() => {
     if (userInfo?._id && userInfo?.role === Constants.USER_ROLE.ADMIN) {
@@ -41,10 +39,11 @@ const HomePage = ({
 
   useEffect(() => {
     // Seeds the feed with the server-fetched first page so ListPost renders
-    // real posts on first paint. ListPost's own InfiniteScroll still fires
-    // its usual client-side getPosts() fetch right after (unchanged) and
-    // will replace this with its own copy — harmless since it's normally
-    // the same page 1, just re-confirms it's fresh.
+    // real posts on first paint. app/(main)/page.tsx and [tab]/page.tsx both
+    // re-run getInitialPosts() server-side on every tab navigation, so this
+    // is always the up-to-date page 1 for the current `tab` — no separate
+    // client-side getPosts() fetch needed here (ListPost's InfiniteScroll
+    // only fetches page 2+, see its `page === 1` early-return).
     dispatch(updateListPost(initialPosts));
     dispatch(updateHasMoreData(initialPosts.length > 0));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -68,17 +67,6 @@ const HomePage = ({
       },
     });
   }, [tab]);
-
-  useEffect(() => {
-    if (!userId) return;
-    dispatch(
-      getPosts({
-        filter: { page: tab },
-        userId,
-        isNewPage: true,
-      })
-    );
-  }, [tab, userId]);
 
   return (
     <ContainerLayout>

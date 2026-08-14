@@ -1,4 +1,6 @@
-import { Avatar, AvatarBadge, Box, Flex, Skeleton, Text } from "@chakra-ui/react";
+import { Avatar, AvatarBadge } from "./ui/primitives";
+import { Skeleton } from "./ui/primitives";
+import "./Activity.css";
 import dayjs from "../util/dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -112,7 +114,7 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
 
   if (isLoading && filteredNotifications.length === 0) {
     return (
-      <Flex direction="column" gap={3} py={2}>
+      <div className="activity-skeleton-list">
         {[1, 2, 3, 4, 5].map((num) => (
           <Skeleton
             key={`activity-skeleton-${num}`}
@@ -122,26 +124,16 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
             endColor="#2a2a2a"
           />
         ))}
-      </Flex>
+      </div>
     );
   }
 
   if (filteredNotifications.length === 0) {
     return (
-      <Flex
-        flex={1}
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        width="100%"
-        gap={3}
-        py={6}
-      >
+      <div className="activity-empty">
         <EmptyContentSvg />
-        <Text color="gray.500" fontSize="15px" fontWeight="500">
-          {getEmptyMessage()}
-        </Text>
-      </Flex>
+        <p className="activity-empty__text">{getEmptyMessage()}</p>
+      </div>
     );
   }
 
@@ -152,20 +144,17 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
           (action) => action.name === item.action
         );
         return (
-          <Flex
+          <div
             key={item._id}
-            w="full"
-            alignItems="center"
-            justifyContent="space-between"
-            bg="#202020"
-            p={3}
-            borderRadius="10px"
-            my={2}
+            className="activity-item"
             onClick={() => dispatch(updateHasNotification(false))}
           >
             {item.action !== FOLLOW ? (
-              <Flex alignItems="center">
-                <Avatar mr={4} src={item.FromUserDetails?.avatar}>
+              <div className="activity-item__main">
+                <Avatar
+                  className="activity-item__avatar"
+                  src={item.FromUserDetails?.avatar}
+                >
                   <AvatarBadge
                     boxSize="1.4em"
                     bg={actionDetails?.color}
@@ -176,47 +165,42 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
                     {actionDetails?.icon}
                   </AvatarBadge>
                 </Avatar>
-                <Flex direction="column" wrap="wrap">
-                  <Box display="flex">
-                    <Text
-                      fontWeight="bold"
-                      mr={2}
-                      fontSize={"sm"}
+                <div className="activity-item__body">
+                  <div className="activity-item__header">
+                    <span
+                      className="activity-item__username"
                       onClick={() => comeToUser(item.fromUser)}
-                      cursor="pointer"
-                      _hover={{ textDecoration: "underline" }}
                     >
                       {item.FromUserDetails?.username || "Unknown User"}
-                    </Text>
-                    <Text color="gray.500" fontSize="sm">
+                    </span>
+                    <span className="activity-item__time">
                       {item.createdAt
                         ? dayjs(new Date(item.createdAt)).fromNow()
                         : "Unknown time"}
-                    </Text>
-                  </Box>
-                  <Text
-                    color="white"
-                    fontSize="sm"
+                    </span>
+                  </div>
+                  <span
+                    className="activity-item__content"
                     onClick={() => comeToPost(item.target)}
-                    cursor="pointer"
                   >
                     {item.postDetails?.content ? (
                       item.postDetails.content
                     ) : (
                       <IoImageOutline />
                     )}
-                  </Text>
-                </Flex>
-              </Flex>
+                  </span>
+                </div>
+              </div>
             ) : (
-              <Flex
-                alignItems="center"
-                justifyContent="space-between"
-                w="full"
+              <div
+                className="activity-item__header--spread"
                 onClick={() => dispatch(updateHasNotification(false))}
               >
-                <Flex alignItems="center">
-                  <Avatar mr={4} src={item.FromUserDetails?.avatar}>
+                <div className="activity-item__main">
+                  <Avatar
+                    className="activity-item__avatar"
+                    src={item.FromUserDetails?.avatar}
+                  >
                     <AvatarBadge
                       boxSize="1.4em"
                       bg={actionDetails?.color}
@@ -227,39 +211,35 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
                       {actionDetails?.icon}
                     </AvatarBadge>
                   </Avatar>
-                  <Flex direction="column">
-                    <Box display="flex" justifyContent="space-between">
-                      <Text
-                        fontWeight="bold"
-                        mr={2}
-                        fontSize={"sm"}
+                  <div className="activity-item__body">
+                    <div className="activity-item__header--spread">
+                      <span
+                        className="activity-item__username"
                         onClick={() => comeToUser(item.fromUser)}
-                        cursor={"pointer"}
-                        _hover={{ textDecoration: "underline" }}
                       >
                         {item.FromUserDetails?.username || "Unknown User"}
-                      </Text>
-                      <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">
+                      </span>
+                      <span className="activity-item__time--nowrap">
                         {item.createdAt
                           ? dayjs(new Date(item.createdAt)).fromNow()
                           : "Unknown time"}
-                      </Text>
-                    </Box>
+                      </span>
+                    </div>
 
                     {item.name !== FOLLOW && (
-                      <Text color="gray.600" fontSize="sm">
+                      <span className="activity-item__action-text">
                         {actionDetails?.actionText}
-                      </Text>
+                      </span>
                     )}
-                  </Flex>
-                </Flex>
+                  </div>
+                </div>
 
-                <Flex alignItems="center" justifyContent="flex-end" w="full">
+                <div className="activity-item__follow-row">
                   <FollowBtn user={item.FromUserDetails} />
-                </Flex>
-              </Flex>
+                </div>
+              </div>
             )}
-          </Flex>
+          </div>
         );
       })}
     </>

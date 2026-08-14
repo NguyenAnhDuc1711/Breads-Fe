@@ -1,9 +1,10 @@
 import { CloseIcon } from "../../assests/chakraIcons";
-import { Container, Flex, Image } from "@chakra-ui/react";
+import { Image } from "../ui/primitives";
 import { Constants } from "../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { updateReportInfo } from "../../store/ReportSlice";
+import "./media.css";
 
 const ReportMediaDisplay = () => {
   const dispatch = useAppDispatch();
@@ -22,42 +23,30 @@ const ReportMediaDisplay = () => {
   };
 
   return (
-    <Flex gap={2}>
+    <div className="report-media">
       {media?.map(({ url, type }, index) => {
         const isImg = type === Constants.MEDIA_TYPE.IMAGE;
         if (isImg) {
           return (
-            <Container
-              m={0}
-              p={0}
-              pos={"relative"}
-              maxH={"150px"}
-              maxW={"150px"}
-            >
-              <Image src={url} maxH={"150px"} maxW={"150px"} alt="Report media" />
+            <div className="report-media__item" key={url}>
+              <Image
+                className="report-media__image"
+                src={url}
+                alt="Report media"
+              />
               <CloseIcon
-                pos={"absolute"}
-                top={"-6px"}
-                right={"-6px"}
-                w={"12px"}
-                h={"12px"}
-                cursor={"pointer"}
+                className="report-media__remove"
                 onClick={() => handleRemoveMedia(index)}
               />
-            </Container>
+            </div>
           );
         } else {
           return (
-            <video
-              src={url}
-              style={{
-                maxHeight: "150px",
-              }}
-            />
+            <video className="report-media__video" src={url} key={url} />
           );
         }
       })}
-    </Flex>
+    </div>
   );
 };
 

@@ -1,13 +1,23 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 import { useAppSelector } from "../../src/hooks/redux";
-import PostPopup from "../../src/components/PostPopup";
-import SeeMedia from "../../src/components/SeeMedia";
 import Header from "../../src/Layout/Header";
 import LeftSideBar from "../../src/Layout/LeftSideBar/index";
 import { AppState } from "../../src/store";
+
+// Both bail out to `return null` until opened, but importing them statically
+// still forces their module graph (Chakra Modal/Menu, useDebounce,
+// usePopupCancel, ...) into the initial client bundle. Deferred to a chunk
+// that only loads once a post/media is actually opened.
+const PostPopup = dynamic(() => import("../../src/components/PostPopup"), {
+  ssr: false,
+});
+const SeeMedia = dynamic(() => import("../../src/components/SeeMedia"), {
+  ssr: false,
+});
 
 // Ports src/Layout/index.tsx (LeftSideBar always, Header only once a user is
 // loaded). HeaderHeight / LeftSideBarWidth stay exported from src/Layout so the

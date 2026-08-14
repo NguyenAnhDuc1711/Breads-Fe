@@ -1,0 +1,18 @@
+.gif-msg-box {
+  padding: 0;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.gif-msg-box__grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.gif-msg-box__item {
+  width: 45%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  margin: 4px;
+}

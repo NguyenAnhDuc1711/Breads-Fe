@@ -1,0 +1,5 @@
+.users-cms-page__table-wrap {
+  overflow-x: auto;
+  max-height: 70vh;
+  overflow-y: auto;
+}

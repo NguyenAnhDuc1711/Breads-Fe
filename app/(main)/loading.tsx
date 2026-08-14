@@ -1,7 +1,8 @@
 "use client";
 
-import { Center, Spinner } from "@chakra-ui/react";
+import { Spinner } from "../../src/components/ui/primitives";
 import { HeaderHeight } from "../../src/Layout";
+import "./loading.css";
 
 // Next.js swaps this in immediately on navigation while the target route
 // segment's server work (identity fetch in the root layout, any future
@@ -11,9 +12,15 @@ import { HeaderHeight } from "../../src/Layout";
 // same fallback covers everything under (main) — feed, chat, search,
 // admin, auth.
 const Loading = () => (
-  <Center height={`calc(100vh - ${HeaderHeight}px)`} marginTop={`${HeaderHeight}px`}>
+  <div
+    className="route-loading"
+    style={{
+      height: `calc(100vh - ${HeaderHeight}px)`,
+      marginTop: `${HeaderHeight}px`,
+    }}
+  >
     <Spinner size="lg" />
-  </Center>
+  </div>
 );
 
 export default Loading;

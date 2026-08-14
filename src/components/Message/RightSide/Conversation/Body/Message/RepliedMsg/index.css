@@ -1,0 +1,50 @@
+.replied-msg {
+  cursor: pointer;
+}
+
+.replied-msg__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  height: 16px;
+}
+
+.replied-msg__header--own {
+  justify-content: flex-end;
+}
+
+.replied-msg__header--other {
+  justify-content: flex-start;
+}
+
+.replied-msg__header-text {
+  font-size: 12px;
+}
+
+.replied-msg__bubble {
+  width: fit-content;
+  position: relative;
+  top: 12px;
+  background-color: #d3d3d37a;
+  padding: 4px 12px 12px;
+  max-width: 30vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.replied-msg__bubble--own {
+  float: right;
+  border-radius: 16px 16px 0 16px;
+}
+
+.replied-msg__bubble--other {
+  float: left;
+  border-radius: 16px 16px 16px 0;
+}
+
+.replied-msg__attach-row {
+  display: flex;
+  align-items: center;
+}

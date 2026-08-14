@@ -1,0 +1,16 @@
+.create-post-btn {
+  display: none;
+  padding: 25px;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: #444444;
+  z-index: 1000;
+}
+
+@media (min-width: 768px) {
+  .create-post-btn {
+    display: flex;
+  }
+}

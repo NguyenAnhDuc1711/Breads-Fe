@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Flex, Text } from "@chakra-ui/react";
+import { Text } from "../../../ui/primitives";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { ANALYTICS_PATH, Route } from "../../../../Breads-Shared/APIConfig";
@@ -9,6 +9,7 @@ import Socket from "../../../../socket";
 import { AppState } from "../../../../store";
 import DetailStatisticTable from "../AnalyticsGraph/DetailStatistic";
 import { sortObjectByValue } from "../utils";
+import "./ReportSnapshot.css";
 
 // chart.js/react-chartjs-2 (Bar/Line/Doughnut) and chartjs-chart-geo (Map)
 // touch canvas/window at module/mount time; react-date-range touches
@@ -79,61 +80,37 @@ const ReportSnapshot = () => {
 
   const containerBox = (cpns, fitBox = false) => {
     return (
-      <Flex
-        width={fitBox ? "fit-content" : "100%"}
-        minWidth={fitBox ? "fit-content" : "80vw"}
-        gap={6}
-        border={"1px solid white"}
-        p={10}
-        borderRadius={10}
-        justifyContent={"center"}
-        mb={4}
-        maxH={"60vh"}
+      <div
+        className={`report-snapshot__row${
+          fitBox ? " report-snapshot__row--fit" : ""
+        }`}
       >
         {cpns.map((cpn, index) => (
-          <div
-            key={`graph-${index}`}
-            style={{
-              flex: 1,
-              width: "fit-content",
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}
-          >
+          <div className="report-snapshot__cell" key={`graph-${index}`}>
             {cpn}
           </div>
         ))}
-      </Flex>
+      </div>
     );
   };
 
   return (
-    <Container
-      id="report-snapshot"
-      maxWidth={"100vw"}
-      width={"100%"}
-      m={0}
-      p={6}
-    >
-      <Flex
-        width={"100%"}
-        height={"fit-content"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        mb={4}
-      >
+    <div id="report-snapshot" className="report-snapshot">
+      <div className="report-snapshot__header">
         <Text fontWeight="semibold" fontSize="lg">
           Report snapshot
         </Text>
         <DateRangeView />
-      </Flex>
+      </div>
       {containerBox([
         <LineGraph
+          key="active-line"
           labels={snapshotData?.active?.map(({ date }) => date)}
           data={snapshotData?.active?.map(({ data }) => data)}
           isLoading={isLoading}
         />,
         <DetailStatisticTable
+          key="event-detail"
           data={snapshotData?.event}
           title="User events"
           keyHead="Event"
@@ -142,16 +119,18 @@ const ReportSnapshot = () => {
         />,
       ])}
       {containerBox([
-        <MapGraph data={snapshotData?.locale} isLoading={isLoading} />,
-        <BarGraph data={snapshotData?.locale} isLoading={isLoading} />,
+        <MapGraph key="locale-map" data={snapshotData?.locale} isLoading={isLoading} />,
+        <BarGraph key="locale-bar" data={snapshotData?.locale} isLoading={isLoading} />,
       ])}
       {containerBox([
         <DoughnutGraph
+          key="device-donut"
           labels={snapshotData?.device ? Object.keys(snapshotData?.device) : []}
           data={snapshotData?.device ? Object.values(snapshotData?.device) : []}
           isLoading={isLoading}
         />,
         <DetailStatisticTable
+          key="os-detail"
           data={snapshotData?.os}
           title="User operating system"
           keyHead="OS"
@@ -159,7 +138,7 @@ const ReportSnapshot = () => {
           isLoading={isLoading}
         />,
       ])}
-    </Container>
+    </div>
   );
 };
 

@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 import "../src/index.css";
 import "../src/animations.css";
 import { getCurrentUser } from "./lib/getCurrentUser";
 import Providers from "./providers";
+
+const inter = Inter({
+  subsets: ["latin", "vietnamese"],
+  display: "swap",
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -57,8 +65,8 @@ export const metadata: Metadata = {
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   const initialUser = await getCurrentUser();
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
+      <body suppressHydrationWarning style={{ fontFamily: "var(--font-inter), Inter, system-ui, -apple-system, sans-serif" }}>
         <Providers initialUser={initialUser}>{children}</Providers>
       </body>
     </html>

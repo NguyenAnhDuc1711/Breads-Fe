@@ -1,6 +1,7 @@
-import { Input } from "@chakra-ui/react";
+import { Input } from "../ui/primitives";
 import { memo, useEffect, useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
+import "./index.css";
 
 const SearchBar = ({
   value,
@@ -32,11 +33,7 @@ const SearchBar = ({
       value={text}
       onChange={(e) => setText(e.target.value)}
       placeholder={placeholder}
-      width={"100%"}
-      maxWidth={"100%"}
-      height={"100%"}
-      padding={"0 16px"}
-      border={"1px solid gray"}
+      className="search-bar"
     />
   );
 };

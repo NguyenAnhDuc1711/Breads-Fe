@@ -1,18 +1,10 @@
-import {
-  Avatar,
-  AvatarBadge,
-  Container,
-  Flex,
-  Image,
-  Stack,
-  Text,
-  useBreakpointValue,
-  WrapItem,
-} from "@chakra-ui/react";
+import { Avatar, AvatarBadge, Text } from "../../../../ui/primitives";
+import { WrapItem } from "../../../../ui/primitives";
 import dayjs from "../../../../../util/dayjs";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import { AppState } from "../../../../../store";
 import { selectConversation } from "../../../../../store/MessageSlice";
+import "./index.css";
 
 const ConversationBar = ({
   conversation,
@@ -28,7 +20,6 @@ const ConversationBar = ({
     (state) => state.message.selectedConversation
   );
   const isSeen = lastMsg?.usersSeen?.includes(userInfo?._id);
-  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleLastMsgInfo = () => {
     const isCurrentUser = lastMsg?.sender === userInfo._id;
@@ -40,36 +31,12 @@ const ConversationBar = ({
       : lastMsg?.media?.length
       ? "Send media to you"
       : "";
-    const maxWidth = isMobile ? "145px" : "100px";
-    const marginBottom = isMobile ? "5px" : "0px";
     return (
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          marginBottom: marginBottom,
-        }}
-      >
-        <span
-          style={{
-            textOverflow: "ellipsis",
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            maxWidth: maxWidth,
-            flexGrow: 1,
-          }}
-        >
+      <div className="conversation-bar__last-msg-row">
+        <span className="conversation-bar__last-msg-text">
           {userPrefix + ": " + msgContent}
         </span>
-        <span
-          style={{
-            flexShrink: 0,
-            whiteSpace: "nowrap",
-            marginLeft: "8px",
-            minWidth: "50px",
-          }}
-        >
+        <span className="conversation-bar__last-msg-time">
           {" • " + dayjs(lastMsg?.createdAt).fromNow(true)}
         </span>
       </div>
@@ -93,18 +60,11 @@ const ConversationBar = ({
   };
 
   return (
-    <Flex
+    <div
       id={`conversation_${conversation?._id}`}
-      gap={4}
-      alignItems={"center"}
-      p={2}
-      _hover={{
-        cursor: "pointer",
-        bg: "gray",
-        color: "white",
-      }}
-      bg={_id === selectedConversation?._id ? "gray" : ""}
-      borderRadius={"md"}
+      className={`conversation-bar${
+        _id === selectedConversation?._id ? " conversation-bar--selected" : ""
+      }`}
       onClick={() => {
         handleClickConversation();
       }}
@@ -117,24 +77,21 @@ const ConversationBar = ({
           <AvatarBadge boxSize={"1em"} bg={"green.500"} />
         </Avatar>
       </WrapItem>
-      <Stack direction={"column"} fontSize={isMobile ? "md" : "sm"}>
-        <Text fontWeight={"700"} display={"flex"} alignItems={"center"}>
+      <div className="conversation-bar__stack">
+        <Text className="conversation-bar__username">
           {participant?.username}
         </Text>
-        <Container
-          p={0}
-          m={0}
-          fontSize={isMobile ? "md" : "xs"}
-          display={"flex"}
-          alignItems={"center"}
-          gap={1}
-          maxWidth={"100%"}
-          color={isSeen ? "lightgray" : "white"}
+        <div
+          className={`conversation-bar__last-msg${
+            isSeen
+              ? " conversation-bar__last-msg--seen"
+              : " conversation-bar__last-msg--unseen"
+          }`}
         >
           {handleLastMsgInfo()}
-        </Container>
-      </Stack>
-    </Flex>
+        </div>
+      </div>
+    </div>
   );
 };
 

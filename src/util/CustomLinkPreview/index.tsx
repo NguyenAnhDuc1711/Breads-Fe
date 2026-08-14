@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Skeleton, SkeletonText } from "@chakra-ui/react";
+import { Skeleton, SkeletonText } from "../../components/ui/primitives";
 import axios from "axios";
 import { memo, useEffect, useState } from "react";
 import { TiDeleteOutline } from "react-icons/ti";
@@ -69,38 +69,25 @@ const CustomLinkPreview = ({
   };
   if (!data)
     return (
-      <Box padding="6" boxShadow="lg" bg="#202020" maxW="sm" borderRadius="md">
+      <div className="preview-link-skeleton">
         <Skeleton height="200px" borderRadius="md" />
         <SkeletonText my="4" noOfLines={1} spacing="4" skeletonHeight="3" />
-      </Box>
+      </div>
     );
 
   return (
     <div
       className="preview-link-container"
       style={{
-        backgroundColor: bg || "",
-        color: color || "",
-        border: borderColor ? `1px solid ${borderColor}` : "",
-        position: "relative",
-        padding: "10px",
-        borderRadius: "8px",
+        backgroundColor: bg || undefined,
+        color: color || undefined,
+        border: borderColor ? `1px solid ${borderColor}` : undefined,
       }}
     >
       {postAction === PostConstants.ACTIONS.CREATE && (
         <TiDeleteOutline
+          className="link-delete-btn"
           onClick={handleDeleteLink}
-          style={{
-            position: "absolute",
-            top: "5px",
-            right: "5px",
-            color: "white",
-            border: "none",
-            width: "20px",
-            height: "20px",
-            cursor: "pointer",
-            fontSize: "12px",
-          }}
         />
       )}
 
@@ -109,18 +96,12 @@ const CustomLinkPreview = ({
       <a href={data.url} target="_blank" rel="noopener noreferrer">
         {data.image && (
           <>
-            <img
-              src={data.image}
-              className="link-img"
-              alt={data.title}
-              style={{ maxWidth: "100%", borderRadius: "8px" }}
-            />
+            <img src={data.image} className="link-img" alt={data.title} />
             <p
               className="link-des"
               style={{
-                backgroundColor: bg || "",
-                color: color || "",
-                marginTop: "8px",
+                backgroundColor: bg || undefined,
+                color: color || undefined,
               }}
             >
               {data.description?.length > 100

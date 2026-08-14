@@ -1,0 +1,98 @@
+.activity-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.activity-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding: 24px 0;
+}
+
+.activity-empty__text {
+  color: #718096;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.activity-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #202020;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+.activity-item__main {
+  display: flex;
+  align-items: center;
+}
+
+.activity-item__avatar {
+  margin-right: 16px;
+}
+
+.activity-item__body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.activity-item__header {
+  display: flex;
+}
+
+.activity-item__header--spread {
+  display: flex;
+  justify-content: space-between;
+}
+
+.activity-item__username {
+  font-weight: 700;
+  margin-right: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.activity-item__username:hover {
+  text-decoration: underline;
+}
+
+.activity-item__time {
+  color: #718096;
+  font-size: 0.875rem;
+}
+
+.activity-item__time--nowrap {
+  color: #718096;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.activity-item__content {
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.activity-item__action-text {
+  color: #4a5568;
+  font-size: 0.875rem;
+}
+
+.activity-item__follow-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}

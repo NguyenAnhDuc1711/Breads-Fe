@@ -1,5 +1,6 @@
-import { Flex, Spinner, Text } from "@chakra-ui/react";
+import { Spinner, Text } from "../ui/primitives";
 import { memo, useEffect, useState } from "react";
+import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
 import { GET } from "../../config/API";
@@ -93,14 +94,9 @@ const UsersTagBox = ({
   return (
     <>
       {isLoading && (
-        <Flex
-          justifyContent={"center"}
-          width={"100%"}
-          height={"100%"}
-          padding={"6px"}
-        >
+        <div className="users-tag-box__loading">
           <Spinner size="sm" />
-        </Flex>
+        </div>
       )}
       <InfiniteScroll
         queryFc={(page) => {

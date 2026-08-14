@@ -1,64 +1,31 @@
-import { Flex, Image, Text, useColorMode, Link } from "@chakra-ui/react";
+import { Image, Text } from "../../../../../../ui/primitives";
+import "./index.css";
 
 const LinkBox = ({ link, color = "" }: { link: any; color?: string }) => {
-  const { colorMode } = useColorMode();
-
   return (
-    <Link
+    <a
       href={link.url}
-      width={"100%"}
-      borderRadius={4}
-      isExternal
-      _hover={{
-        textDecoration: "none",
-        backgroundColor: "gray",
-      }}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="msg-link"
     >
-      <Flex
-        p={2}
-        pr={4}
-        gap={2}
-        alignItems={"center"}
-        width={"100%"}
-        cursor={"pointer"}
-      >
+      <div className="msg-link__row">
         <Image
+          className="msg-link__thumb"
           src={link.image}
-          width={"36px"}
-          height={"36px"}
-          borderRadius={3}
           alt={link.title ? `${link.title} thumbnail` : "Link preview"}
         />
-        <Flex
-          flexDir={"column"}
-          alignItems={"center"}
-          width={"calc(100% - 40px)"}
-        >
+        <div className="msg-link__text-col">
           <Text
-            fontWeight={600}
-            fontSize={"12px"}
-            textOverflow={"ellipsis"}
-            maxW={"100%"}
-            overflow={"hidden"}
-            whiteSpace={"nowrap"}
-            color={color ? color : ""}
+            className="msg-link__title"
+            style={{ color: color || undefined }}
           >
             {link.title}
           </Text>
-          <Text
-            fontWeight={400}
-            color={"blue"}
-            fontSize={"10px"}
-            textOverflow={"ellipsis"}
-            maxW={"100%"}
-            overflow={"hidden"}
-            whiteSpace={"nowrap"}
-          >
-            {link.url}
-          </Text>
-        </Flex>
-      </Flex>
-    </Link>
+          <Text className="msg-link__url">{link.url}</Text>
+        </div>
+      </div>
+    </a>
   );
 };
 

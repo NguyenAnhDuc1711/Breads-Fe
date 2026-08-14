@@ -1,0 +1,72 @@
+.conversation-body {
+  overflow-y: auto;
+  flex: 1;
+  max-height: calc(100% - 112px);
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.chat-hidden-layer {
+  position: fixed;
+  z-index: 5000;
+  display: none;
+}
+
+.conversation-body__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+  height: fit-content;
+  padding: 8px 12px;
+}
+
+.conversation-body__date-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conversation-body__date-line {
+  height: 2px;
+  flex: 1;
+}
+
+.conversation-body__scroll-btn {
+  position: fixed;
+  bottom: 72px;
+  z-index: 3000;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  color: #1a202c;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.conversation-body__scroll-btn:hover:not(:disabled) {
+  background-color: #e2e8f0;
+}
+
+[data-theme="dark"] .conversation-body__scroll-btn {
+  background-color: #2a2a2a;
+  color: #f7fafc;
+}
+
+[data-theme="dark"] .conversation-body__scroll-btn:hover:not(:disabled) {
+  background-color: #333333;
+}
+
+.conversation-body__scroll-btn--detail {
+  right: 22vw;
+}
+
+.conversation-body__scroll-btn--full {
+  right: 30px;
+}
+
+.conversation-body__scroll-btn-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

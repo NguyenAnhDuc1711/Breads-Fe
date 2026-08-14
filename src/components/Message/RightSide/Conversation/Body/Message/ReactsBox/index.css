@@ -1,0 +1,40 @@
+.reacts-summary {
+  display: flex;
+  border-radius: 12px;
+  background-color: lightgray;
+  padding: 0 6px;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.reacts-summary:hover {
+  background-color: #ebebeb;
+}
+
+.reacts-summary__icons {
+  display: flex;
+}
+
+.reacts-detail-modal {
+  background-color: #e2e8f0;
+}
+
+[data-theme="dark"] .reacts-detail-modal {
+  background-color: #181818;
+}
+
+.reacts-detail-modal__header {
+  border-bottom: 1px solid gray;
+  position: relative;
+}
+
+.reacts-detail-modal__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reacts-detail-modal__close-wrap {
+  position: absolute;
+  right: 20px;
+}

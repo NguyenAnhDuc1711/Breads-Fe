@@ -1,8 +1,9 @@
-import { Container, Flex, Text, useColorModeValue } from "@chakra-ui/react";
+import { Text, useColorModeValue } from "../ui/primitives";
 import { useAppSelector } from "../../hooks/redux";
 import Survey from "../ListPost/Post/Survey";
 import MediaDisplay from "./mediaDisplay";
 import OptimizedAvatar from "../OptimizedAvatar";
+import "./PostReplied.css";
 
 const PostReplied = () => {
   const postReply = useAppSelector((state) => state.post.postReply);
@@ -11,21 +12,24 @@ const PostReplied = () => {
   return (
     <>
       {postReply && (
-        <Flex>
+        <div className="post-replied">
           <OptimizedAvatar
             src={postReply.authorInfo?.avatar}
             width={"40px"}
             height={"40px"}
           />
-          <Container margin="0" paddingRight={0}>
-            <Text color={textColor} fontWeight={"600"}>
+          <div className="post-replied__body">
+            <Text
+              className="post-replied__username"
+              style={{ color: textColor }}
+            >
               {postReply.authorInfo?.username}
             </Text>
             <Text>{postReply.content}</Text>
             <MediaDisplay post={postReply} />
             {postReply.survey.length !== 0 && <Survey post={postReply} />}
-          </Container>
-        </Flex>
+          </div>
+        </div>
       )}
     </>
   );

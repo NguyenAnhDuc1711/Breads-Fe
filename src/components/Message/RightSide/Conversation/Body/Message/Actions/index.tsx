@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Text } from "../../../../../../ui/primitives";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { FaDeleteLeft } from "react-icons/fa6";
@@ -24,6 +24,7 @@ import {
 import { addEvent, getEmojiIcon } from "../../../../../../../util";
 import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
 import IconWrapper from "../../../MessageBar/IconWrapper";
+import "./index.css";
 
 const MessageAction = ({ ownMsg, msg, previousReact }) => {
   const dispatch = useAppDispatch();
@@ -133,15 +134,7 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
   };
 
   return (
-    <Flex
-      pos={"relative"}
-      p={0}
-      m={0}
-      width={"fit-content"}
-      maxWidth={"fit-content"}
-      mr={ownMsg ? 2 : 0}
-      ml={!ownMsg ? 2 : 0}
-    >
+    <div className={`msg-action${ownMsg ? " msg-action--own" : " msg-action--other"}`}>
       <ClickOutsideComponent
         onClose={() => {
           setOpenBox(false);
@@ -157,42 +150,24 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
             />
           }
         />
-        <Flex
-          display={openBox ? "flex" : "none"}
-          position={"absolute"}
-          flexDir={"column"}
-          borderRadius={4}
-          border={"1px solid gray"}
-          p={2}
-          top={"calc(100% + 4px)"}
-          // bg={useColorModeValue("gray.200", "#181818")}
-          left={ownMsg ? "" : "0"}
-          right={ownMsg ? "0" : ""}
-          zIndex={1000}
-          minWidth={"140px"}
+        <div
+          className={`msg-action__menu${openBox ? " msg-action__menu--open" : ""}${
+            ownMsg ? " msg-action__menu--own" : " msg-action__menu--other"
+          }`}
         >
           {boxActions.map(({ icon, name, onClick }) => (
-            <Flex
+            <div
+              className="msg-action__menu-item"
               key={name}
-              alignItems={"center"}
-              gap={3}
-              px={2}
-              py={1}
-              cursor={"pointer"}
-              borderRadius={4}
-              _hover={{
-                bg: "gray",
-              }}
-              minWidth={"140px"}
               onClick={() => {
                 !!onClick && onClick();
               }}
             >
               {icon}
               <Text textTransform={"capitalize"}>{name}</Text>
-            </Flex>
+            </div>
           ))}
-        </Flex>
+        </div>
       </ClickOutsideComponent>
       <ClickOutsideComponent onClose={() => setDisplayReactBox(false)}>
         <IconWrapper
@@ -204,19 +179,7 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
           }
         />
         {displayReactBox && (
-          <Flex
-            alignItems={"center"}
-            px={2}
-            py={1}
-            borderRadius={6}
-            pos={"absolute"}
-            bottom={"calc(100%)"}
-            right={"50%"}
-            transform={"translateX(55%)"}
-            border={"1px solid gray"}
-            // bg={useColorModeValue("gray.200", "#181818")}
-            zIndex={1000}
-          >
+          <div className="msg-action__emoji-box">
             {defaultEmoji.map((emjStr) => (
               <IconWrapper
                 key={`emj-${emjStr}`}
@@ -232,10 +195,10 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
                 }
               />
             ))}
-          </Flex>
+          </div>
         )}
       </ClickOutsideComponent>
-    </Flex>
+    </div>
   );
 };
 

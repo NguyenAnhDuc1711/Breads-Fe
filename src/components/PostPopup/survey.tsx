@@ -1,9 +1,11 @@
-import { Collapse, Container, Flex, Slide, Text } from "@chakra-ui/react";
+import { Text } from "../ui/primitives";
+import { Collapse, Slide } from "../ui/primitives";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { updatePostInfo } from "../../store/PostSlice";
 import SurveyOption from "./survey-option";
+import "./survey.css";
 
 const PostSurvey = () => {
   const dispatch = useAppDispatch();
@@ -23,7 +25,7 @@ const PostSurvey = () => {
   return (
     <Collapse in={true}>
       <Slide direction={"left"} in={true}>
-        <Container margin={0} padding={0}>
+        <div className="post-survey">
           {survey.map((item, index) => (
             <SurveyOption
               key={`survey-${item.value}-${index}`}
@@ -33,24 +35,16 @@ const PostSurvey = () => {
               setSelectedOption={setSelectedOption}
             />
           ))}
-          <Flex
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            margin={"4px 0"}
-          >
-            <Text fontSize={"13px"} fontWeight={400}>
-              End after 24 hours
-            </Text>
+          <div className="post-survey__footer">
+            <Text className="post-survey__hint">End after 24 hours</Text>
             <Text
-              fontSize={"13px"}
-              fontWeight={600}
-              cursor={"pointer"}
+              className="post-survey__remove"
               onClick={() => handleRemoveSurvey()}
             >
               Remove this survey
             </Text>
-          </Flex>
-        </Container>
+          </div>
+        </div>
       </Slide>
     </Collapse>
   );

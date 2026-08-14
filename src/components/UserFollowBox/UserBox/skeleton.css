@@ -1,0 +1,8 @@
+.user-box-skeleton {
+  display: flex;
+  align-items: center;
+}
+
+.user-box-skeleton__text-col {
+  width: fit-content;
+}

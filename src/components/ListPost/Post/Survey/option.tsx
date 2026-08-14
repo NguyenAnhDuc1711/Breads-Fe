@@ -42,25 +42,17 @@ const SurveyOption = ({
   }, [post]);
 
   return (
-    <div className="survey-opt">
+    <div className="survey__option">
       <p
-        className="value"
-        style={
-          isAdmin
-            ? {
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                flexGrow: 1,
-              }
-            : {}
-        }
+        className={`survey__option-value${
+          isAdmin ? " survey__option-value--admin" : ""
+        }`}
       >
         {option.value}
       </p>
       {!isAdmin && (
-        <div className="action-wrapper">
-          <p className="percent">{percent}%</p>
+        <div className="survey__option-actions">
+          <p className="survey__option-percent">{percent}%</p>
           <input
             type="checkbox"
             onChange={() => {
@@ -72,13 +64,7 @@ const SurveyOption = ({
           />
         </div>
       )}
-      <div
-        className="opt-bg"
-        style={{
-          width: `${percent}%`,
-          transition: "width 0.5s ease-in-out",
-        }}
-      />
+      <div className="survey__option-bg" style={{ width: `${percent}%` }} />
     </div>
   );
 };

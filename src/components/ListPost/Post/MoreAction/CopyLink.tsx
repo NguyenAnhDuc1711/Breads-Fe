@@ -1,4 +1,4 @@
-import { useToast } from "@chakra-ui/react";
+import { useToast } from "../../../ui/primitives";
 import { IPost } from "../../../../store/PostSlice";
 
 const useCopyLink = () => {

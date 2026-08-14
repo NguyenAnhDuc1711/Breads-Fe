@@ -1,0 +1,40 @@
+.send-next-modal {
+  background-color: #e2e8f0;
+}
+
+[data-theme="dark"] .send-next-modal {
+  background-color: #181818;
+}
+
+.send-next-modal__header {
+  border-bottom: 1px solid gray;
+  position: relative;
+}
+
+.send-next-modal__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-next-modal__close-wrap {
+  position: absolute;
+  right: 20px;
+}
+
+.send-next-modal__search {
+  margin-bottom: 12px;
+  font-size: 1.125rem;
+}
+
+@media (min-width: 768px) {
+  .send-next-modal__search {
+    font-size: 1rem;
+  }
+}
+
+.send-next-modal__empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

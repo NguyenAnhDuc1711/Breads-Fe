@@ -1,7 +1,13 @@
-import { Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+} from "../ui/primitives";
 import { useAppDispatch } from "../../hooks/redux";
 import Login from "../../pages/Login";
 import { openLoginPopupAction } from "../../store/UtilSlice";
+import "./index.css";
 
 const LoginPopupScreen = () => {
   const dispatch = useAppDispatch();
@@ -13,17 +19,12 @@ const LoginPopupScreen = () => {
     <Modal closeOnOverlayClick={true} isOpen={true} onClose={() => onClose()}>
       <ModalOverlay />
       <ModalContent
-        borderRadius={"10px"}
-        maxW={"100vw"}
-        w={"100vw"}
-        p={0}
-        m={0}
-        bg="transparent"
+        className="login-popup__content"
         onClick={() => {
           onClose();
         }}
       >
-        <ModalBody p={0} maxH={"100vh"} maxW={"100vw"} bg="transparent">
+        <ModalBody className="login-popup__body">
           <Login />
         </ModalBody>
       </ModalContent>

@@ -1,7 +1,8 @@
-import { Container, Flex, Text } from "@chakra-ui/react";
+import { Text } from "../../../../../ui/primitives";
 import { memo, useMemo } from "react";
 import { emojiMap } from "../../../../../../util";
 import IconWrapper from "../IconWrapper";
+import "./EmojiBox.css";
 
 const EmojiBox = ({ searchValue, currentEmoji = "", onClick }) => {
   const emojis = useMemo(() => {
@@ -14,26 +15,8 @@ const EmojiBox = ({ searchValue, currentEmoji = "", onClick }) => {
   }, [searchValue]);
 
   return (
-    <Container
-      padding={0}
-      overflowY={"auto"}
-      maxHeight={"200px"}
-      sx={{
-        "&::-webkit-scrollbar": {
-          width: "12px",
-        },
-        "&::-webkit-scrollbar-track": {
-          background: "white",
-          borderRadius: "8px",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "gray",
-          borderRadius: "8px",
-          border: "3px solid white",
-        },
-      }}
-    >
-      <Flex wrap="wrap" width={"180px"} gap={"4px"}>
+    <div className="emoji-box">
+      <div className="emoji-box__grid">
         {emojis.map((emoji) => (
           <IconWrapper
             key={emoji}
@@ -49,8 +32,8 @@ const EmojiBox = ({ searchValue, currentEmoji = "", onClick }) => {
             }
           />
         ))}
-      </Flex>
-    </Container>
+      </div>
+    </div>
   );
 };
 

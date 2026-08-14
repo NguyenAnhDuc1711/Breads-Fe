@@ -1,4 +1,8 @@
-import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
+import {
+  Input,
+  InputGroup,
+  InputRightElement,
+} from "../../../../ui/primitives";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IoSendSharp } from "react-icons/io5";
@@ -21,6 +25,7 @@ import {
   replaceEmojis,
 } from "../../../../../util";
 import { getCurrentTheme } from "../../../../../util/Themes";
+import "./index.css";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
@@ -186,30 +191,22 @@ const MessageInput = () => {
 
   return (
     <form
+      className="msg-bar"
       style={{
-        position: "relative",
         backgroundColor: conversationBackground?.backgroundColor,
         backgroundBlendMode: conversationBackground?.backgroundBlendMode,
-        display: "flex",
-        flexDirection: "column",
       }}
     >
-      <InputGroup
-        alignItems={"center"}
-        p={2}
-        width={"100%"}
-        color={borderColor}
-      >
+      <InputGroup className="msg-bar__input-group" color={borderColor}>
         {icons.map(({ action, icon }) => (
           <Fragment key={action}>
             <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
           </Fragment>
         ))}
         <Input
+          className="msg-bar__input"
           ref={inputRef}
-          flex={1}
           placeholder={t("Typeamessage")}
-          margin={"0 8px"}
           value={content}
           bg={loadingUploadMsg ? "gray" : bg ? bg : ""}
           color={textColor ? textColor : ""}
@@ -228,7 +225,7 @@ const MessageInput = () => {
           }}
           opacity={loadingUploadMsg ? 0.4 : 1}
         />
-        <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
+        <InputRightElement className="msg-bar__send-wrap">
           <EmojiMsgBtn
             popup={popup}
             closeTooltip={closeTooltip}

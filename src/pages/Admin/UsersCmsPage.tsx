@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Container, Image, Button, Box, Text } from "@chakra-ui/react";
+import { Button, Image, Text } from "../../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GET } from "../../config/API";
@@ -11,6 +11,7 @@ import { Constants } from "../../Breads-Shared/Constants";
 import { updateUser } from "../../store/UserSlice/asyncThunk";
 import PaginationBtn from "../../components/PaginationBtn";
 import useDebounce from "../../hooks/useDebounce";
+import "./UsersCmsPage.css";
 
 const convertUserStatus = (status: number) => {
   const { ACTIVE, INACTIVE, LOCK, BANNED } = Constants.USER_STATUS;
@@ -96,7 +97,7 @@ const UsersCmsPage = () => {
           }}
         />
       </div>
-      <Box overflowX="auto" maxHeight="70vh" overflowY="auto">
+      <div className="users-cms-page__table-wrap">
         <table className="table table-striped table-bordered table-responsive">
           <thead
             className="thead-dark"
@@ -145,9 +146,6 @@ const UsersCmsPage = () => {
                       borderRadius="md"
                       cursor={"pointer"}
                       alt={user?.username ? `${user.username}'s avatar` : "User avatar"}
-                      _hover={{
-                        opacity: 0.7,
-                      }}
                     />
                   </td>
                   <td style={{ minWidth: "100px", width: "20%" }}>
@@ -211,7 +209,7 @@ const UsersCmsPage = () => {
             )}
           </tbody>
         </table>
-      </Box>
+      </div>
       {totalPages > 1 && (
         <nav className="d-flex justify-content-center mt-3">
           <PaginationBtn

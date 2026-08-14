@@ -1,9 +1,7 @@
 "use client";
 
-import { Avatar } from "@chakra-ui/avatar";
-import { Box, Divider, Flex, Link, Text, VStack } from "@chakra-ui/layout";
+import { Avatar, Button, Divider, Text } from "./ui/primitives";
 import {
-  Button,
   Menu,
   MenuButton,
   MenuItem,
@@ -18,9 +16,9 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  useColorModeValue,
   useDisclosure,
-} from "@chakra-ui/react";
+} from "./ui/primitives";
+import "./UserHeader.css";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CgDanger, CgMoreO } from "react-icons/cg";
@@ -120,8 +118,6 @@ const UserHeader = ({ user }: { user: IUser }) => {
       );
     });
   };
-  const hoverColor = useColorModeValue("cbg.light", "cbg.dark");
-  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleSeeAvatar = () => {
     addEvent({
@@ -149,24 +145,16 @@ const UserHeader = ({ user }: { user: IUser }) => {
 
   return (
     <>
-      <VStack gap={4} alignItems={"start"} padding={"4px"}>
-        <Flex justifyContent={"space-between"} w={"full"}>
-          <Box>
-            <Text fontSize={"2xl"}>{user?.name}</Text>
-            <Flex gap={2} alignItems={"center"}>
-              <Text fontSize={"sm"}>{user?.username}</Text>
-              <Text
-                fontSize={"xs"}
-                bg={"gray.dark"}
-                color={"gray.light"}
-                p={1}
-                borderRadius={"full"}
-              >
-                Breads.net
-              </Text>
-            </Flex>
-          </Box>
-          <Box>
+      <div className="user-header">
+        <div className="user-header__top">
+          <div>
+            <Text className="user-header__name">{user?.name}</Text>
+            <div className="user-header__username-row">
+              <Text className="user-header__username">{user?.username}</Text>
+              <Text className="user-header__badge">Breads.net</Text>
+            </div>
+          </div>
+          <div>
             {user?.avatar && (
               <OptimizedAvatar
                 name={user?.name}
@@ -188,39 +176,35 @@ const UserHeader = ({ user }: { user: IUser }) => {
                 }}
               />
             )}
-          </Box>
-        </Flex>
+          </div>
+        </div>
         <Text>{user?.bio}</Text>
         {userInfo._id === user?._id && (
-          <Link as={NextLink} href="/update">
-            <Button size={"sm"} w={"full"}>
+          <NextLink href="/update">
+            <Button className="user-header__update-btn btn-subtle" size={"sm"}>
               {" "}
               {t("updateprofile")}
             </Button>
-          </Link>
+          </NextLink>
         )}
         {userInfo._id !== user?._id && (
-          <Flex width={"100%"} gap={4}>
+          <div className="user-header__actions-row">
             <FollowBtn user={user} />
             <ConversationBtn user={user} />
-          </Flex>
+          </div>
         )}
-        <Flex w={"full"} justifyContent={"space-between"}>
-          <Flex gap={2} alignItems={"center"}>
+        <div className="user-header__stats-row">
+          <div className="user-header__followers-group">
             <Text
-              _hover={{
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-              color={"gray.light"}
+              className="user-header__followers-text"
               onClick={() => openFollowBox(FOLLOW_TAB.FOLLOWED)}
             >
               {user?.followersCount ?? 0} {t("followers")}
             </Text>
-          </Flex>
-          <Flex>
+          </div>
+          <div>
             {user?._id !== userInfo?._id && (
-              <Box className="icon-container">
+              <div className="icon-container">
                 <Menu>
                   <MenuButton>
                     <CgMoreO size={24} cursor={"pointer"} />
@@ -229,44 +213,23 @@ const UserHeader = ({ user }: { user: IUser }) => {
                     <MenuList
                       bg="gray.dark"
                       boxShadow="md"
-                      py={2}
                       borderRadius={"10px"}
                     >
                       <MenuItem
-                        bg="gray.dark"
-                        color="white"
-                        _hover={{ bg: hoverColor }}
-                        py={3}
-                        px={4}
-                        display="flex"
-                        borderRadius={"10px"}
-                        alignItems="center"
-                        gap={2}
+                        className="user-header__menu-item"
                         onClick={copyURL}
                       >
                         <FaLink />
                         {t("copylink")}
                       </MenuItem>
-                      <MenuItem
-                        bg="gray.dark"
-                        color="white"
-                        _hover={{ bg: hoverColor }}
-                        py={3}
-                        px={4}
-                        display="flex"
-                        borderRadius={"10px"}
-                        alignItems="center"
-                        gap={2}
-                      >
-                        <Box
+                      <MenuItem className="user-header__menu-item">
+                        <div
+                          className="user-header__menu-item-trigger"
                           onClick={onOpen}
-                          display="flex"
-                          alignItems="center"
-                          gap={2}
                         >
                           <CgDanger />
                           {t("aboutthisprofile")}
-                        </Box>
+                        </div>
 
                         <Modal
                           closeOnOverlayClick={true}
@@ -274,26 +237,22 @@ const UserHeader = ({ user }: { user: IUser }) => {
                           onClose={onClose}
                         >
                           <ModalOverlay />
-                          <ModalContent
-                            w={"400px"}
-                            bg={bgColor}
-                            borderRadius={"10px"}
-                          >
-                            <ModalBody pb={6}>
-                              <Flex justifyContent={"space-between"} mt={2}>
-                                <Flex direction={"column"}>
+                          <ModalContent className="user-header__about-modal">
+                            <ModalBody className="user-header__about-modal-body">
+                              <div className="user-header__about-row">
+                                <div className="user-header__about-col">
                                   <Text>{t("name")}</Text>
-                                  <Box>{`${user.name}(@${user.username})`}</Box>
-                                </Flex>
+                                  <div>{`${user.name}(@${user.username})`}</div>
+                                </div>
                                 <Avatar src={user.avatar} size="lg" />
-                              </Flex>
+                              </div>
                               <Divider width={"270px"} borderWidth="1px" />
-                              <Flex justifyContent={"space-between"} my={2}>
-                                <Flex direction={"column"}>
+                              <div className="user-header__about-row--spaced">
+                                <div className="user-header__about-col">
                                   <Text>{t("joindate")}</Text>
-                                  <Box>{`${month} ${t("year")} ${year}`}</Box>
-                                </Flex>
-                              </Flex>
+                                  <div>{`${month} ${t("year")} ${year}`}</div>
+                                </div>
+                              </div>
                             </ModalBody>
                           </ModalContent>
                         </Modal>
@@ -301,21 +260,17 @@ const UserHeader = ({ user }: { user: IUser }) => {
                     </MenuList>
                   </Portal>
                 </Menu>
-              </Box>
+              </div>
             )}
-          </Flex>
-        </Flex>
+          </div>
+        </div>
 
         <Tabs width={"100%"}>
           <TabList width={"100%"}>
             {Object.keys(TABS).map((key) => (
               <Tab
                 key={`tab-${key}`}
-                flex={1}
-                borderBottom={"1.5px solid white"}
-                justifyContent={"center"}
-                pb={3}
-                cursor={"pointer"}
+                className="user-header__tab"
                 onClick={() => {
                   addEvent({
                     event: "change_user_post_tab",
@@ -334,13 +289,13 @@ const UserHeader = ({ user }: { user: IUser }) => {
 
           <TabPanels width={"100%"}>
             {Object.keys(TABS).map((tab) => (
-              <TabPanel key={tab} p={0} mt={4} width={"100%"}>
+              <TabPanel key={tab} className="user-header__tab-panel">
                 {isLoading ? (
-                  <Flex direction="column" gap={2}>
+                  <div className="user-header__skeleton-list">
                     {[1, 2, 3, 4, 5].map((num) => (
                       <SkeletonPost key={`skeleton-${num}`} />
                     ))}
-                  </Flex>
+                  </div>
                 ) : (
                   <ListPost />
                 )}
@@ -348,7 +303,7 @@ const UserHeader = ({ user }: { user: IUser }) => {
             ))}
           </TabPanels>
         </Tabs>
-      </VStack>
+      </div>
       <Modal
         isOpen={followBox.open}
         onClose={() => {
@@ -359,7 +314,7 @@ const UserHeader = ({ user }: { user: IUser }) => {
         }}
       >
         <ModalOverlay />
-        <ModalContent overflow={"hidden"}>
+        <ModalContent className="user-header__follow-modal-content">
           <Tabs
             isLazy
             index={followBox.currentTab === FOLLOW_TAB.FOLLOWED ? 0 : 1}
@@ -370,27 +325,27 @@ const UserHeader = ({ user }: { user: IUser }) => {
             }}
           >
             <TabList width={"100%"} maxWidth={"100%"}>
-              <Tab width={"50%"} textTransform={"capitalize"}>
-                <Flex flexDirection={"column"}>
+              <Tab className="user-header__follow-tab">
+                <div className="user-header__follow-tab-inner">
                   <Text>{FOLLOW_TAB.FOLLOWED}</Text>
-                  <Text fontSize={"14px"} fontWeight={500}>
+                  <Text className="user-header__follow-tab-count">
                     {user?.followersCount ?? 0}
                   </Text>
-                </Flex>
+                </div>
               </Tab>
-              <Tab width={"50%"} textTransform={"capitalize"}>
-                <Flex flexDirection={"column"}>
+              <Tab className="user-header__follow-tab">
+                <div className="user-header__follow-tab-inner">
                   <Text>{FOLLOW_TAB.FOLLOWING}</Text>
-                  <Text fontSize={"14px"} fontWeight={500}>
+                  <Text className="user-header__follow-tab-count">
                     {user?.followingCount ?? 0}
                   </Text>
-                </Flex>
+                </div>
               </Tab>
             </TabList>
 
-            <TabPanels padding={0} maxHeight={"50vh"} overflowY={"auto"}>
+            <TabPanels className="user-header__follow-panels">
               {[FOLLOW_TAB.FOLLOWED, FOLLOW_TAB.FOLLOWING].map((tab) => (
-                <TabPanel padding={0} key={tab}>
+                <TabPanel key={tab}>
                   <InfiniteScroll
                     queryFc={(page) => loadFollowPage(tab, page)}
                     data={followLists[tab].items}
@@ -405,9 +360,9 @@ const UserHeader = ({ user }: { user: IUser }) => {
                   />
                   {followLists[tab].loaded &&
                     followLists[tab].items.length === 0 && (
-                      <Flex justifyContent={"center"} padding={"16px"}>
+                      <div className="user-header__follow-empty">
                         <EmptyContentSvg />
-                      </Flex>
+                      </div>
                     )}
                 </TabPanel>
               ))}

@@ -1,0 +1,35 @@
+.code-popup__content {
+  border-radius: 10px;
+}
+
+.code-popup__body {
+  padding-bottom: 24px;
+  background-color: #ffffff;
+  border: 1px solid #0a0a0a;
+  border-radius: 6px;
+}
+
+[data-theme="dark"] .code-popup__body {
+  background-color: #0a0a0a;
+  border: 1px solid #ffffff;
+}
+
+.code-popup__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.code-popup__title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 12px 0;
+}
+
+.code-popup__description {
+  font-size: 14px;
+}
+
+.code-popup__input {
+  margin: 16px 0;
+}

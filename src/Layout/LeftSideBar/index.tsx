@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
+import { Button, Image, useColorMode } from "../../components/ui/primitives";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
@@ -12,7 +12,6 @@ import { FiSearch } from "react-icons/fi";
 import { GrHomeRounded, GrOverview } from "react-icons/gr";
 import { MdAdd } from "react-icons/md";
 import { TbMessageReport } from "react-icons/tb";
-import { LeftSideBarWidth } from "..";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
@@ -27,6 +26,7 @@ import {
 import { updatePostAction } from "../../store/PostSlice";
 import { getCurrentPage, getPathForPage } from "../../util/route";
 import SidebarMenu from "./SidebarMenu";
+import "./index.css";
 
 const LeftSideBar = () => {
   const dispatch = useAppDispatch();
@@ -44,44 +44,20 @@ const LeftSideBar = () => {
 
   const linkIcon = useMemo(
     () => (
-      <Box position="relative" display="inline-block">
+      <div className="left-sidebar__icon-wrap">
         <FaRegHeart size={24} />
-        {hasNewNotification && (
-          <Box
-            position="absolute"
-            top="-2px"
-            right="-6px"
-            width="12px"
-            height="12px"
-            borderRadius="full"
-            bg="red"
-            border="2px solid"
-            borderColor={colorMode === "dark" ? "gray.800" : "white"}
-          />
-        )}
-      </Box>
+        {hasNewNotification && <div className="left-sidebar__badge" />}
+      </div>
     ),
     [hasNewNotification],
   );
 
   const messIcon = useMemo(
     () => (
-      <Box position="relative" display="inline-block">
+      <div className="left-sidebar__icon-wrap">
         <FaFacebookMessenger size={24} />
-        {userInfo.hasNewMsg && (
-          <Box
-            position="absolute"
-            top="-2px"
-            right="-6px"
-            width="12px"
-            height="12px"
-            borderRadius="full"
-            bg="red"
-            border="2px solid"
-            borderColor={colorMode === "dark" ? "gray.800" : "white"}
-          />
-        )}
-      </Box>
+        {userInfo.hasNewMsg && <div className="left-sidebar__badge" />}
+      </div>
     ),
     [userInfo.hasNewMsg],
   );
@@ -182,54 +158,27 @@ const LeftSideBar = () => {
   }
 
   return (
-    <Flex
-      direction={["column", "row"]}
-      width={[`${LeftSideBarWidth}px`, "100%"]}
-    >
-      <Box
-        height={["auto", "auto", "100vh"]}
-        color="white"
-        p={1}
-        position="fixed"
-        top={0}
-        left={0}
-        zIndex={1000}
-        display={["none", "none", "block"]}
-      >
-        <Flex
-          alignItems={"center"}
-          direction="column"
-          justifyContent="space-between"
-          height="100%"
-          color={colorMode === "dark" ? "white" : "black"}
-          position="relative"
-        >
-          <Link as={NextLink} href={"/"}>
-            <Box m={5}>
+    <div className="left-sidebar">
+      <div className="left-sidebar__desktop">
+        <div className="left-sidebar__desktop-inner">
+          <NextLink href={"/"}>
+            <div className="left-sidebar__logo-wrap">
               <Image
-                cursor={"pointer"}
+                className="left-sidebar__logo"
                 alt="logo"
-                w={9}
                 src={
                   colorMode === "dark"
                     ? "/bread-logo-dark.svg"
                     : "/bread-logo-light.svg"
                 }
               />
-            </Box>
-          </Link>
-          <Flex direction={"column"}>
+            </div>
+          </NextLink>
+          <div className="left-sidebar__items">
             {listItems.map((item, index) => (
-              <Box my={2} key={`side-bar-item-${index}`}>
+              <div className="left-sidebar__item-wrap" key={`side-bar-item-${index}`}>
                 <Button
-                  bg="transparent"
-                  _hover={{
-                    bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
-                  }}
-                  color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
-                  py={2}
-                  px={4}
-                  borderRadius="md"
+                  className="left-sidebar__item-btn"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (item.linkTo) {
@@ -239,48 +188,33 @@ const LeftSideBar = () => {
                   }}
                 >
                   {item?.linkTo ? (
-                    <Link
-                      as={NextLink}
+                    <NextLink
                       href={item.linkTo}
-                      borderRadius="md"
-                      width={"100%"}
-                      height={"100%"}
-                      _hover={{ textDecoration: "none" }}
+                      className="left-sidebar__item-link"
+                      style={{ color: item.color }}
                       onClick={(e) => {
                         e.stopPropagation();
                         item.onClick && item.onClick();
                       }}
-                      color={item.color}
                     >
                       {item.icon}
-                    </Link>
+                    </NextLink>
                   ) : (
                     <>{item.icon}</>
                   )}
                 </Button>
-              </Box>
+              </div>
             ))}
-          </Flex>
-          <Flex marginBottom={"10px"}>{userInfo?._id && <SidebarMenu />}</Flex>
-        </Flex>
-      </Box>
+          </div>
+          <div className="left-sidebar__footer">
+            {userInfo?._id && <SidebarMenu />}
+          </div>
+        </div>
+      </div>
 
       {/* leftsidebar với mobile */}
-      <Box
-        display={["block", "block", "none"]}
-        position="fixed"
-        bottom={0}
-        width="100%"
-        bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-        zIndex={1000}
-        py={2}
-      >
-        <Flex
-          justifyContent="space-evenly"
-          alignItems="center"
-          direction="row"
-          width="100%"
-        >
+      <div className="left-sidebar__mobile">
+        <div className="left-sidebar__mobile-row">
           {listItems
             .filter(({ linkTo }) => {
               return ![PageConstant.ACTIVITY, PageConstant.CHAT].includes(
@@ -288,14 +222,10 @@ const LeftSideBar = () => {
               );
             })
             .map((item, index) => (
-              <Box key={`side-bar-item-${index}`}>
+              <div key={`side-bar-item-${index}`}>
                 <Button
-                  p={0}
-                  bg="transparent"
-                  _hover={{
-                    bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
-                  }}
-                  color={item.color}
+                  className="left-sidebar__mobile-item-btn"
+                  style={{ color: item.color }}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (item.linkTo) {
@@ -307,23 +237,23 @@ const LeftSideBar = () => {
                   }}
                 >
                   {item?.linkTo ? (
-                    <Link
-                      as={NextLink}
+                    <NextLink
                       href={item.linkTo}
-                      _hover={{ textDecoration: "none" }}
+                      className="left-sidebar__mobile-item-link"
+                      style={{ color: item.color }}
                     >
                       {item.icon}
-                    </Link>
+                    </NextLink>
                   ) : (
                     <>{item.icon}</>
                   )}
                 </Button>
-              </Box>
+              </div>
             ))}
           {userInfo?._id && <SidebarMenu />}
-        </Flex>
-      </Box>
-    </Flex>
+        </div>
+      </div>
+    </div>
   );
 };
 

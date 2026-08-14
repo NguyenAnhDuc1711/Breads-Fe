@@ -1,0 +1,21 @@
+.message-skeleton {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px;
+  border-radius: 0.375rem;
+}
+
+.message-skeleton--start {
+  align-self: flex-start;
+}
+
+.message-skeleton--end {
+  align-self: flex-end;
+}
+
+.message-skeleton__bubble-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

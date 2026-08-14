@@ -1,0 +1,6 @@
+.optimized-avatar {
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  line-height: 0;
+}

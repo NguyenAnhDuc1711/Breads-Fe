@@ -1,11 +1,12 @@
 import {
-  Link,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@chakra-ui/react";
+} from "../../../ui/primitives";
+import NextLink from "next/link";
 import { IPost } from "../../../../store/PostSlice";
 import { UserInfoBox } from "../../../UserInfoPopover";
+import "./index.css";
 
 const PostContent = ({ post, content }: { post: IPost; content: string }) => {
   const tagInfo = post.usersTagInfo || [];
@@ -22,23 +23,22 @@ const PostContent = ({ post, content }: { post: IPost; content: string }) => {
           return (
             <span
               key={index}
-              style={{ marginRight: "4px" }}
+              className="post-content__url-wrap"
               onClick={(e) => {
                 e.stopPropagation();
               }}
             >
-              <Link
+              <a
                 href={part}
-                color="blue.500"
-                isExternal
-                _hover={{ textDecoration: "underline" }}
-                _focus={{ boxShadow: "none" }}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="post-content__link"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
               >
                 {part}
-              </Link>
+              </a>
             </span>
           );
         } else if (part.match(usernameRegex)) {
@@ -48,17 +48,15 @@ const PostContent = ({ post, content }: { post: IPost; content: string }) => {
           return (
             <Popover trigger="hover" placement="bottom-start" key={index}>
               <PopoverTrigger>
-                <Link
+                <NextLink
                   href={matchedUser ? `/users/${matchedUser._id}` : "#"}
-                  color="blue.500"
-                  _hover={{ textDecoration: "underline" }}
-                  _focus={{ boxShadow: "none" }}
+                  className="post-content__link"
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
                 >
                   {part}
-                </Link>
+                </NextLink>
               </PopoverTrigger>
               {matchedUser && (
                 <PopoverContent

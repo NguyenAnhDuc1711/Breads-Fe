@@ -1,7 +1,8 @@
-import { Container, Flex, useBreakpointValue } from "@chakra-ui/react";
+import { useBreakpointValue } from "../../ui/primitives";
 import { useState } from "react";
 import ConversationScreen from "./Conversation";
 import DetailConversationTab from "./DetailTab";
+import "./index.css";
 
 const RightSideMsg = ({
   onBack,
@@ -13,7 +14,10 @@ const RightSideMsg = ({
   const [openDetailTab, setOpenDetailTab] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   return (
-    <Flex flex={isMobile ? 1 : 70} width="100%" minWidth="300px">
+    <div
+      className="msg-right-side"
+      style={{ flex: isMobile ? 1 : 70 }}
+    >
       {!isMobile || !openDetailTab ? (
         <ConversationScreen
           openDetailTab={openDetailTab}
@@ -22,14 +26,14 @@ const RightSideMsg = ({
         />
       ) : null}
       {openDetailTab && (
-        <Container width={isMobile ? "100vw" : "20vw"}>
+        <div className="msg-right-side__detail-wrap">
           <DetailConversationTab
             openDetailTab={openDetailTab}
             setOpenDetailTab={setOpenDetailTab}
           />
-        </Container>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };
 

@@ -12,7 +12,7 @@ const Survey = ({
   const surveyOptions = post.survey;
 
   return (
-    <div className="survey-container">
+    <div className="survey">
       {surveyOptions?.map((option, index) => (
         <div key={`${post._id}-option-${option.value}-${index}`}>
           <SurveyOption

@@ -1,0 +1,71 @@
+.post-actions {
+  display: flex;
+}
+
+.post-actions--admin {
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.post-actions__admin-btn {
+  flex: 1;
+}
+
+.post-actions__admin-btn--accept {
+  background-color: green;
+}
+
+.post-actions__btn {
+  width: 32px;
+  height: 32px;
+  padding: 6px 10px;
+  background-color: transparent;
+  border-radius: 16px;
+  position: relative;
+  z-index: 0;
+}
+
+.post-actions__btn:active:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  transform: none;
+}
+
+.post-actions__icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-actions__stat {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  padding-left: 4px;
+}
+
+.post-actions__share-popover {
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.post-actions__share-item {
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.post-actions__share-item:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .post-actions__share-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}

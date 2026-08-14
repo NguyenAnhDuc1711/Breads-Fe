@@ -9,11 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/avatar": "^2.3.0",
-    "@chakra-ui/layout": "^2.3.1",
-    "@chakra-ui/react": "^2.10.4",
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@uiw/react-md-editor": "^4.0.5",
     "axios": "^1.7.7",
@@ -21,7 +16,6 @@
     "chart.js": "^4.4.7",
     "chartjs-chart-geo": "^4.3.4",
     "dayjs": "^1.11.13",
-    "framer-motion": "^12.4.4",
     "i18next": "^23.16.4",
     "marked": "^15.0.7",
     "next": "^14.2.15",

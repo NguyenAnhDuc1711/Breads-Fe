@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Input, useColorModeValue } from "@chakra-ui/react";
+import { Button, Input } from "./ui/primitives";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
@@ -9,11 +9,10 @@ import { updatePostAction } from "../store/PostSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 import OptimizedAvatar from "./OptimizedAvatar";
+import "./CreatePostBar.css";
 
 const CreatePostBar = () => {
   const { t } = useTranslation();
-  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
-  const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const dispatch = useAppDispatch();
   const navigate = useRouter().push;
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
@@ -27,8 +26,8 @@ const CreatePostBar = () => {
   };
 
   return (
-    <Card padding={"16px 20px"} borderRadius={"12px"} mb={"12px"} bg={bgColor}>
-      <Flex gap={"12px"} alignItems={"center"}>
+    <div className="create-post-bar">
+      <div className="create-post-bar__row">
         <a
           href={`/users/${userInfo._id}`}
           onClick={(e) => {
@@ -40,16 +39,15 @@ const CreatePostBar = () => {
           <OptimizedAvatar src={userInfo?.avatar} />
         </a>
         <Input
+          className="create-post-bar__input"
           placeholder={t("whatnew")}
-          padding={"12px"}
-          border={"none"}
           defaultValue={""}
           onChange={(e) => {}}
           onClick={() => handleOpenPostPopup()}
         />
-        <Button onClick={() => handleOpenPostPopup()}>{t("post")}</Button>
-      </Flex>
-    </Card>
+        <Button className="btn-subtle" onClick={() => handleOpenPostPopup()}>{t("post")}</Button>
+      </div>
+    </div>
   );
 };
 

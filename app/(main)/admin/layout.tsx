@@ -1,7 +1,7 @@
 "use client";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container } from "@chakra-ui/react";
+import "./layout.css";
 import { ReactNode } from "react";
 import { Constants } from "../../../src/Breads-Shared/Constants";
 import { useAppSelector } from "../../../src/hooks/redux";
@@ -21,18 +21,16 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <Container
-      m={0}
-      p={0}
-      width={`calc(100vw - ${LeftSideBarWidth + 8}px)`}
-      maxW={`calc(100vw - ${LeftSideBarWidth + 8}px)`}
-      height="fit-content"
-      minH={"100vh"}
-      pos={"relative"}
-      left={`${LeftSideBarWidth}px`}
+    <div
+      className="admin-layout"
+      style={{
+        width: `calc(100vw - ${LeftSideBarWidth + 8}px)`,
+        maxWidth: `calc(100vw - ${LeftSideBarWidth + 8}px)`,
+        left: `${LeftSideBarWidth}px`,
+      }}
     >
       {children}
-    </Container>
+    </div>
   );
 };
 

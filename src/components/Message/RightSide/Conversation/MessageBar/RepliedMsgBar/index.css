@@ -1,0 +1,40 @@
+.replied-msg-bar {
+  display: flex;
+  width: 100%;
+  position: relative;
+  padding: 4px 16px;
+  align-items: center;
+  gap: 16px;
+}
+
+.replied-msg-bar__content-col {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.replied-msg-bar__username {
+  font-weight: 600;
+}
+
+.replied-msg-bar__attach-row {
+  display: flex;
+  align-items: center;
+}
+
+.replied-msg-bar__content-text {
+  max-width: 30vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.replied-msg-bar__close {
+  position: absolute;
+  right: 24px;
+  cursor: pointer;
+}
+
+.replied-msg-bar__close:hover {
+  opacity: 0.7;
+}

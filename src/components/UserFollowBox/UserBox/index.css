@@ -1,0 +1,35 @@
+.user-box {
+  display: flex;
+  align-items: center;
+}
+
+.user-box--tag {
+  background-color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+[data-theme="dark"] .user-box--tag {
+  background-color: #202020;
+}
+
+.user-box--tag:hover {
+  opacity: 0.8;
+}
+
+.user-box__username {
+  font-size: 0.875rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.user-box__name {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.user-box__name--tag {
+  cursor: pointer;
+}

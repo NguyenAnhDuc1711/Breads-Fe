@@ -1,0 +1,33 @@
+.more-action-menu {
+  width: 180px;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 50%;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background-color: #edf2f7;
+  z-index: 1000;
+  animation: fadeIn ease 0.3s;
+}
+
+[data-theme="dark"] .more-action-menu {
+  background-color: #1c1e21;
+}
+
+.more-action-menu__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.more-action-menu__item:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .more-action-menu__item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}

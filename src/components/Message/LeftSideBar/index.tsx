@@ -1,8 +1,9 @@
 import { SearchIcon } from "../../../assests/chakraIcons";
-import { Button, Flex, Input, Text, useColorModeValue } from "@chakra-ui/react";
+import { Button, Input, Text } from "../../ui/primitives";
 import Conversations from "./Conversations";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import "./index.css";
 
 const LeftSideBarMsg = ({
   onSelectConversation,
@@ -13,64 +14,28 @@ const LeftSideBarMsg = ({
   const { t } = useTranslation();
 
   return (
-    <Flex
-      gap={4}
-      flexDirection={{
-        base: "column",
-        md: "row",
-      }}
-      width={{
-        base: "100%",
-        md: "full",
-      }}
-      maxW={{
-        sm: "480px",
-        md: "full",
-      }}
-      pr={{ base: 0, md: 3 }}
-      mx={"auto"}
-      maxHeight={`85vh`}
-      overflowY={"scroll"}
-    >
-      <Flex
-        flex={30}
-        gap={3}
-        flexDirection={"column"}
-        width={{
-          base: "100%",
-          md: "250px",
-        }}
-        mx={"auto"}
-      >
-        <Text
-          fontWeight={700}
-          color={useColorModeValue("gray.600", "gray.400")}
-        >
-          {" "}
-          {t("Yourconversations")}
-        </Text>
+    <div className="msg-sidebar">
+      <div className="msg-sidebar__list">
+        <Text className="msg-sidebar__title"> {t("Yourconversations")}</Text>
         <form>
-          <Flex alignItems={"center"} gap={2}>
+          <div className="msg-sidebar__search-row">
             <Input
-              fontSize={{
-                base: "lg",
-                md: "md",
-              }}
+              className="msg-sidebar__search-input"
               placeholder={t("Searchforuser")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
-            <Button size={"sm"}>
+            <Button className="msg-sidebar__search-btn">
               <SearchIcon />{" "}
             </Button>
-          </Flex>
+          </div>
         </form>
         <Conversations
           searchValue={searchValue}
           onSelect={onSelectConversation}
         />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

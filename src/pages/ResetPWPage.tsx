@@ -2,14 +2,12 @@
 
 import {
   Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
   Input,
   InputGroup,
   InputRightElement,
   Text,
-} from "@chakra-ui/react";
+} from "../components/ui/primitives";
+import { FormControl, FormErrorMessage } from "../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,6 +19,7 @@ import { useAppDispatch } from "../hooks/redux";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 import ErrorPage from "./ErrorPage";
+import "./ResetPWPage.css";
 
 const ResetPWPage = ({
   userId,
@@ -120,33 +119,15 @@ const ResetPWPage = ({
   return (
     <>
       {isTrueCode ? (
-        <Flex
-          w={"100vw"}
-          h={"100vh"}
-          justifyContent={"center"}
-          alignItems={"center"}
-        >
-          <div className="register-right">
-            <Text
-              variant="h5"
-              fontWeight={600}
-              textAlign={"center"}
-              fontSize={24}
-              mb={8}
-            >
-              {t("changePW")}
-            </Text>
-            <Text
-              sx={{ marginTop: "10px", fontSize: "15px", marginLeft: "8px" }}
-            >
-              {t("newPW")}
-            </Text>
+        <div className="reset-pw-page">
+          <div>
+            <Text className="reset-pw-page__title">{t("changePW")}</Text>
+            <Text className="reset-pw-page__label">{t("newPW")}</Text>
             <FormControl
-              sx={{ m: 1, width: "400px" }}
-              variant="outlined"
+              className="reset-pw-page__field"
               isInvalid={!!errors?.password}
             >
-              <InputGroup size="lg">
+              <InputGroup>
                 <Input
                   fontSize={16}
                   placeholder={t("passwordRequired2")}
@@ -172,17 +153,14 @@ const ResetPWPage = ({
               </InputGroup>
               <FormErrorMessage>{errors?.password}</FormErrorMessage>
             </FormControl>
-            <Text
-              sx={{ marginTop: "24px", fontSize: "15px", marginLeft: "8px" }}
-            >
+            <Text className="reset-pw-page__label--spaced">
               {t("confirmPW")}
             </Text>
             <FormControl
-              sx={{ m: 1, width: "400px" }}
-              variant="outlined"
+              className="reset-pw-page__field"
               isInvalid={!!errors?.confirmPW}
             >
-              <InputGroup size={"lg"}>
+              <InputGroup>
                 <Input
                   fontSize={16}
                   placeholder={t("confirmPWRequired")}
@@ -208,11 +186,11 @@ const ResetPWPage = ({
               </InputGroup>
               <FormErrorMessage>{errors?.confirmPW}</FormErrorMessage>
             </FormControl>
-            <Flex justifyContent={"end"} mt={4}>
-              <Button onClick={handleSubmit}>{t("submit")}</Button>
-            </Flex>
+            <div className="reset-pw-page__submit-row">
+              <Button className="btn-subtle" onClick={handleSubmit}>{t("submit")}</Button>
+            </div>
           </div>
-        </Flex>
+        </div>
       ) : (
         <ErrorPage />
       )}

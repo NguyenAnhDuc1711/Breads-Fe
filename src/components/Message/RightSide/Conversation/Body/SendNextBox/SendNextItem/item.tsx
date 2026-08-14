@@ -1,4 +1,5 @@
-import { Avatar, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Text } from "../../../../../../ui/primitives";
+import "./item.css";
 
 const SendNextItem = ({
   conversation,
@@ -32,32 +33,18 @@ const SendNextItem = ({
   };
 
   return (
-    <Flex
-      alignItems={"center"}
-      justifyContent={"space-between"}
-      cursor={"pointer"}
-      p={2}
-      px={4}
-      borderRadius={6}
-      _hover={{
-        bg: "lightgray",
-      }}
-      onClick={() => handleTick()}
-    >
-      <Flex alignItems={"center"} gap={4}>
+    <div className="send-next-item" onClick={() => handleTick()}>
+      <div className="send-next-item__main">
         <Avatar src={participant?.avatar} />
         <Text fontWeight={600}>{participant?.username}</Text>
-      </Flex>
+      </div>
       <input
         type="checkbox"
+        className="send-next-item__checkbox"
         onChange={() => handleTick()}
         checked={selected}
-        style={{
-          width: "16px",
-          height: "16px",
-        }}
       />
-    </Flex>
+    </div>
   );
 };
 

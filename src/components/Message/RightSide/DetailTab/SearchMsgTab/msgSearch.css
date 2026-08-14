@@ -1,0 +1,44 @@
+.msg-search-item {
+  position: relative;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid gray;
+  border-radius: 4px;
+  width: 100%;
+  cursor: pointer;
+  overflow-x: hidden;
+}
+
+.msg-search-item:hover {
+  background-color: gray;
+}
+
+.msg-search-item__row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.msg-search-item__text-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.msg-search-item__text-col--wide {
+  max-width: 60%;
+}
+
+.msg-search-item__text-col--narrow {
+  max-width: 50%;
+}
+
+.msg-search-item__date {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 11px;
+}

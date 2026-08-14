@@ -65,6 +65,9 @@ export const login = createAsyncThunk(
         const objectIdRegex = /^[a-fA-F0-9]{24}$/;
         if (data?._id && objectIdRegex.test(data?._id)) {
           localStorage.setItem("userId", data?._id);
+          if (typeof document !== "undefined") {
+            document.cookie = "jwt=1; path=/; max-age=1296000; SameSite=Lax";
+          }
         }
       }
       return data;
@@ -85,6 +88,9 @@ export const getMe = createAsyncThunk(
       });
       if (data && data._id) {
         localStorage.setItem("userId", data._id);
+        if (typeof document !== "undefined") {
+          document.cookie = "jwt=1; path=/; max-age=1296000; SameSite=Lax";
+        }
         return data;
       }
       return thunkAPI.rejectWithValue("Session expired or user not found");
@@ -103,6 +109,9 @@ export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
       path: Route.USER + USER_PATH.LOGOUT,
     });
     localStorage.removeItem("userId");
+    if (typeof document !== "undefined") {
+      document.cookie = "jwt=; path=/; max-age=0; SameSite=Lax";
+    }
     // We don't need to manually reset state here anymore
     // The root reducer will handle resetting all state when this action fulfills
     return data;

@@ -3,19 +3,20 @@
 import {
   Avatar,
   Button,
-  Center,
   Flex,
-  FormControl,
-  FormLabel,
   Heading,
   Input,
   Stack,
+  Text,
+} from "../components/ui/primitives";
+import {
+  Center,
+  FormControl,
+  FormLabel,
   Tag,
   TagCloseButton,
   TagLabel,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
+} from "../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,6 +30,7 @@ import { updateUser } from "../store/UserSlice/asyncThunk";
 import { showToast } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent, convertToBase64 } from "../util/index";
+import "./UpdateProfilePage.css";
 
 const POPUP_TYPE = {
   LINKS: "links",
@@ -209,32 +211,26 @@ const UpdateProfilePage = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Flex align={"center"} justify={"center"} mt={`${HeaderHeight + 12}px`}>
-          <Stack
-            spacing={4}
-            w={"full"}
-            maxW={"md"}
-            bg={useColorModeValue("white", "gray.dark")}
-            rounded={"xl"}
-            boxShadow={"lg"}
-            p={6}
-          >
-            <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
+        <Flex
+          className="update-profile-page__wrap"
+          style={{ marginTop: `${HeaderHeight + 12}px` }}
+        >
+          <Stack className="update-profile-page__card">
+            <Heading className="update-profile-page__heading">
               {t("updateProfileTitle")}
             </Heading>
             <FormControl id="userName">
-              <Stack direction={["column", "row"]} spacing={6}>
+              <Stack className="update-profile-page__avatar-row">
                 <Center>
                   <Avatar
+                    className="update-profile-page__avatar"
                     size="xl"
-                    boxShadow={"md"}
                     src={inputs.avatar}
-                    cursor={"pointer"}
                   />
                 </Center>
-                <Center w="full">
+                <Center className="update-profile-page__avatar-btn-wrap">
                   <Button
-                    w="full"
+                    className="update-profile-page__change-avatar-btn btn-subtle"
                     onClick={() => {
                       if (fileRef.current) {
                         fileRef.current?.click();
@@ -256,35 +252,27 @@ const UpdateProfilePage = () => {
             <FormControl>
               <FormLabel>{t("name")}</FormLabel>
               <Input
+                className="update-profile-page__input"
                 placeholder="Your name..."
                 onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
                 value={inputs.name}
-                _placeholder={{ color: "gray.500" }}
                 type="text"
               />
             </FormControl>
             <FormControl>
               <FormLabel>{t("bio")}</FormLabel>
               <Input
+                className="update-profile-page__input"
                 placeholder={t("bio")}
                 onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
                 value={inputs.bio}
-                _placeholder={{ color: "gray.500" }}
                 type="text"
               />
             </FormControl>
             <FormControl>
               <FormLabel>{t("links")}</FormLabel>
               <Flex
-                width={"100%"}
-                height={"fit-content"}
-                minHeight={"40px"}
-                border={"1px solid lightgray"}
-                borderRadius={"6px"}
-                alignItems={"center"}
-                padding={"10px 16px"}
-                flexWrap={"wrap"}
-                gap={"6px"}
+                className="update-profile-page__links-box"
                 onClick={() =>
                   setPopup({
                     isOpen: true,
@@ -300,9 +288,9 @@ const UpdateProfilePage = () => {
                       if (link.trim()) {
                         return (
                           <Tag
+                            className="update-profile-page__link-tag"
                             size={"lg"}
                             key={link + index}
-                            borderRadius="full"
                             variant="solid"
                             colorScheme="blue"
                           >
@@ -323,7 +311,7 @@ const UpdateProfilePage = () => {
             </FormControl>
             <FormControl>
               <Button
-                width={"100%"}
+                className="update-profile-page__change-pw-btn btn-subtle"
                 onClick={() =>
                   setPopup({
                     isOpen: true,
@@ -334,14 +322,9 @@ const UpdateProfilePage = () => {
                 {t("changePassword")}
               </Button>
             </FormControl>
-            <Stack spacing={6} direction={["column", "row"]}>
+            <Stack className="update-profile-page__actions-row">
               <Button
-                bg={"red.400"}
-                color={"white"}
-                w="full"
-                _hover={{
-                  bg: "red.500",
-                }}
+                className="update-profile-page__cancel-btn"
                 onClick={() => {
                   router.back();
                 }}
@@ -349,16 +332,10 @@ const UpdateProfilePage = () => {
                 {t("cancel")}
               </Button>
               <Button
-                bg={"green.400"}
-                color={"white"}
-                w="full"
-                _hover={{
-                  bg: "green.500",
-                }}
+                className="update-profile-page__confirm-btn"
                 type="submit"
                 isLoading={updating}
                 disabled={updating}
-                mb={["36px", "36px", 0]}
               >
                 {t("confirm")}
               </Button>

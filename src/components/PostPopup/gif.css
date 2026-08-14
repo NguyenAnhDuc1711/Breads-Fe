@@ -1,0 +1,54 @@
+.gif-modal {
+  position: relative;
+  box-sizing: border-box;
+  background-color: white;
+  color: gray;
+  padding-right: 4px;
+  border-radius: 16px;
+}
+
+.gif-modal__spacer-top {
+  padding: 4px;
+}
+
+.gif-modal__spacer-bottom {
+  padding: 8px;
+}
+
+.gif-modal__title {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  z-index: 4000;
+  text-transform: capitalize;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.gif-modal__close {
+  position: absolute;
+  top: -36px;
+  left: 0;
+  color: white;
+}
+
+.gif-modal__body {
+  padding: 0;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.gif-modal__grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 10px;
+}
+
+.gif-modal__item {
+  max-width: 48%;
+  height: auto;
+  border-radius: 9px;
+  margin: 4px;
+}

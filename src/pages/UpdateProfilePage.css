@@ -1,0 +1,125 @@
+.update-profile-page__wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.update-profile-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 28rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  background-color: white;
+}
+
+[data-theme="dark"] .update-profile-page__card {
+  background-color: #0a0a0a;
+}
+
+.update-profile-page__heading {
+  line-height: 1.1;
+  font-size: 1.5rem;
+}
+
+@media (min-width: 480px) {
+  .update-profile-page__heading {
+    font-size: 1.875rem;
+  }
+}
+
+.update-profile-page__avatar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 480px) {
+  .update-profile-page__avatar-row {
+    flex-direction: row;
+  }
+}
+
+.update-profile-page__avatar {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.update-profile-page__avatar-btn-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.update-profile-page__change-avatar-btn {
+  width: 100%;
+}
+
+.update-profile-page__input::placeholder {
+  color: #718096;
+}
+
+.update-profile-page__links-box {
+  width: 100%;
+  height: fit-content;
+  min-height: 40px;
+  border: 1px solid lightgray;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  flex-wrap: wrap;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.update-profile-page__link-tag {
+  border-radius: 9999px;
+}
+
+.update-profile-page__change-pw-btn {
+  width: 100%;
+}
+
+.update-profile-page__actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 480px) {
+  .update-profile-page__actions-row {
+    flex-direction: row;
+  }
+}
+
+.update-profile-page__cancel-btn {
+  background-color: #f56565;
+  color: white;
+  width: 100%;
+}
+
+.update-profile-page__cancel-btn:hover:not(:disabled) {
+  background-color: #e53e3e;
+}
+
+.update-profile-page__confirm-btn {
+  background-color: #48bb78;
+  color: white;
+  width: 100%;
+  margin-bottom: 36px;
+}
+
+@media (min-width: 768px) {
+  .update-profile-page__confirm-btn {
+    margin-bottom: 0;
+  }
+}
+
+.update-profile-page__confirm-btn:hover:not(:disabled) {
+  background-color: #38a169;
+}

@@ -1,0 +1,24 @@
+.posts-cms-page__header {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.posts-cms-page__table-wrap {
+  overflow-x: auto;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.posts-cms-page__media-cell {
+  padding: 0;
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+}
+
+.posts-cms-page__files-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

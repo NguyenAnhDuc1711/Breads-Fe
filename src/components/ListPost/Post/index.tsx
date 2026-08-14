@@ -1,17 +1,7 @@
 "use client";
 
 import { ChevronRightIcon } from "../../../assests/chakraIcons";
-import {
-  Button,
-  Card,
-  CardBody,
-  Container,
-  Divider,
-  Flex,
-  Text,
-  Tooltip,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Button, Card, CardBody, Divider, Menu, MenuButton, MenuList, Portal, Text, Tooltip, useColorMode } from "../../ui/primitives";
 import dayjs from "../../../util/dayjs";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -57,11 +47,11 @@ const Post = ({
   isFirst?: boolean;
 }) => {
   const { t } = useTranslation();
+  const { colorMode } = useColorMode();
   const router = useRouter();
   const pathname = usePathname();
   const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
-  const { colorMode } = useColorMode();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
   const postAction = useAppSelector((state: AppState) => state.post.postAction);
@@ -91,19 +81,13 @@ const Post = ({
   return (
     <>
       <Card
-        boxSizing={"border-box"}
-        className="post-container"
-        borderRadius="12px"
-        border={isParentPost ? "1px solid gray" : "none"}
-        boxShadow={isReply ? "none" : "0 4px 12px rgba(0, 0, 0, 0.1)"}
-        bg={colorMode === "dark" ? "#202020" : "#ffffff"}
-        width={"100%"}
-        transition="transform 0.2s ease"
-        mt={isReply ? "8px" : ""}
+        className={`post${isParentPost ? " post--parent" : ""}${
+          isReply ? " post--reply" : ""
+        }`}
       >
-        <CardBody padding={isReply ? "0px" : "1.25rem"}>
-          <Flex justifyContent={"space-between"}>
-            <Flex alignItems={"center"} gap={3}>
+        <CardBody className="post__body">
+          <div className="post__header">
+            <div className="post__author-group">
               <OptimizedAvatar
                 src={post?.authorInfo?.avatar}
                 size={"md"}
@@ -111,7 +95,7 @@ const Post = ({
                 cursor={"pointer"}
                 position={"relative"}
               />
-              <Flex>
+              <div>
                 {post?.authorInfo && (
                   <UserInfoPopover
                     user={post?.authorInfo}
@@ -119,10 +103,10 @@ const Post = ({
                     isDetail={isDetail}
                   />
                 )}
-              </Flex>
-            </Flex>
+              </div>
+            </div>
 
-            <Flex gap={4} alignItems={"center"}>
+            <div className="post__meta">
               {post?.visibility === Constants.POST_VISIBILITY.ONLY_ME && (
                 <Tooltip label={t("visibilityOnlyMe")}>
                   <span>
@@ -137,57 +121,50 @@ const Post = ({
                   </span>
                 </Tooltip>
               )}
-              <Text
-                fontSize={"sm"}
-                color={colorMode === "dark" ? "gray.100" : "gray.light"}
-              >
+              <span className="post__timestamp">
                 {dayjs(post?.createdAt).fromNow()}
-              </Text>
+              </span>
               {!isParentPost && !isAdmin && (
-                <div className="btn-more-action">
-                  <ClickOutsideComponent
-                    onClose={() => {
-                      setOpenPostBox(false);
-                    }}
-                  >
-                    <Button
-                      bg={colorMode === "dark" ? "#181818" : "#ffffff"}
-                      borderRadius={"50%"}
-                      width={"32px"}
-                      height={"40px"}
-                      padding={"0"}
-                      onClick={(e) => {
+                <div className="post__more-action">
+                  <Menu placement="bottom-end">
+                    <MenuButton
+                      as={Button}
+                      className="post__more-action-btn"
+                      onClick={(e: any) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        setOpenPostBox(!openPostBox);
                       }}
                     >
                       <BsThreeDots />
-                    </Button>
-                    {openPostBox && (
-                      <PostMoreActionBox
-                        post={post}
-                        setOpenPostBox={setOpenPostBox}
-                        setPopupCancelInfo={setPopupCancelInfo}
-                        closePopupCancel={closePopupCancel}
-                      />
-                    )}
-                  </ClickOutsideComponent>
+                    </MenuButton>
+                    <Portal>
+                      <MenuList
+                        zIndex={2000}
+                        bg={colorMode === "dark" ? "#1c1e21" : "#edf2f7"}
+                        borderRadius="12px"
+                        p={1.5}
+                        minW="180px"
+                      >
+                        <PostMoreActionBox
+                          post={post}
+                          setOpenPostBox={setOpenPostBox}
+                          setPopupCancelInfo={setPopupCancelInfo}
+                          closePopupCancel={closePopupCancel}
+                        />
+                      </MenuList>
+                    </Portal>
+                  </Menu>
                 </div>
               )}
-            </Flex>
-          </Flex>
-          <Container
-            p={0}
-            m={0}
-            my={2}
-            width={"100%"}
-            cursor={
+            </div>
+          </div>
+          <div
+            className={`post__content-wrap${
               !isDetail &&
               !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
-                ? "pointer"
-                : "text"
-            }
+                ? " post__content-wrap--clickable"
+                : " post__content-wrap--static"
+            }`}
             onClick={() => {
               if (
                 !isDetail &&
@@ -203,37 +180,27 @@ const Post = ({
                 link={post?.linksInfo[post?.linksInfo?.length - 1]}
               />
             )}
-          </Container>
+          </div>
           {isParentPost && post?.quote?._id && !postAction && (
-            <Text
-              display={"flex"}
-              alignItems={"center"}
-              gap={"4px"}
-              color={"lightgray"}
-              cursor={"pointer"}
+            <div
+              className="post__quote post__quote--clickable"
               onClick={() => {
                 router.push(`/posts/${post?.quote?._id}`);
               }}
             >
               <RiDoubleQuotesL />
               {post?.quote?.content}
-            </Text>
+            </div>
           )}
           <MediaDisplay post={post} isDetail={isDetail} isFirst={isFirst} />
           {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>
               {post?.quote?._id && isParentPost ? (
-                <Text
-                  display={"flex"}
-                  alignItems={"center"}
-                  gap={"4px"}
-                  color={"lightgray"}
-                  cursor={"text"}
-                >
+                <div className="post__quote post__quote--static">
                   <RiDoubleQuotesL />
                   {post.quote.content}
-                </Text>
+                </div>
               ) : (
                 <Post post={post?.parentPostInfo} isParentPost={true} />
               )}
@@ -243,45 +210,30 @@ const Post = ({
             <UploadDisplay isPost={true} filesFromPost={post?.files} />
           )}
           {!isParentPost && (
-            <Flex gap={3} mt={"10px"} mb={isDetail ? "10px" : ""}>
+            <div
+              className={`post__actions${isDetail ? " post__actions--detail" : ""}`}
+            >
               <Actions post={post} />
-            </Flex>
+            </div>
           )}
           {isDetail && (
             <>
               <Divider />
-              <Flex mt={4} justifyContent={"space-between"} m={1}>
-                <Text p={2}>{t("breadCmt")}</Text>
-                <Flex
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                  p={2}
-                  cursor={"pointer"}
-                  _hover={{
-                    transform: "scale(1.05)",
-                    transition: "transform 0.2s ease-in-out",
-                  }}
-                  onClick={() => onOpen()}
-                >
+              <div className="post__comment-header">
+                <Text className="post__comment-label">{t("breadCmt")}</Text>
+                <div className="post__view-activities" onClick={() => onOpen()}>
                   <Text>{t("seeActivities")}</Text>
                   <ChevronRightIcon />
-                </Flex>
-              </Flex>
+                </div>
+              </div>
               <Divider />
               <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
               {post.replies && post.replies?.length > 0 && (
-                <Container
-                  width={"100%"}
-                  maxWidth={"100%"}
-                  padding={"12px 0"}
-                  mx={0}
-                  boxShadow={"none"}
-                  borderY={"1px solid gray"}
-                >
+                <div className="post__replies">
                   {post.replies.map((reply) => (
                     <Post key={reply._id} post={reply} isReply={true} />
                   ))}
-                </Container>
+                </div>
               )}
             </>
           )}

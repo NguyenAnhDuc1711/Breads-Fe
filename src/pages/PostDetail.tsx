@@ -1,6 +1,5 @@
 "use client";
 
-import { Flex } from "@chakra-ui/react";
 import { useEffect, useMemo } from "react";
 import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
@@ -14,6 +13,7 @@ import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 import { showToast } from "../store/UtilSlice";
 import { useTranslation } from "react-i18next";
+import "./PostDetail.css";
 
 const PostDetail = ({ postId }: { postId: string }) => {
   const { t } = useTranslation();
@@ -82,9 +82,9 @@ const PostDetail = ({ postId }: { postId: string }) => {
       );
     }
     return (
-      <Flex justifyContent={"center"} alignItems={"center"}>
+      <div className="post-detail__empty">
         <EmptyContentSvg />
-      </Flex>
+      </div>
     );
   }, [postSelected, userInfo?._id]);
 

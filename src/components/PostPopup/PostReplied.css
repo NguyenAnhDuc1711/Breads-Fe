@@ -1,0 +1,14 @@
+.post-replied {
+  display: flex;
+}
+
+.post-replied__body {
+  width: 100%;
+  margin: 0;
+  padding-left: 16px;
+  padding-right: 0;
+}
+
+.post-replied__username {
+  font-weight: 600;
+}

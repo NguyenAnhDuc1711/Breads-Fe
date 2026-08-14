@@ -1,0 +1,23 @@
+.send-next-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+.send-next-item:hover {
+  background-color: lightgray;
+}
+
+.send-next-item__main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.send-next-item__checkbox {
+  width: 16px;
+  height: 16px;
+}

@@ -4,26 +4,41 @@
     width: 100%;
     font-size: inherit;
     line-height: 1.5;
-    border-radius: 4px;
+    border: none;
+    background: transparent;
     resize: none;
     overflow: hidden;
     box-sizing: border-box;
     outline: none;
-    background-color: inherit;
+    color: #000000;
     &::placeholder {
-      color: inherit;
+      color: gray;
     }
   }
-  .tag-popup {
-    position: absolute;
-    display: none;
-    padding: 10px;
-    border-radius: 8px;
-    max-height: 240px;
-    width: 240px;
-    z-index: 2000;
-    overflow-y: auto;
-    overflow-x: hidden;
-    border: 1px solid gray;
-  }
+}
+
+[data-theme="dark"] .text-area-container .auto-expand-textarea {
+  color: #f3f5f7;
+}
+
+.tag-popup {
+  position: absolute;
+  display: none;
+  padding: 10px;
+  border-radius: 8px;
+  max-height: 240px;
+  width: 240px;
+  z-index: 2000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid gray;
+  background-color: #fafafa;
+}
+
+[data-theme="dark"] .tag-popup {
+  background-color: #181818;
+}
+
+.tag-popup--open {
+  display: block;
 }

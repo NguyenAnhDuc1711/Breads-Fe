@@ -1,6 +1,7 @@
-import { Container, Flex, Image, Text } from "@chakra-ui/react";
+import { Image, Text } from "../../../../../../ui/primitives";
 import { useAppDispatch } from "../../../../../../../hooks/redux";
 import { updateSeeMedia } from "../../../../../../../store/UtilSlice";
+import "./index.css";
 
 const MsgMediaLayout = ({ media }: { media: any }) => {
   const dispatch = useAppDispatch();
@@ -20,14 +21,8 @@ const MsgMediaLayout = ({ media }: { media: any }) => {
     case 1:
       return (
         <Image
-          mr={2}
+          className="msg-media-single"
           src={media[0].url}
-          height={"auto"}
-          maxHeight={"200px"}
-          maxWidth={"35vw"}
-          objectFit={"cover"}
-          borderRadius={4}
-          cursor={"pointer"}
           alt="Message media"
           onClick={() => {
             handleSeeMedia(0);
@@ -37,45 +32,31 @@ const MsgMediaLayout = ({ media }: { media: any }) => {
     case 2:
     case 3:
       return (
-        <Flex
-          gap={2}
-          height={"auto"}
-          maxHeight={"180px"}
-          maxWidth={"35vw"}
-          mr={2}
-        >
+        <div className="msg-media-pair">
           {media.map(({ url }, index) => (
             <Image
-              maxWidth={"15vw"}
+              className="msg-media-pair__item"
               key={url}
               src={url}
-              objectFit={"cover"}
-              borderRadius={4}
-              cursor={"pointer"}
               alt={`Message media ${index + 1}`}
               onClick={() => {
                 handleSeeMedia(index);
               }}
             />
           ))}
-        </Flex>
+        </div>
       );
     default:
+      const sizeModifier = mediaLen === 4 ? "--quad" : "--many";
       return (
-        <Flex wrap={"wrap"} gap={2} mr={2} maxWidth={"35vw"}>
+        <div className="msg-media-grid">
           {media.map(({ url }, index) => {
             if (index < 4) {
               return (
                 <Image
-                  height={"auto"}
-                  maxHeight={"140px"}
-                  width={mediaLen === 4 ? "20vw" : "10vw"}
-                  flex={1}
+                  className={`msg-media-grid__item msg-media-grid__item${sizeModifier}`}
                   key={url}
                   src={url}
-                  objectFit={"cover"}
-                  borderRadius={4}
-                  cursor={"pointer"}
                   alt={`Message media ${index + 1}`}
                   onClick={() => {
                     handleSeeMedia(index);
@@ -84,53 +65,30 @@ const MsgMediaLayout = ({ media }: { media: any }) => {
               );
             } else if (index === 4) {
               return (
-                <Container
-                  p={0}
-                  margin={0}
-                  position={"relative"}
-                  height={"auto"}
-                  maxHeight={"140px"}
-                  width={mediaLen === 4 ? "20vw" : "10vw"}
-                  flex={1}
+                <div
+                  className={`msg-media-grid__overlay-wrap msg-media-grid__overlay-wrap${sizeModifier}`}
                   key={url}
-                  borderRadius={4}
-                  overflow={"hidden"}
                   onClick={() => {
                     handleSeeMedia(index);
                   }}
                 >
                   <Image
-                    position={"absolute"}
-                    left={0}
-                    top={0}
+                    className="msg-media-grid__overlay-img"
                     src={url}
-                    objectFit={"cover"}
                     alt={`Message media ${index + 1}`}
                   />
                   {mediaLen - 5 > 0 && (
-                    <Flex
-                      p={0}
-                      margin={0}
-                      position={"absolute"}
-                      left={0}
-                      top={0}
-                      width={"100%"}
-                      height={"100%"}
-                      backgroundColor={"rgba(128, 128, 128, 0.600)"}
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                      cursor={"pointer"}
-                    >
-                      <Text fontSize={"24px"} color={"white"} fontWeight={700}>
+                    <div className="msg-media-grid__overlay-count">
+                      <Text className="msg-media-grid__overlay-count-text">
                         +{mediaLen - 5}
                       </Text>
-                    </Flex>
+                    </div>
                   )}
-                </Container>
+                </div>
               );
             }
           })}
-        </Flex>
+        </div>
       );
   }
 };

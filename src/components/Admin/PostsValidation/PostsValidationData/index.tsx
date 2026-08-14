@@ -1,11 +1,10 @@
-import { Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
 import { getPosts } from "../../../../store/PostSlice/asyncThunk";
 import ListPost from "../../../ListPost";
-import { containerBoxWidth } from "../../../MainBoxLayout";
 import { filterPostWidth } from "../PostsFilterBar";
+import "./index.css";
 
 const PostsValidationData = () => {
   const dispatch = useAppDispatch();
@@ -27,18 +26,14 @@ const PostsValidationData = () => {
   }, [userInfo?._id]);
 
   return (
-    <Flex
-      ml={`${filterPostWidth}px`}
-      justifyContent={"center"}
-      width={"100%"}
-      height={"fit-content"}
-      minHeight={"100vh"}
-      py={8}
+    <div
+      className="posts-validation-data"
+      style={{ marginLeft: `${filterPostWidth}px` }}
     >
-      <Flex width={containerBoxWidth} flexDir={"column"} m={0}>
+      <div className="posts-validation-data__inner">
         <ListPost />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

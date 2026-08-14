@@ -1,0 +1,14 @@
+.conversation-bar-skeleton {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 4px;
+  border-radius: 0.375rem;
+}
+
+.conversation-bar-skeleton__text-col {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 12px;
+}

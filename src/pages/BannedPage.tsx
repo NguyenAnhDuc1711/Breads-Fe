@@ -1,8 +1,9 @@
 "use client";
 
-import { Button, Container, Text, VStack } from "@chakra-ui/react";
+import { Button } from "../components/ui/primitives";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import "./BannedPage.css";
 
 const BannedPage = () => {
   const { t } = useTranslation();
@@ -14,24 +15,13 @@ const BannedPage = () => {
   };
 
   return (
-    <Container
-      maxW="container.md"
-      textAlign="center"
-      py={10}
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-    >
-      <VStack spacing={4}>
-        <Text fontSize="4xl" fontWeight="bold" color="red.500">
-          {t("bannedTitle")}
-        </Text>
-        <Text fontSize="lg" color="gray.600">
-          {t("bannedMsg")}
-        </Text>
-        <Button onClick={handleGoBack}>{t("goBack")}</Button>
-      </VStack>
-    </Container>
+    <div className="banned-page">
+      <div className="banned-page__stack">
+        <p className="banned-page__title">{t("bannedTitle")}</p>
+        <p className="banned-page__message">{t("bannedMsg")}</p>
+        <Button className="btn-subtle" onClick={handleGoBack}>{t("goBack")}</Button>
+      </div>
+    </div>
   );
 };
 

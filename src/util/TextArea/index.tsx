@@ -1,5 +1,5 @@
 // TextArea.jsx
-import { Container, useColorModeValue } from "@chakra-ui/react";
+import { useColorModeValue } from "../../components/ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import UsersTagBox from "../../components/UsersTagBox";
 import { useAppSelector } from "../../hooks/redux";
@@ -54,7 +54,6 @@ const TextArea = ({
   placeholder?: string;
 }) => {
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
-  const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const postInfo = useAppSelector((state: AppState) => state.post.postInfo);
   const usersTag = postInfo?.usersTag || [];
   const textAreaRef = useRef<any>(null);
@@ -137,7 +136,6 @@ const TextArea = ({
   return (
     <div className="text-area-container">
       <textarea
-        style={{ color: textColor }}
         ref={textAreaRef}
         value={text}
         onChange={handleChange}
@@ -149,19 +147,15 @@ const TextArea = ({
       {urls.length > 0 && <CustomLinkPreview url={urls[0]} bg={bgColor} />}
 
       {tagUsers && (
-        <Container
+        <div
           ref={popupRef}
-          className="tag-popup"
-          bg={bgColor}
-          style={{
-            display: openTagBox ? "block" : "none",
-          }}
+          className={`tag-popup${openTagBox ? " tag-popup--open" : ""}`}
         >
           <UsersTagBox
             searchValue={searchValue}
             setOpenTagBox={setOpenTagBox}
           />
-        </Container>
+        </div>
       )}
     </div>
   );

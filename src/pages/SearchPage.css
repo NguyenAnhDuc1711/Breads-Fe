@@ -1,0 +1,38 @@
+.search-page__search-bar-wrap {
+  width: 100%;
+  max-width: 100%;
+  height: 40px;
+  border-radius: 12px;
+  background-color: #fafafa;
+  margin: 0;
+  margin-bottom: 12px;
+  padding: 0;
+}
+
+[data-theme="dark"] .search-page__search-bar-wrap {
+  background-color: #181818;
+}
+
+.search-page__suggested-label {
+  color: gray;
+  font-weight: 500;
+  margin-bottom: 12px;
+  position: relative;
+  left: 4px;
+}
+
+.search-page__skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.search-page__empty {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px 0;
+}

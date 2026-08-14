@@ -1,0 +1,18 @@
+.list-post__gap {
+  border-color: transparent;
+  height: 12px;
+  margin: 0;
+}
+
+.list-post__skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+}
+
+.list-post__empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

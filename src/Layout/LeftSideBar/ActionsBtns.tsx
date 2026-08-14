@@ -1,10 +1,9 @@
-"use client";
-
-import { Button, useColorMode } from "@chakra-ui/react";
+import { Button, useColorMode } from "../../components/ui/primitives";
 import { usePathname, useRouter } from "next/navigation";
 import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { getCurrentPage } from "../../util/route";
+import "./ActionsBtns.css";
 
 export const BtnLike = () => {
   const router = useRouter();
@@ -25,15 +24,9 @@ export const BtnLike = () => {
 
   return (
     <Button
-      bg="transparent"
-      _hover={{ bg: "transparent" }}
+      className="header-icon-btn"
       color={getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode)}
       onClick={handleClick}
-      width="60px"
-      height="60px"
-      minW="60px"
-      minH="60px"
-      display={["block", "block", "none"]}
     >
       <FaRegHeart size={24} />
     </Button>
@@ -59,15 +52,9 @@ export const BtnMess = () => {
 
   return (
     <Button
-      bg="transparent"
-      _hover={{ bg: "transparent" }}
+      className="header-icon-btn"
       color={getButtonColor(currentPage === PageConstant.CHAT, colorMode)}
       onClick={handleClick}
-      width="60px"
-      height="60px"
-      minW="60px"
-      minH="60px"
-      display={["block", "block", "none"]}
     >
       <FaFacebookMessenger size={24} />
     </Button>

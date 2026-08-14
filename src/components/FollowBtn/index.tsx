@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button } from "../ui/primitives";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
@@ -12,6 +12,7 @@ import { followUser } from "../../store/UserSlice/asyncThunk";
 import { addEvent } from "../../util";
 import UnFollowPopup from "./UnfollowPopup";
 import { openLoginPopupAction, showToast } from "../../store/UtilSlice";
+import "./index.css";
 
 export const handleFollow = async (
   userInfo: IUser,
@@ -77,16 +78,12 @@ const FollowBtn = ({
       handleFollow(userInfo, user, dispatch);
     }
   };
+  const isFullWidth = currentPage === PageConstant.FRIEND && !inUserFlBox;
+
   return (
-    <div
-      style={{
-        flex: currentPage === PageConstant.FRIEND && !inUserFlBox ? 1 : "",
-      }}
-    >
+    <div className={isFullWidth ? "follow-btn-wrap--full" : undefined}>
       <Button
-        width={
-          currentPage === PageConstant.FRIEND && !inUserFlBox ? "100%" : ""
-        }
+        className="follow-btn btn-subtle"
         size={"md"}
         onClick={() => {
           clickFollowBtn();

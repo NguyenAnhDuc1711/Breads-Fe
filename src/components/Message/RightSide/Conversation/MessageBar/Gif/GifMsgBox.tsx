@@ -1,4 +1,4 @@
-import { Container, Flex, Image } from "@chakra-ui/react";
+import { Image } from "../../../../../ui/primitives";
 import { memo } from "react";
 import { MESSAGE_PATH, Route } from "../../../../../../Breads-Shared/APIConfig";
 import {
@@ -13,6 +13,7 @@ import {
   defaulMessageInfo,
   updateConversations,
 } from "../../../../../../store/MessageSlice";
+import "./GifMsgBox.css";
 
 const GifMsgBox = ({ onClose }) => {
   const dispatch = useAppDispatch();
@@ -46,44 +47,22 @@ const GifMsgBox = ({ onClose }) => {
   };
 
   return (
-    <Container
-      p={0}
-      overflowY={"auto"}
-      maxHeight={"400px"}
-      sx={{
-        "&::-webkit-scrollbar": {
-          width: "12px",
-        },
-        "&::-webkit-scrollbar-track": {
-          background: "white",
-          borderRadius: "8px",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "gray",
-          borderRadius: "8px",
-          border: "3px solid white",
-        },
-      }}
-    >
-      <Flex wrap="wrap">
+    <div className="gif-msg-box">
+      <div className="gif-msg-box__grid">
         {gif.map((link, index) => (
           <Image
+            className="gif-msg-box__item"
             loading="lazy"
             key={link}
             src={link}
             alt={`GIF ${index + 1}`}
-            width="45%"
-            height="auto"
-            borderRadius={"8px"}
-            objectFit={"cover"}
-            m={1}
             onClick={() => {
               handleSendMsg(link);
             }}
           />
         ))}
-      </Flex>
-    </Container>
+      </div>
+    </div>
   );
 };
 

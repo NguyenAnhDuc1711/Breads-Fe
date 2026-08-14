@@ -9,7 +9,8 @@ import {
   Tooltip,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { Box, Flex, Skeleton, Text } from "@chakra-ui/react";
+import { Skeleton } from "../../../ui/primitives";
+import "./LineGraph.css";
 
 // Register required modules with ChartJS
 ChartJS.register(
@@ -55,44 +56,30 @@ const LineGraph = ({ labels, data, isLoading = false }) => {
 
   if (isLoading) {
     return (
-      <Box width="100%" height="25vh" position="relative">
-        <Flex height="calc(100% - 50px)">
-          <Flex
-            direction="column"
-            justifyContent="space-between"
-            pr={3}
-            height="100%"
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-              <Text fontSize="xs" color="gray.500">
+      <div className="line-graph-skeleton">
+        <div className="line-graph-skeleton__row">
+          <div className="line-graph-skeleton__y-axis">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
+              <p className="line-graph-skeleton__y-label" key={index}>
                 <Skeleton width="40px" height="10px" />
-              </Text>
+              </p>
             ))}
-          </Flex>
+          </div>
 
           {/* Chart area */}
-          <Box width="100%" height="100%" position="relative" borderRadius="md">
+          <div className="line-graph-skeleton__chart-area">
             <Skeleton width="100%" height="100%" borderRadius="md" />
-            <Box
-              position="absolute"
-              left="25%"
-              top="40%"
-              width="10px"
-              height="10px"
-              borderRadius="full"
-              bg="rgb(75, 192, 192)"
-              border="2px solid white"
-            />
-          </Box>
-        </Flex>
+            <div className="line-graph-skeleton__dot" />
+          </div>
+        </div>
 
         {/* X-axis date */}
-        <Flex justifyContent="flex-start" mt={2} pl="50px">
-          <Text fontSize="xs" color="gray.500">
+        <div className="line-graph-skeleton__x-axis">
+          <p className="line-graph-skeleton__y-label">
             <Skeleton width="40px" height="10px" />
-          </Text>
-        </Flex>
-      </Box>
+          </p>
+        </div>
+      </div>
     );
   }
 

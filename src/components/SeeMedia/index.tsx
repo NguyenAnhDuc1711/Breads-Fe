@@ -1,13 +1,6 @@
 import { ArrowBackIcon, ArrowForwardIcon, CloseIcon } from "../../assests/chakraIcons";
-import {
-  Button,
-  Flex,
-  Image,
-  Modal,
-  ModalContent,
-  ModalOverlay,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Button, Image } from "../ui/primitives";
+import { Modal, ModalContent, ModalOverlay } from "../ui/primitives";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Constants } from "../../Breads-Shared/Constants";
@@ -15,13 +8,13 @@ import { useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import { addEvent } from "../../util";
+import "./index.css";
 
 const SeeMedia = () => {
   const dispatch = useDispatch();
   const seeMediaInfo = useAppSelector(
     (state: AppState) => state.util.seeMediaInfo
   );
-  const { colorMode } = useColorMode();
   const currentMedia = seeMediaInfo.media?.[seeMediaInfo.currentMediaIndex];
 
   useEffect(() => {
@@ -85,18 +78,9 @@ const SeeMedia = () => {
   const moveBtn = (addStep) => {
     return (
       <Button
-        position={"fixed"}
-        top={"50%"}
-        width={"40px"}
-        height={"40px"}
-        left={addStep === -1 ? "12px" : ""}
-        right={addStep === 1 ? "12px" : ""}
-        borderRadius={"50%"}
-        bg={"gray"}
-        opacity={"0.3"}
-        _hover={{
-          opacity: "0.6",
-        }}
+        className={`see-media__nav-btn ${
+          addStep === -1 ? "see-media__nav-btn--prev" : "see-media__nav-btn--next"
+        }`}
         onClick={() => {
           handleChangeCurrentMedia(addStep);
         }}
@@ -114,70 +98,32 @@ const SeeMedia = () => {
 
   return (
     <>
-      <CloseIcon
-        position={"fixed"}
-        top={"24px"}
-        left={"24px"}
-        width={"40px"}
-        height={"40px"}
-        boxSizing="border-box"
-        padding={"8px"}
-        borderRadius={"50%"}
-        cursor={"pointer"}
-        zIndex={5000}
-        _hover={{
-          bg: "gray",
-        }}
-        onClick={handleClose}
-      />
+      <CloseIcon className="see-media__close" onClick={handleClose} />
       <Modal isOpen={seeMediaInfo.open} onClose={handleClose}>
         <ModalOverlay bg={"black"} />
-        <ModalContent
-          margin="0"
-          width={"100vw"}
-          height={"100vh"}
-          bg={"transparent"}
-        >
+        <ModalContent className="see-media__modal-content">
           {seeMediaInfo?.media?.length > 1 && (
             <>
               {moveBtn(-1)}
               {moveBtn(1)}
             </>
           )}
-          <Flex
-            justifyContent={"center"}
-            height={"100vh"}
-            bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
-          >
+          <div className="see-media__stage">
             {currentMedia.type === Constants.MEDIA_TYPE.VIDEO ? (
               <video
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                margin="auto"
-                maxWidth={{ base: "80%", md: "80vw" }}
-                height={{ base: "80%", md: "100vh" }}
-                width="fit-content"
-                objectFit="cover"
+                className="see-media__video"
                 src={currentMedia?.url}
                 controls
                 autoPlay
               />
             ) : (
               <Image
+                className="see-media__image"
                 src={currentMedia?.url}
-                height={{ base: "80%", md: "100vh" }}
-                maxWidth={{ base: "80%", md: "80vw" }}
-                width="fit-content"
-                objectFit="cover"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                margin="auto"
                 alt="Media viewer"
               />
             )}
-          </Flex>
+          </div>
         </ModalContent>
       </Modal>
     </>

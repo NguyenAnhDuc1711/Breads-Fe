@@ -1,0 +1,22 @@
+.post-survey {
+  margin: 0;
+  padding: 0;
+}
+
+.post-survey__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0;
+}
+
+.post-survey__hint {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.post-survey__remove {
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}

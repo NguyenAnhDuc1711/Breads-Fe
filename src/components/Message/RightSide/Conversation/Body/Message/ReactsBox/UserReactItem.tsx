@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Text } from "../../../../../../ui/primitives";
 import { useRouter } from "next/navigation";
 import {
   MESSAGE_PATH,
@@ -14,6 +14,7 @@ import Socket from "../../../../../../../socket";
 import { AppState } from "../../../../../../../store";
 import { updateMsg } from "../../../../../../../store/MessageSlice";
 import { getEmojiIcon } from "../../../../../../../util";
+import "./UserReactItem.css";
 
 const UserReactItem = ({
   userId,
@@ -60,19 +61,11 @@ const UserReactItem = ({
   };
 
   return (
-    <Flex
-      width={"100%"}
-      height={"52px"}
-      alignItems={"center"}
-      justifyContent={"space-between"}
-      p={2}
-      cursor={"pointer"}
-    >
-      <Flex gap={2} alignItems={"center"}>
+    <div className="user-react-item">
+      <div className="user-react-item__main">
         <Avatar src={userDisplay?.avatar} width={"40px"} height={"40px"} />
-        <Flex
-          flexDir={"column"}
-          ml={2}
+        <div
+          className="user-react-item__text-col"
           onClick={() => {
             if (isOwnReact) {
               handleRemoveReact();
@@ -82,13 +75,13 @@ const UserReactItem = ({
           }}
         >
           <Text fontWeight={600}>{userDisplay?.username}</Text>
-          <Text fontSize={"12px"} color={"gray"}>
+          <Text className="user-react-item__hint">
             {isOwnReact ? "Remove react" : "See detail profile"}
           </Text>
-        </Flex>
-      </Flex>
+        </div>
+      </div>
       <Text>{getEmojiIcon(react)}</Text>
-    </Flex>
+    </div>
   );
 };
 

@@ -1,0 +1,7 @@
+.admin-layout {
+  margin: 0;
+  padding: 0;
+  height: fit-content;
+  min-height: 100vh;
+  position: relative;
+}

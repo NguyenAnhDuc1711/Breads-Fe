@@ -1,12 +1,5 @@
-import {
-  Avatar,
-  Container,
-  Flex,
-  Image,
-  Link,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Avatar, Image, Text } from "../../../../../ui/primitives";
+import { Tooltip } from "../../../../../ui/primitives";
 import dayjs from "../../../../../../util/dayjs";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -23,6 +16,7 @@ import RepliedMsg from "./RepliedMsg";
 import { IMessage } from "../../../../../../store/MessageSlice";
 import { useAppSelector } from "../../../../../../hooks/redux";
 import { AppState } from "../../../../../../store";
+import "./index.css";
 
 const Message = ({
   msg,
@@ -101,13 +95,11 @@ const Message = ({
     const reactBox = () => {
       return (
         <div
-          style={{
-            position: "absolute",
-            right: ownMessage ? "" : "-16px",
-            bottom: "-10px",
-            left: ownMessage ? "-16px" : "",
-            zIndex: 2000,
-          }}
+          className={`message-reactbox-wrap${
+            ownMessage
+              ? " message-reactbox-wrap--own"
+              : " message-reactbox-wrap--other"
+          }`}
         >
           <MessageReactsBox reacts={reacts} msgId={msg?._id || ""} />
         </div>
@@ -116,26 +108,20 @@ const Message = ({
 
     if (isRetrieve) {
       return (
-        <Container
-          py={1}
-          px={3}
-          borderRadius={"16px"}
-          color={msgColor}
-          border={borderColor ? `1px solid ${borderColor}` : ""}
-          bg={"lightgray"}
+        <div
+          className="message-retrieved"
+          style={{
+            color: msgColor,
+            border: borderColor ? `1px solid ${borderColor}` : undefined,
+          }}
         >
           <Text>This message is retrieved</Text>
-        </Container>
+        </div>
       );
     }
 
     return (
-      <Flex
-        id={`msg_${msg?._id}`}
-        width={"fit-content"}
-        alignItems={"center"}
-        pos={"relative"}
-      >
+      <div className="message-row" id={`msg_${msg?._id}`}>
         {ownMessage && displayAction && (
           <MessageAction
             ownMsg={ownMessage}
@@ -148,44 +134,44 @@ const Message = ({
             {displayUserAva ? (
               <Avatar src={participant?.avatar} w={"32px"} h={"32px"} mr={2} />
             ) : (
-              <Container w={"32px"} h={"32px"} mr={2} />
+              <div className="message-avatar-placeholder" />
             )}
           </>
         )}
-        <Flex
-          flexDir={"column"}
-          alignItems={ownMessage ? "flex-end" : "flex-start"}
+        <div
+          className={`message-content-col${
+            ownMessage
+              ? " message-content-col--own"
+              : " message-content-col--other"
+          }`}
         >
           {respondTo?._id && <RepliedMsg repliedMsg={respondTo} msg={msg} />}
           {content?.trim() && (
-            <Container
-              m={0}
-              pos={"relative"}
-              maxW={"30vw"}
-              bg={msgBg}
-              py={1}
-              px={3}
-              borderRadius={"16px"}
-              color={msgColor}
-              border={borderColor ? `1px solid ${borderColor}` : ""}
-              width={"fit-content"}
+            <div
+              className="message-bubble"
+              style={{
+                backgroundColor: msgBg,
+                color: msgColor,
+                border: borderColor ? `1px solid ${borderColor}` : undefined,
+              }}
             >
               {contentArr.map((part, index) => {
                 if (part.match(urlRegex)) {
                   return (
-                    <span key={index} style={{ marginRight: "4px" }}>
-                      <Link
+                    <span className="message-link-wrap" key={index}>
+                      <a
                         href={part}
-                        color={ownMessage ? "white" : "black"}
-                        isExternal
-                        _hover={{ textDecoration: "underline" }}
-                        _focus={{ boxShadow: "none" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`message-link${
+                          ownMessage ? " message-link--own" : " message-link--other"
+                        }`}
                         onClick={(e) => {
                           e.stopPropagation();
                         }}
                       >
                         {part}
-                      </Link>
+                      </a>
                     </span>
                   );
                 }
@@ -195,14 +181,10 @@ const Message = ({
                 !links?.length &&
                 !media?.length &&
                 !file?._id && <>{reactBox()}</>}
-            </Container>
+            </div>
           )}
           {links?.length > 0 && (
-            <div
-              style={{
-                position: "relative",
-              }}
-            >
+            <div className="message-link-preview-wrap">
               <CustomLinkPreview
                 link={links[links?.length - 1]}
                 bg={msgBg}
@@ -216,7 +198,7 @@ const Message = ({
           )}
           {media?.length > 0 && <MsgMediaLayout media={media} />}
           {file?._id && <FileMsg file={file} bg={msgBg} color={msgColor} />}
-        </Flex>
+        </div>
         {!ownMessage && displayAction && (
           <MessageAction
             ownMsg={ownMessage}
@@ -224,7 +206,7 @@ const Message = ({
             previousReact={previousReact}
           />
         )}
-      </Flex>
+      </div>
     );
   };
 
@@ -242,41 +224,20 @@ const Message = ({
           {msg?.content}
         </Text>
         {isTheme && bgImg && (
-          <Image
-            src={bgImg}
-            width={"20px"}
-            height={"20px"}
-            borderRadius={"50%"}
-            alt=""
-          />
+          <Image className="message-setting__theme-img" src={bgImg} alt="" />
         )}
       </>
     );
   };
 
-  const settingMsgProp = {
-    _id: `msg_$msg?._id}`,
-    width: "100%",
-    height: "fit-content",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 1,
+  const handleMouseEnter = () => {
+    if (!isRetrieve) {
+      setDisplayAction(true);
+    }
   };
 
-  const messageProp = {
-    pos: "relative",
-    flexDir: ownMessage ? "column" : "",
-    gap: 2,
-    alignSelf: ownMessage ? "flex-end" : "flex-start",
-    width: "fit-content",
-    onMouseEnter: () => {
-      if (!isRetrieve) {
-        setDisplayAction(true);
-      }
-    },
-    onMouseLeave: () => {
-      setDisplayAction(false);
-    },
+  const handleMouseLeave = () => {
+    setDisplayAction(false);
   };
 
   return (
@@ -285,16 +246,28 @@ const Message = ({
         label={!isSettingMsg && getTooltipTime()}
         placement={ownMessage ? "left" : "right"}
       >
-        <Flex {...(isSettingMsg ? settingMsgProp : (messageProp as any))}>
-          {isSettingMsg ? handleSettingMsg() : msgContent()}
-        </Flex>
+        {isSettingMsg ? (
+          <div className="message-setting" id={`msg_${msg?._id}`}>
+            {handleSettingMsg()}
+          </div>
+        ) : (
+          <div
+            className={`message-wrap${
+              ownMessage ? " message-wrap--own" : " message-wrap--other"
+            }`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {msgContent()}
+          </div>
+        )}
       </Tooltip>
       {isLastSeen && msg?.sender === userInfo?._id && (
-        <Flex justifyContent={"end"}>
+        <div className="message-seen-row">
           <Tooltip label={getUserSeenTooltip()} placement={"top"}>
             <Avatar width={"16px"} height={"16px"} src={participant?.avatar} />
           </Tooltip>
-        </Flex>
+        </div>
       )}
     </>
   );

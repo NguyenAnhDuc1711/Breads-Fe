@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Text } from "../../../../../../ui/primitives";
 import { useEffect, useState } from "react";
 import { MdOutlineAttachFile, MdOutlineReply } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,7 @@ import {
   useAppSelector,
 } from "../../../../../../../hooks/redux";
 import { AppState } from "../../../../../../../store";
+import "./index.css";
 
 const RepliedMsg = ({
   msg,
@@ -42,18 +43,9 @@ const RepliedMsg = ({
   const msgStyle = ownMessage ? user1Message : user2Message;
   const msgColor = msgStyle?.color;
   const borderColor = msgStyle?.borderColor;
-  const cssProp = {
-    float: ownMessage ? "right" : "left",
-    width: "fit-content",
-    pos: "relative",
-    top: "12px",
-    bg: "#d3d3d37a",
-    py: "1",
-    pb: "3",
-    px: "3",
-    borderRadius: ownMessage ? "16px 16px 0 16px" : "16px 16px 16px 0",
+  const bubbleDynamicStyle = {
     color: msgColor,
-    border: borderColor ? `1px solid ${borderColor}` : "",
+    border: borderColor ? `1px solid ${borderColor}` : undefined,
   };
   const [startScroll, setStartScroll] = useState(false);
 
@@ -101,49 +93,45 @@ const RepliedMsg = ({
 
   return (
     <div
-      style={{
-        cursor: "pointer",
-      }}
+      className="replied-msg"
       onClick={() => {
         clickSeeDetailMsg();
       }}
     >
-      <Flex
-        alignItems={"center"}
-        gap={2}
-        pos={"relative"}
-        height={"16px"}
-        justifyContent={ownMessage ? "end" : "start"}
-        color={msgColor}
+      <div
+        className={`replied-msg__header${
+          ownMessage ? " replied-msg__header--own" : " replied-msg__header--other"
+        }`}
+        style={{ color: msgColor }}
       >
         <MdOutlineReply />{" "}
-        <span
-          style={{
-            fontSize: "12px",
-          }}
-        >
+        <span className="replied-msg__header-text">
           Reply to {ownRepliedMessage ? "yourself" : participant?.username}
         </span>
-      </Flex>
+      </div>
       {content?.trim() ? (
         <Text
-          {...(cssProp as any)}
-          maxW={"30vw"}
-          textOverflow={"ellipsis"}
-          overflow={"hidden"}
-          whiteSpace={"nowrap"}
+          className={`replied-msg__bubble${
+            ownMessage ? " replied-msg__bubble--own" : " replied-msg__bubble--other"
+          }`}
+          style={bubbleDynamicStyle}
         >
           {content}
         </Text>
       ) : (
         <>
           {(media?.length || file?._id) && (
-            <Flex alignItems={"center"} {...(cssProp as any)}>
+            <div
+              className={`replied-msg__attach-row replied-msg__bubble${
+                ownMessage ? " replied-msg__bubble--own" : " replied-msg__bubble--other"
+              }`}
+              style={bubbleDynamicStyle}
+            >
               <MdOutlineAttachFile />
               <Text ml={1}>
                 Attached {media?.length ? media[0].type : "file"}
               </Text>
-            </Flex>
+            </div>
           )}
         </>
       )}
