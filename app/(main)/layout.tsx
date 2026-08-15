@@ -18,6 +18,10 @@ const PostPopup = dynamic(() => import("../../src/components/PostPopup"), {
 const SeeMedia = dynamic(() => import("../../src/components/SeeMedia"), {
   ssr: false,
 });
+const LoginPopupScreen = dynamic(
+  () => import("../../src/components/LoginPopupScreen"),
+  { ssr: false },
+);
 
 // Ports src/Layout/index.tsx (LeftSideBar always, Header only once a user is
 // loaded). HeaderHeight / LeftSideBarWidth stay exported from src/Layout so the
@@ -27,6 +31,9 @@ const SeeMedia = dynamic(() => import("../../src/components/SeeMedia"), {
 // that spacing now belongs to the individual route files.
 const MainLayout = ({ children }: { children: ReactNode }) => {
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
+  const openLoginPopup = useAppSelector(
+    (state: AppState) => state.util.openLoginPopup,
+  );
   const pathname = usePathname();
 
   // LeftSideBar navigates via router.push, which doesn't reliably scroll the
@@ -38,10 +45,11 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <LeftSideBar />
-      {userInfo?._id && <Header />}
+      <Header />
       {children}
       <PostPopup />
       <SeeMedia />
+      {openLoginPopup && <LoginPopupScreen />}
     </>
   );
 };

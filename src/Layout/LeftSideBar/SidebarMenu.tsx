@@ -15,20 +15,32 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { MdOutlineBrightness2 } from "react-icons/md";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import { useAppDispatch } from "../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { AppState } from "../../store";
 import { openPopup } from "../../store/ReportSlice";
 import { logout } from "../../store/UserSlice/asyncThunk";
-import { showToast } from "../../store/UtilSlice";
+import { openLoginPopupAction, showToast } from "../../store/UtilSlice";
 import "./SidebarMenu.css";
 
 const SidebarMenu = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [isSubMenuOpen1, setIsSubMenuOpen1] = useState(false);
+  const [menuPlacement, setMenuPlacement] = useState<string>("top-start");
   const { setColorMode } = useColorMode();
+
+  useEffect(() => {
+    const updatePlacement = () => {
+      setMenuPlacement(window.innerWidth < 768 ? "top-end" : "top-start");
+    };
+    updatePlacement();
+    window.addEventListener("resize", updatePlacement);
+    return () => window.removeEventListener("resize", updatePlacement);
+  }, []);
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem("language");
@@ -65,12 +77,24 @@ const SidebarMenu = () => {
       },
       name: t("report_issue"),
     },
-    {
-      onClick: () => {
-        handleLogout();
-      },
-      name: t("logout"),
-    },
+    ...(userInfo?._id
+      ? [
+          {
+            onClick: () => {
+              handleLogout();
+            },
+            name: t("logout"),
+          },
+        ]
+      : [
+          {
+            onClick: () => {
+              dispatch(openLoginPopupAction());
+              handleCloseMenu();
+            },
+            name: t("SignIn"),
+          },
+        ]),
   ];
 
   const themeBtns = [
@@ -134,18 +158,18 @@ const SidebarMenu = () => {
   };
 
   return (
-    <div>
+    <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
       {!isMenuOpen && (
         <Button className="sidebar-menu__toggle" onClick={handleMenuOpen}>
           <HiMenuAlt4 size={24} />
         </Button>
       )}
       {isMenuOpen && !isSubMenuOpen && !isSubMenuOpen1 && (
-        <Menu isOpen={isMenuOpen} placement="top-start">
-          <MenuButton onClick={handleCloseMenu} py={2} px={4}>
+        <Menu isOpen={isMenuOpen} placement={menuPlacement}>
+          <MenuButton className="sidebar-menu__toggle" onClick={handleCloseMenu}>
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList className="sidebar-menu__list">
+          <MenuList className="sidebar-menu__list" bg={colorMode === "dark" ? "#121212" : "#ffffff"}>
             {menuItems.map((item) => (
               <React.Fragment key={item.name}>
                 {(item.name === "Báo cáo sự cố" ||
@@ -174,11 +198,11 @@ const SidebarMenu = () => {
         </Menu>
       )}
       {isSubMenuOpen && (
-        <Menu isOpen={isSubMenuOpen} placement="top-start">
-          <MenuButton onClick={handleCloseMenu} py={2} px={4}>
+        <Menu isOpen={isSubMenuOpen} placement={menuPlacement}>
+          <MenuButton className="sidebar-menu__toggle" onClick={handleCloseMenu}>
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList className="sidebar-menu__list sidebar-menu__list--sub">
+          <MenuList className="sidebar-menu__list sidebar-menu__list--sub" bg={colorMode === "dark" ? "#121212" : "#ffffff"}>
             <MenuItem
               className="sidebar-menu__back-item"
               onClick={() => setIsSubMenuOpen(false)}
@@ -207,11 +231,11 @@ const SidebarMenu = () => {
         </Menu>
       )}
       {isSubMenuOpen1 && (
-        <Menu isOpen={isSubMenuOpen1} placement="top-start">
-          <MenuButton onClick={handleCloseMenu} py={2} px={4}>
+        <Menu isOpen={isSubMenuOpen1} placement={menuPlacement}>
+          <MenuButton className="sidebar-menu__toggle" onClick={handleCloseMenu}>
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList className="sidebar-menu__list sidebar-menu__list--sub">
+          <MenuList className="sidebar-menu__list sidebar-menu__list--sub" bg={colorMode === "dark" ? "#121212" : "#ffffff"}>
             <MenuItem
               className="sidebar-menu__back-item"
               onClick={() => setIsSubMenuOpen1(false)}

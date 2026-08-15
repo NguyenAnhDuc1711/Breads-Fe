@@ -1,5 +1,6 @@
 .post-actions {
   display: flex;
+  gap: 8px;
 }
 
 .post-actions--admin {

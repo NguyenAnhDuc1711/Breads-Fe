@@ -61,6 +61,9 @@ const utilSlice = createSlice({
     openLoginPopupAction: (state) => {
       state.openLoginPopup = !state.openLoginPopup;
     },
+    closeLoginPopupAction: (state) => {
+      state.openLoginPopup = false;
+    },
     showToast: (state, action) => {
       const { title, description, status } = action.payload;
       state.toast = {
@@ -89,6 +92,7 @@ export const {
   updateHasMoreData,
   openNewPostNotify,
   openLoginPopupAction,
+  closeLoginPopupAction,
   showToast,
   clearToast,
 } = utilSlice.actions;

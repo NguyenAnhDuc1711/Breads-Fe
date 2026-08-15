@@ -26,7 +26,7 @@ import { GET, POST } from "../config/API";
 import { useAppDispatch } from "../hooks/redux";
 import { IUser } from "../store/UserSlice";
 import { login } from "../store/UserSlice/asyncThunk";
-import { showToast } from "../store/UtilSlice";
+import { closeLoginPopupAction, showToast } from "../store/UtilSlice";
 import "./Login.css";
 
 type LoginInput = {
@@ -38,7 +38,7 @@ type LoginInput = {
 // Fix #9: Separate error type — loginAsAdmin is not a validation field
 type LoginErrors = Partial<Pick<LoginInput, "email" | "password">>;
 
-const Login = () => {
+const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
   const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -195,7 +195,10 @@ const Login = () => {
               status: "success",
             }),
           );
-          router.replace("/");
+          dispatch(closeLoginPopupAction());
+          if (window.location.pathname.startsWith("/login") || window.location.pathname.startsWith("/signup")) {
+            router.replace("/");
+          }
         }
       }
     } catch (error: any) {
@@ -351,144 +354,157 @@ const Login = () => {
     );
   }
 
-  return (
-    <div className="login-page">
-      <div className="login-page__container">
-        <div className="login-page__card">
-          <div className="login-page__header">
-            <Heading
-              className="login-page__heading"
-              onClick={() => setCountClick((prev) => prev + 1)}
+  const cardContent = (
+    <div className={`login-page__card ${isPopup ? "login-page__card--popup" : ""}`}>
+      <div className="login-page__header">
+        <Heading
+          className="login-page__heading"
+          onClick={() => setCountClick((prev) => prev + 1)}
+        >
+          {t("SignIn")}
+        </Heading>
+        <Text className="login-page__subtitle">Welcome back to Breads</Text>
+      </div>
+
+      <div className="login-page__form-stack">
+        <FormControl isRequired isInvalid={!!errors?.email}>
+          <FormLabel
+            className="login-page__label"
+            onClick={() => setCountClickGetFullAcc((prev) => prev + 1)}
+          >
+            Email
+          </FormLabel>
+          <Input
+            type="email"
+            className="login-page__input"
+            placeholder="name@example.com"
+            onChange={(e) =>
+              setInputs((prev) => ({ ...prev, email: e.target.value }))
+            }
+            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+            onBlur={() => validateField("email")}
+            value={inputs.email}
+          />
+          <FormErrorMessage className="login-page__error-msg">
+            {errors?.email}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isRequired isInvalid={!!errors?.password}>
+          <div className="login-page__password-header">
+            <FormLabel className="login-page__label">
+              {t("password")}
+            </FormLabel>
+            <span
+              className="login-page__forgot-link"
+              onClick={() => {
+                handleForgotPassword();
+              }}
             >
-              {t("SignIn")}
-            </Heading>
-            <Text className="login-page__subtitle">Welcome back to Breads</Text>
+              {t("forgotPW")}
+            </span>
           </div>
-
-          <div className="login-page__form-stack">
-            <FormControl isRequired isInvalid={!!errors?.email}>
-              <FormLabel
-                className="login-page__label"
-                onClick={() => setCountClickGetFullAcc((prev) => prev + 1)}
-              >
-                Email
-              </FormLabel>
-              <Input
-                type="email"
-                className="login-page__input"
-                placeholder="name@example.com"
-                onChange={(e) =>
-                  setInputs((prev) => ({ ...prev, email: e.target.value }))
-                }
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                onBlur={() => validateField("email")}
-                value={inputs.email}
-              />
-              <FormErrorMessage className="login-page__error-msg">
-                {errors?.email}
-              </FormErrorMessage>
-            </FormControl>
-
-            <FormControl isRequired isInvalid={!!errors?.password}>
-              <div className="login-page__password-header">
-                <FormLabel className="login-page__label">
-                  {t("password")}
-                </FormLabel>
-                <span
-                  className="login-page__forgot-link"
-                  onClick={() => {
-                    handleForgotPassword();
-                  }}
-                >
-                  {t("forgotPW")}
-                </span>
-              </div>
-              <InputGroup className="login-page__input-group">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  className="login-page__input"
-                  placeholder="••••••••"
-                  onChange={(e) =>
-                    setInputs((prev) => ({ ...prev, password: e.target.value }))
-                  }
-                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  onBlur={() => validateField("password")}
-                  value={inputs.password}
-                />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    className="login-page__eye-btn"
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }
-                  >
-                    {showPassword ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                        <line x1="1" y1="1" x2="23" y2="23" />
-                      </svg>
-                    )}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage className="login-page__error-msg">
-                {errors?.password}
-              </FormErrorMessage>
-            </FormControl>
-
-            <div className="login-page__submit-stack">
+          <InputGroup className="login-page__input-group">
+            <Input
+              type={showPassword ? "text" : "password"}
+              className="login-page__input"
+              placeholder="••••••••"
+              onChange={(e) =>
+                setInputs((prev) => ({ ...prev, password: e.target.value }))
+              }
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              onBlur={() => validateField("password")}
+              value={inputs.password}
+            />
+            <InputRightElement h={"full"}>
               <Button
-                className="login-page__submit-btn"
-                isLoading={isLoading}
-                loadingText="Logging in..."
-                size="lg"
-                onClick={() => handleLogin()}
+                variant={"ghost"}
+                className="login-page__eye-btn"
+                onClick={() =>
+                  setShowPassword((showPassword) => !showPassword)
+                }
               >
-                {t("SignIn")}
+                {showPassword ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                )}
               </Button>
-            </div>
+            </InputRightElement>
+          </InputGroup>
+          <FormErrorMessage className="login-page__error-msg">
+            {errors?.password}
+          </FormErrorMessage>
+        </FormControl>
 
-            <div className="login-page__footer">
-              <Text className="login-page__footer-text">
-                {t("dontHaveAccount")}{" "}
-                <span
-                  className="login-page__link"
-                  onClick={() => router.push(`/${PageConstant.SIGNUP}`)}
-                >
-                  {t("SignUp")}
-                </span>
-              </Text>
-            </div>
-          </div>
+        <div className="login-page__submit-stack">
+          <Button
+            className="login-page__submit-btn"
+            isLoading={isLoading}
+            loadingText="Logging in..."
+            size="lg"
+            onClick={() => handleLogin()}
+          >
+            {t("SignIn")}
+          </Button>
+        </div>
+
+        <div className="login-page__footer">
+          <Text className="login-page__footer-text">
+            {t("dontHaveAccount")}{" "}
+            <span
+              className="login-page__link"
+              onClick={() => {
+                if (isPopup) {
+                  dispatch(closeLoginPopupAction());
+                }
+                router.push(`/${PageConstant.SIGNUP}`);
+              }}
+            >
+              {t("SignUp")}
+            </span>
+          </Text>
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <>
+      {isPopup ? (
+        cardContent
+      ) : (
+        <div className="login-page">
+          <div className="login-page__container">{cardContent}</div>
+        </div>
+      )}
       <CodePopup
         isOpen={openCodeBox}
         title={t("forgotCode")}
@@ -496,7 +512,7 @@ const Login = () => {
         onClose={() => setOpenCodeBox(false)}
         onSubmit={(code) => handleSubmitCode(code)}
       />
-    </div>
+    </>
   );
 };
 

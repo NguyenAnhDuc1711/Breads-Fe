@@ -14,10 +14,10 @@ import { getInitialPosts } from "../lib/getInitialPosts";
 // (same condition the old client-side redirect effect covered).
 const Page = async () => {
   const user = await getCurrentUser();
-  if (!user?._id) {
-    redirect(`/${PageConstant.LOGIN}`);
-  }
-  const initialPosts = await getInitialPosts(PageConstant.FOR_YOU, user._id);
+  const initialPosts = await getInitialPosts(
+    PageConstant.FOR_YOU,
+    user?._id || "",
+  );
   return <HomePage tab={PageConstant.FOR_YOU} initialPosts={initialPosts} />;
 };
 

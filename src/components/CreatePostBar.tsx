@@ -6,6 +6,7 @@ import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import { updatePostAction } from "../store/PostSlice";
+import { openLoginPopupAction } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 import OptimizedAvatar from "./OptimizedAvatar";
@@ -17,7 +18,13 @@ const CreatePostBar = () => {
   const navigate = useRouter().push;
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
 
+  if (!userInfo?._id) return null;
+
   const handleOpenPostPopup = () => {
+    if (!userInfo?._id) {
+      dispatch(openLoginPopupAction());
+      return;
+    }
     addEvent({
       event: "click_create_post_bar",
       payload: {},
@@ -29,9 +36,13 @@ const CreatePostBar = () => {
     <div className="create-post-bar">
       <div className="create-post-bar__row">
         <a
-          href={`/users/${userInfo._id}`}
+          href={userInfo?._id ? `/users/${userInfo._id}` : "#"}
           onClick={(e) => {
             e.preventDefault();
+            if (!userInfo?._id) {
+              dispatch(openLoginPopupAction());
+              return;
+            }
             dispatch(changePage({ nextPage: PageConstant.USER }));
             navigate(`/users/${userInfo._id}`);
           }}

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
 import { IPost, ISurveyOption } from "../../../../store/PostSlice";
 import { selectSurveyOption } from "../../../../store/PostSlice/asyncThunk";
+import { openLoginPopupAction } from "../../../../store/UtilSlice";
 import { getIsAdminPage } from "../../../../util";
 import "./index.css";
 
@@ -21,6 +22,10 @@ const SurveyOption = ({
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const handleTickOption = () => {
+    if (!userInfo?._id) {
+      dispatch(openLoginPopupAction());
+      return;
+    }
     dispatch(
       selectSurveyOption({
         optionId: option._id,

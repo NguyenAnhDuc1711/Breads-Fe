@@ -2,11 +2,16 @@ import { Button, useColorMode } from "../../components/ui/primitives";
 import { usePathname, useRouter } from "next/navigation";
 import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { AppState } from "../../store";
+import { openLoginPopupAction } from "../../store/UtilSlice";
 import { getCurrentPage } from "../../util/route";
 import "./ActionsBtns.css";
 
 export const BtnLike = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const pathname = usePathname();
   const { colorMode } = useColorMode();
   const currentPage = getCurrentPage(pathname);
@@ -19,6 +24,10 @@ export const BtnLike = () => {
   };
 
   const handleClick = (): void => {
+    if (!userInfo?._id) {
+      dispatch(openLoginPopupAction());
+      return;
+    }
     router.push("/" + PageConstant.ACTIVITY);
   };
 
@@ -35,6 +44,8 @@ export const BtnLike = () => {
 
 export const BtnMess = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const pathname = usePathname();
   const { colorMode } = useColorMode();
   const currentPage = getCurrentPage(pathname);
@@ -47,6 +58,10 @@ export const BtnMess = () => {
   };
 
   const handleClick = () => {
+    if (!userInfo?._id) {
+      dispatch(openLoginPopupAction());
+      return;
+    }
     router.push("/" + PageConstant.CHAT);
   };
 

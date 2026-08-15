@@ -35,3 +35,5 @@ skill
 AGENTS.md
 CLAUDE.md
 GEMINI.md
+
+.env*

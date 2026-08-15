@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   // Vite kept `build` and `lint` as separate concerns (vite build never ran
   // ESLint). Keep that separation here too — `npm run lint` still surfaces
   // pre-existing violations (this codebase's old eslint.config.js had a glob

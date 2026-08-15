@@ -1,32 +1,47 @@
 import {
   Modal,
-  ModalBody,
   ModalContent,
   ModalOverlay,
 } from "../ui/primitives";
 import { useAppDispatch } from "../../hooks/redux";
 import Login from "../../pages/Login";
-import { openLoginPopupAction } from "../../store/UtilSlice";
+import { closeLoginPopupAction } from "../../store/UtilSlice";
 import "./index.css";
 
 const LoginPopupScreen = () => {
   const dispatch = useAppDispatch();
   const onClose = () => {
-    dispatch(openLoginPopupAction());
+    dispatch(closeLoginPopupAction());
   };
 
   return (
-    <Modal closeOnOverlayClick={true} isOpen={true} onClose={() => onClose()}>
-      <ModalOverlay />
+    <Modal
+      closeOnOverlayClick={true}
+      isOpen={true}
+      onClose={onClose}
+      isCentered={true}
+    >
+      <ModalOverlay bg="blackAlpha.700" />
       <ModalContent
         className="login-popup__content"
-        onClick={() => {
-          onClose();
+        bg="transparent"
+        boxShadow="none"
+        borderRadius="24px"
+        onClick={(e) => {
+          e.stopPropagation();
         }}
       >
-        <ModalBody className="login-popup__body">
-          <Login />
-        </ModalBody>
+        <div className="login-popup__form-wrap">
+          <button
+            type="button"
+            className="login-popup__close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+          <Login isPopup={true} />
+        </div>
       </ModalContent>
     </Modal>
   );

@@ -14,10 +14,10 @@ import UserPageHydrate from "./UserPageHydrate";
 // `grep -rniE "visibility|private|isPrivate|blocked" src/store/UserSlice
 // src/pages/UserPage.tsx` — zero matches) — SSR is unconditional for any
 // existing userId, unlike posts/[postId] which forks on status.
-async function fetchJson(path: string, jwt: string | undefined) {
+async function fetchJson(path: string, cookieHeader: string | undefined) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api${path}`, {
-      headers: jwt ? { Cookie: `jwt=${jwt}` } : {},
+      headers: cookieHeader ? { Cookie: cookieHeader } : {},
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -29,8 +29,14 @@ async function fetchJson(path: string, jwt: string | undefined) {
 }
 
 async function fetchUser(userId: string) {
+  const refreshToken = cookies().get("refreshToken")?.value;
   const jwt = cookies().get("jwt")?.value;
-  return fetchJson(`${Route.USER}${USER_PATH.PROFILE}${userId}`, jwt);
+  const cookieHeader = refreshToken
+    ? `refreshToken=${refreshToken}`
+    : jwt
+      ? `jwt=${jwt}`
+      : undefined;
+  return fetchJson(`${Route.USER}${USER_PATH.PROFILE}${userId}`, cookieHeader);
 }
 
 export async function generateMetadata({

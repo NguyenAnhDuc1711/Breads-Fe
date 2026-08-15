@@ -23,6 +23,7 @@ import {
   addNotification,
   updateHasNotification,
 } from "../../store/NotificationSlice";
+import { openLoginPopupAction } from "../../store/UtilSlice";
 import { updatePostAction } from "../../store/PostSlice";
 import { getCurrentPage, getPathForPage } from "../../util/route";
 import SidebarMenu from "./SidebarMenu";
@@ -145,10 +146,77 @@ const LeftSideBar = () => {
         ]
       : [
           {
-            icon: <BiLogIn size={24} />,
-            ...getItemPropByPage(PageConstant.LOGIN, ""),
+            icon: <GrHomeRounded size={24} />,
+            ...getItemPropByPage(PageConstant.HOME),
+          },
+          {
+            icon: <FiSearch size={24} />,
+            ...getItemPropByPage(PageConstant.SEARCH),
+          },
+          {
+            icon: linkIcon,
+            onClick: () => dispatch(openLoginPopupAction()),
+            color: getButtonColor(false, colorMode),
+          },
+          {
+            icon: <MdAdd size={24} />,
+            onClick: () => dispatch(openLoginPopupAction()),
+            color: getButtonColor(false, colorMode),
+          },
+          {
+            icon: <FaRegUser size={24} />,
+            onClick: () => dispatch(openLoginPopupAction()),
+            color: getButtonColor(false, colorMode),
+          },
+          {
+            icon: messIcon,
+            onClick: () => dispatch(openLoginPopupAction()),
+            color: getButtonColor(false, colorMode),
           },
         ];
+
+  const mobileListItems = userInfo?._id
+    ? [
+        {
+          icon: <GrHomeRounded size={24} />,
+          ...getItemPropByPage(PageConstant.HOME),
+        },
+        {
+          icon: <FiSearch size={24} />,
+          ...getItemPropByPage(PageConstant.SEARCH),
+        },
+        {
+          icon: <MdAdd size={24} />,
+          onClick: () => {
+            dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+          },
+          color: getButtonColor(false, colorMode),
+        },
+        {
+          icon: <FaRegUser size={24} />,
+          ...getItemPropByPage(PageConstant.USER, `/${userInfo._id}`),
+        },
+      ]
+    : [
+        {
+          icon: <GrHomeRounded size={24} />,
+          ...getItemPropByPage(PageConstant.HOME),
+        },
+        {
+          icon: <FiSearch size={24} />,
+          ...getItemPropByPage(PageConstant.SEARCH),
+        },
+        {
+          icon: <MdAdd size={24} />,
+          onClick: () => dispatch(openLoginPopupAction()),
+          color: getButtonColor(false, colorMode),
+        },
+        {
+          icon: <FaRegUser size={24} />,
+          onClick: () => dispatch(openLoginPopupAction()),
+          color: getButtonColor(false, colorMode),
+        },
+      ];
 
   if (
     currentPage === PageConstant.LOGIN ||
@@ -207,7 +275,7 @@ const LeftSideBar = () => {
             ))}
           </div>
           <div className="left-sidebar__footer">
-            {userInfo?._id && <SidebarMenu />}
+            <SidebarMenu />
           </div>
         </div>
       </div>
@@ -215,42 +283,36 @@ const LeftSideBar = () => {
       {/* leftsidebar với mobile */}
       <div className="left-sidebar__mobile">
         <div className="left-sidebar__mobile-row">
-          {listItems
-            .filter(({ linkTo }) => {
-              return ![PageConstant.ACTIVITY, PageConstant.CHAT].includes(
-                linkTo?.slice(1, linkTo.length),
-              );
-            })
-            .map((item, index) => (
-              <div key={`side-bar-item-${index}`}>
-                <Button
-                  className="left-sidebar__mobile-item-btn"
-                  style={{ color: item.color }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (item.linkTo) {
-                      e.preventDefault();
-                      item.onClick && item.onClick();
-                    } else {
-                      item.onClick && item.onClick();
-                    }
-                  }}
-                >
-                  {item?.linkTo ? (
-                    <NextLink
-                      href={item.linkTo}
-                      className="left-sidebar__mobile-item-link"
-                      style={{ color: item.color }}
-                    >
-                      {item.icon}
-                    </NextLink>
-                  ) : (
-                    <>{item.icon}</>
-                  )}
-                </Button>
-              </div>
-            ))}
-          {userInfo?._id && <SidebarMenu />}
+          {mobileListItems.map((item, index) => (
+            <div key={`side-bar-mobile-item-${index}`}>
+              <Button
+                className="left-sidebar__mobile-item-btn"
+                style={{ color: item.color }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (item.linkTo) {
+                    e.preventDefault();
+                    item.onClick && item.onClick();
+                  } else {
+                    item.onClick && item.onClick();
+                  }
+                }}
+              >
+                {item?.linkTo ? (
+                  <NextLink
+                    href={item.linkTo}
+                    className="left-sidebar__mobile-item-link"
+                    style={{ color: item.color }}
+                  >
+                    {item.icon}
+                  </NextLink>
+                ) : (
+                  <>{item.icon}</>
+                )}
+              </Button>
+            </div>
+          ))}
+          <SidebarMenu />
         </div>
       </div>
     </div>

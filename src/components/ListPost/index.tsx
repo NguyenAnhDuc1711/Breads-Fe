@@ -34,7 +34,7 @@ const ListPost = () => {
       ) {
         return;
       }
-      if (page === 1 && !isAdmin) {
+      if (page === 1 && !isAdmin && hasPosts) {
         return;
       }
       let filter = { page: displayPageData };
@@ -46,12 +46,12 @@ const ListPost = () => {
       }
       const payload: {
         filter: any;
-        userId: string;
+        userId?: string;
         page: string;
         isNewPage?: boolean;
       } = {
         filter: filter,
-        userId: userInfo?._id,
+        ...(userInfo?._id ? { userId: userInfo._id } : {}),
         page: page,
       };
       if (page === 1) {
@@ -82,8 +82,8 @@ const ListPost = () => {
                 <hr className="list-post__gap" />
               </Fragment>
             )}
-            condition={!!userInfo._id}
-            deps={[userInfo._id, currentPage, filterPostValidation]}
+            condition={!isAdmin || !!filterPostValidation}
+            deps={[userInfo?._id, currentPage, filterPostValidation]}
             skeletonCpn={<SkeletonPost />}
             reloadPageDeps={isAdmin ? [filterPostValidation] : null}
           />

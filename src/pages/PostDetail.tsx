@@ -71,7 +71,7 @@ const PostDetail = ({ postId }: { postId: string }) => {
             break;
           }
           default:
-            ableToDisplayPost = !!userInfo?._id;
+            ableToDisplayPost = true;
         }
     }
     if (ableToDisplayPost) {

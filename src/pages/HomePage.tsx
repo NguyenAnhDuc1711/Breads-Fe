@@ -10,6 +10,7 @@ import ContainerLayout from "../components/MainBoxLayout";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import { IPost, updateListPost } from "../store/PostSlice";
+import { getPosts } from "../store/PostSlice/asyncThunk";
 import { changeDisplayPageData, updateHasMoreData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
@@ -46,6 +47,16 @@ const HomePage = ({
     // only fetches page 2+, see its `page === 1` early-return).
     dispatch(updateListPost(initialPosts));
     dispatch(updateHasMoreData(initialPosts.length > 0));
+    if (!initialPosts || initialPosts.length === 0) {
+      dispatch(
+        getPosts({
+          filter: { page: tab },
+          page: 1,
+          isNewPage: true,
+          ...(userInfo?._id ? { userId: userInfo._id } : {}),
+        })
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
@@ -71,7 +82,7 @@ const HomePage = ({
   return (
     <ContainerLayout>
       <>
-        {tab === FOR_YOU && <CreatePostBar />}
+        {tab === FOR_YOU && !!userInfo?._id && <CreatePostBar />}
         <ListPost />
       </>
     </ContainerLayout>

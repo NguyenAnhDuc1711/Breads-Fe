@@ -134,33 +134,34 @@ const Header = () => {
       </div>
       <div className="app-header__center">
         {getHeaderContent()}
-        {[PageConstant.HOME, PageConstant.ACTIVITY].includes(currentPage) && (
-          <ClickOutsideComponent onClose={() => setOpenBox(false)}>
-            <ChevronDownIcon
-              className={`app-header__chevron${
-                openBox ? " app-header__chevron--open" : ""
-              }`}
-              onClick={() => setOpenBox(!openBox)}
-            />
-            {openBox && (
-              <div className="app-header__dropdown">
-                {getBoxItems()?.map((item) => (
-                  <Text
-                    className="app-header__dropdown-item"
-                    key={item}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNavigate(item);
-                      setOpenBox(false);
-                    }}
-                  >
-                    {item[0].toUpperCase() + item.slice(1)}
-                  </Text>
-                ))}
-              </div>
-            )}
-          </ClickOutsideComponent>
-        )}
+        {!!userInfo?._id &&
+          [PageConstant.HOME, PageConstant.ACTIVITY].includes(currentPage) && (
+            <ClickOutsideComponent onClose={() => setOpenBox(false)}>
+              <ChevronDownIcon
+                className={`app-header__chevron${
+                  openBox ? " app-header__chevron--open" : ""
+                }`}
+                onClick={() => setOpenBox(!openBox)}
+              />
+              {openBox && (
+                <div className="app-header__dropdown">
+                  {getBoxItems()?.map((item) => (
+                    <Text
+                      className="app-header__dropdown-item"
+                      key={item}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNavigate(item);
+                        setOpenBox(false);
+                      }}
+                    >
+                      {item[0].toUpperCase() + item.slice(1)}
+                    </Text>
+                  ))}
+                </div>
+              )}
+            </ClickOutsideComponent>
+          )}
       </div>
       <div className="app-header__mobile-only">
         <BtnMess />

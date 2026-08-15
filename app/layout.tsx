@@ -15,7 +15,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://breads.social"
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://breads.social",
   ),
   title: {
     default: "Breads – Share Your World",
@@ -29,8 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Breads",
     title: "Breads – Share Your World",
-    description:
-      "Mạng xã hội chia sẻ bài đăng, ảnh và kết nối bạn bè.",
+    description: "Mạng xã hội chia sẻ bài đăng, ảnh và kết nối bạn bè.",
     images: [
       {
         url: "/bread-logo.png",
@@ -66,7 +65,13 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   const initialUser = await getCurrentUser();
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
-      <body suppressHydrationWarning style={{ fontFamily: "var(--font-inter), Inter, system-ui, -apple-system, sans-serif" }}>
+      <body
+        suppressHydrationWarning
+        style={{
+          fontFamily:
+            "var(--font-inter), Inter, system-ui, -apple-system, sans-serif",
+        }}
+      >
         <Providers initialUser={initialUser}>{children}</Providers>
       </body>
     </html>

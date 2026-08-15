@@ -13,22 +13,37 @@ import { NextRequest, NextResponse } from "next/server";
 
 const LOGIN_PATH = "/login";
 
+const PROTECTED_PREFIXES = [
+  "/chat",
+  "/activity",
+  "/following",
+  "/liked",
+  "/saved",
+  "/update",
+  "/admin",
+  "/setting",
+];
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hasJwt = !!request.cookies.get("jwt");
+  const hasAuth =
+    !!request.cookies.get("refreshToken") || !!request.cookies.get("jwt");
 
   // Logged-in users never need the auth screens.
-  // Auth screens live at /login and /signup (the (auth) route group does
-  // NOT create a URL segment — app/(main)/(auth)/login → /login).
   if (pathname === "/login" || pathname === "/signup") {
-    if (hasJwt) {
+    if (hasAuth) {
       return NextResponse.redirect(new URL("/", request.url));
     }
     return NextResponse.next();
   }
 
-  // Everything the matcher lets through (other than /auth/*) is protected.
-  if (!hasJwt) {
+  // Only protect routes that strictly require authentication.
+  // Public routes (/, /for_you, /search, /posts/*, /users/*) are allowed for guests.
+  const isProtected = PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+
+  if (isProtected && !hasAuth) {
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 

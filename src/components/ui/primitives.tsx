@@ -2003,10 +2003,10 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
     const { colorMode } = useColorMode();
     const start =
       colorProp(startColor) ||
-      (colorMode === "dark" ? colorProp("gray.800") : colorProp("gray.100"));
+      (colorMode === "dark" ? "#2d333b" : colorProp("gray.100"));
     const end =
       colorProp(endColor) ||
-      (colorMode === "dark" ? colorProp("gray.600") : colorProp("gray.400"));
+      (colorMode === "dark" ? "#444c56" : colorProp("gray.400"));
     if (isLoaded) {
       return <Box ref={ref} style={style} {...rest} />;
     }
@@ -2020,7 +2020,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
           color: "transparent",
           pointerEvents: "none",
           userSelect: "none",
-          opacity: 0.7,
+          opacity: 0.9,
           width: fitContent ? "fit-content" : undefined,
           background: start,
           borderColor: end,
@@ -2305,6 +2305,7 @@ function useFloatingPosition(
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(
     null,
   );
+  const [computedPlacement, setComputedPlacement] = useState<string>(placement);
 
   useEffect(() => {
     if (!isOpen || !triggerRef.current) {
@@ -2314,8 +2315,19 @@ function useFloatingPosition(
     const update = () => {
       if (!triggerRef.current) return;
       const rect = triggerRef.current.getBoundingClientRect();
-      const isTop = placement.startsWith("top");
-      const isEnd = placement.endsWith("end") || placement.endsWith("right");
+      let effectivePlacement = placement;
+
+      // Auto-flip horizontal placement if it would overflow the screen
+      if (placement.endsWith("start") && rect.left > window.innerWidth / 2) {
+        effectivePlacement = placement.replace("start", "end");
+      } else if (placement.endsWith("end") && rect.right < window.innerWidth / 2) {
+        effectivePlacement = placement.replace("end", "start");
+      }
+
+      setComputedPlacement(effectivePlacement);
+
+      const isTop = effectivePlacement.startsWith("top");
+      const isEnd = effectivePlacement.endsWith("end") || effectivePlacement.endsWith("right");
       setCoords({
         top: isTop ? rect.top : rect.bottom,
         left: isEnd ? rect.right : rect.left,
@@ -2330,8 +2342,8 @@ function useFloatingPosition(
     };
   }, [isOpen, placement, triggerRef]);
 
-  const isTop = placement.startsWith("top");
-  const isEnd = placement.endsWith("end") || placement.endsWith("right");
+  const isTop = computedPlacement.startsWith("top");
+  const isEnd = computedPlacement.endsWith("end") || computedPlacement.endsWith("right");
   return {
     coords,
     transform:

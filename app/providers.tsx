@@ -24,14 +24,6 @@ const AuthSessionInit = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // Server already resolved the user from the jwt cookie (app/layout.tsx)
-    // and seeded it into the store below — only hit /users/me here when that
-    // resolution didn't happen (e.g. cookie missing/expired), instead of
-    // always re-fetching what we already have on first paint.
-    if (!hasInitialUser) {
-      dispatch(getMe());
-    }
-
     // Multi-tab logout sync listener
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "userId" && !e.newValue) {
@@ -59,7 +51,13 @@ const Providers = ({
   const storeRef = useRef<AppStore>();
   if (!storeRef.current) {
     const preloadedState: Partial<AppState> | undefined = initialUser
-      ? { user: { ...initialUserState, userInfo: initialUser, isLoading: false } }
+      ? {
+          user: {
+            ...initialUserState,
+            userInfo: initialUser,
+            isLoading: false,
+          },
+        }
       : undefined;
     storeRef.current = makeStore(preloadedState);
   }

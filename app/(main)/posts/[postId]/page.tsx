@@ -14,12 +14,19 @@ import PostDetailHydrate from "./PostDetailHydrate";
 // (parity with src/config/API.ts's Authorization header, just via
 // Cookie here since axios's withCredentials isn't available server-side).
 async function fetchPost(postId: string): Promise<any | null> {
+  const refreshToken = cookies().get("refreshToken")?.value;
   const jwt = cookies().get("jwt")?.value;
+  const cookieHeader = refreshToken
+    ? `refreshToken=${refreshToken}`
+    : jwt
+      ? `jwt=${jwt}`
+      : undefined;
+
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api${Route.POST}/${postId}`,
       {
-        headers: jwt ? { Cookie: `jwt=${jwt}` } : {},
+        headers: cookieHeader ? { Cookie: cookieHeader } : {},
         cache: "no-store",
       }
     );

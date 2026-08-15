@@ -39,7 +39,6 @@ const SearchPage = () => {
       searchValue: string;
       isFetchMore: boolean;
     }) => {
-      if (!userInfo?._id) return;
       try {
         if (!isFetchMore) {
           setLoading(true);
@@ -47,7 +46,7 @@ const SearchPage = () => {
         const data: IUser[] | undefined | null = await GET({
           path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
           params: {
-            userId: userInfo._id,
+            ...(userInfo?._id ? { userId: userInfo._id } : {}),
             page: page,
             limit: 20,
             searchValue,
@@ -78,13 +77,11 @@ const SearchPage = () => {
   );
 
   useEffect(() => {
-    if (userInfo?._id) {
-      handleGetUsers({
-        page: 1,
-        searchValue,
-        isFetchMore: false,
-      });
-    }
+    handleGetUsers({
+      page: 1,
+      searchValue,
+      isFetchMore: false,
+    });
 
     if (init.current) {
       dispatch(changePage({ nextPage: PageConstant.SEARCH }));

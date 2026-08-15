@@ -19,10 +19,16 @@
 
 .sidebar-menu__list {
   background-color: #ffffff;
+  max-width: calc(100vw - 24px);
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="dark"] .sidebar-menu__list {
-  background-color: #0a0a0a;
+  background-color: #121212;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-menu__list--sub {

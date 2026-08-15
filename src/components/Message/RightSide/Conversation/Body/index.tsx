@@ -59,7 +59,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
   }, [selectedConversation?._id, userInfo]);
 
   useSocket((socket) => {
-    socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, (data) => {
+    const handleGetMessage = (data: any) => {
       const conversationInfo = data?.conversationInfo;
       const msgs = data?.msgs;
       if (msgs) {
@@ -101,8 +101,9 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
           }
         }
       }
-    });
-    socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, (data) => {
+    };
+
+    const handleUpdateMsg = (data: any) => {
       if (data) {
         dispatch(updateMsg(data));
         if (data?._id === lastMsg?._id) {
@@ -114,7 +115,15 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
           );
         }
       }
-    });
+    };
+
+    socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, handleGetMessage);
+    socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, handleUpdateMsg);
+
+    return () => {
+      socket.off(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, handleGetMessage);
+      socket.off(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, handleUpdateMsg);
+    };
   }, []);
 
   useEffect(() => {

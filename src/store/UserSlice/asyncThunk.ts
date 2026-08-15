@@ -7,7 +7,8 @@ import {
   USER_PATH,
 } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import { GET, PATCH, POST, PUT } from "../../config/API";
+import { GET, PATCH, POST, PUT, setAccessToken } from "../../config/API";
+import Socket from "../../socket";
 import { initialMsgState } from "../MessageSlice";
 import { initialPostState, updateListPost } from "../PostSlice";
 import { initialUtilState } from "../UtilSlice";
@@ -24,7 +25,7 @@ export const validateEmailByCode = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err);
     }
-  }
+  },
 );
 
 export const signUp = createAsyncThunk(
@@ -43,7 +44,7 @@ export const signUp = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err);
     }
-  }
+  },
 );
 
 export const login = createAsyncThunk(
@@ -65,9 +66,10 @@ export const login = createAsyncThunk(
         const objectIdRegex = /^[a-fA-F0-9]{24}$/;
         if (data?._id && objectIdRegex.test(data?._id)) {
           localStorage.setItem("userId", data?._id);
-          if (typeof document !== "undefined") {
-            document.cookie = "jwt=1; path=/; max-age=1296000; SameSite=Lax";
-          }
+        }
+        // Store access token in memory (not localStorage for security)
+        if (data?.accessToken) {
+          setAccessToken(data.accessToken);
         }
       }
       return data;
@@ -76,44 +78,42 @@ export const login = createAsyncThunk(
         return rejectWithValue(err.response?.data);
       }
     }
-  }
+  },
 );
 
-export const getMe = createAsyncThunk(
-  "user/getMe",
-  async (_, thunkAPI) => {
-    try {
-      const data = await GET({
-        path: Route.USER + USER_PATH.ME,
-      });
-      if (data && data._id) {
-        localStorage.setItem("userId", data._id);
-        if (typeof document !== "undefined") {
-          document.cookie = "jwt=1; path=/; max-age=1296000; SameSite=Lax";
-        }
-        return data;
-      }
-      return thunkAPI.rejectWithValue("Session expired or user not found");
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        return thunkAPI.rejectWithValue(err.response?.data);
-      }
-      return thunkAPI.rejectWithValue(err);
+export const getMe = createAsyncThunk("user/getMe", async (_, thunkAPI) => {
+  try {
+    const data = await GET({
+      path: Route.USER + USER_PATH.ME,
+    });
+    if (data && data._id) {
+      localStorage.setItem("userId", data._id);
+      return data;
     }
+    return thunkAPI.rejectWithValue("Session expired or user not found");
+  } catch (err: unknown) {
+    if (err instanceof AxiosError) {
+      return thunkAPI.rejectWithValue(err.response?.data);
+    }
+    return thunkAPI.rejectWithValue(err);
   }
-);
+});
 
 export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
   try {
     const data = await POST({
       path: Route.USER + USER_PATH.LOGOUT,
     });
+    // Clear in-memory access token
+    setAccessToken(null);
+    // Disconnect socket to prevent stale connections
+    Socket.disconnect();
     localStorage.removeItem("userId");
     if (typeof document !== "undefined") {
+      document.cookie = "refreshToken=; path=/; max-age=0; SameSite=Lax";
+      // Also clear legacy jwt cookie
       document.cookie = "jwt=; path=/; max-age=0; SameSite=Lax";
     }
-    // We don't need to manually reset state here anymore
-    // The root reducer will handle resetting all state when this action fulfills
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
@@ -140,7 +140,7 @@ export const getUserInfo = createAsyncThunk(
         return thunkAPI.rejectWithValue(err.response?.data);
       }
     }
-  }
+  },
 );
 
 export const updateUser = createAsyncThunk(
@@ -161,7 +161,7 @@ export const updateUser = createAsyncThunk(
         return thunkAPI.rejectWithValue(err.response?.data);
       }
     }
-  }
+  },
 );
 
 export const addPostToCollection = createAsyncThunk(
@@ -182,7 +182,7 @@ export const addPostToCollection = createAsyncThunk(
         return thunkAPI.rejectWithValue(err.response?.data);
       }
     }
-  }
+  },
 );
 
 export const removePostFromCollection = createAsyncThunk(
@@ -202,7 +202,7 @@ export const removePostFromCollection = createAsyncThunk(
       });
       if (displayPageData === PageConstant.SAVED) {
         const newListPost = rootState.post.listPost.filter(
-          (post) => post._id !== postId
+          (post) => post._id !== postId,
         );
         dispatch(updateListPost(newListPost));
         return {
@@ -217,7 +217,7 @@ export const removePostFromCollection = createAsyncThunk(
         return thunkAPI.rejectWithValue(err.response?.data);
       }
     }
-  }
+  },
 );
 
 export const followUser = createAsyncThunk(
@@ -238,5 +238,5 @@ export const followUser = createAsyncThunk(
         return thunkAPI.rejectWithValue(err.response?.data);
       }
     }
-  }
+  },
 );
