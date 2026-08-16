@@ -1,9 +1,32 @@
 import { io, Socket as SocketType } from "socket.io-client";
-import { serverUrl, getAccessToken, onTokenRefreshed } from "./config/API";
+import {
+  serverUrl,
+  getAccessToken,
+  onTokenRefreshed,
+  ensureFreshAccessToken,
+} from "./config/API";
 
 // Trần "1 refresh / 1 phiên kết nối" cho luồng auth-recovery của socket
 // (tương đương cờ _retry của axios interceptor). Được T4 (011.md) dùng.
 let authRefreshAttempted = false;
+
+// AD-6 — allowlist mã lỗi auth. Tương ứng code: "TOKEN_EXPIRED" mà HTTP 401
+// đang dùng (config/API.ts). Payload lỗi từ middleware BE của socket.io nằm ở
+// (err as any).data, nên khớp CẢ err.message LẪN err.data.code.
+const AUTH_ERROR_SIGNALS = [
+  "UNAUTHORIZED",
+  "TOKEN_EXPIRED",
+  "jwt expired",
+  "Unauthorized",
+];
+
+const isAuthError = (err: Error): boolean => {
+  const code = (err as any)?.data?.code;
+  const message = err?.message ?? "";
+  return AUTH_ERROR_SIGNALS.some(
+    (signal) => code === signal || message.includes(signal),
+  );
+};
 
 // Khi access token mới xuất hiện (refresh 401, login, hoặc bootstrap sau
 // SSR), facade ensureFreshAccessToken()/notifyTokenRefreshed() gọi callback
@@ -43,8 +66,37 @@ export default class Socket {
       authRefreshAttempted = false;
     });
 
-    Socket.instance.on("connect_error", (err) => {
-      console.log("Socket connect error:", err.message);
+    // AD-7 — luồng auth-recovery. Thứ tự 5 bước dưới đây là load-bearing.
+    Socket.instance.on("connect_error", async (err) => {
+      // 1) Không phải lỗi auth (server down, mất mạng...) → giữ nguyên
+      //    diagnostic như hôm nay rồi dừng. KHÔNG refresh (FR-3).
+      if (!isAuthError(err)) {
+        console.log("Socket connect error:", err.message);
+        return;
+      }
+
+      // 2) Đã thử refresh cho phiên kết nối này rồi → không làm gì (trần NFR-1).
+      if (authRefreshAttempted) return;
+
+      // 3) Đánh dấu TRƯỚC, rồi disconnect TRƯỚC khi await: dập vòng
+      //    auto-reconnect của socket.io để nó không bắn thêm handshake với
+      //    token cũ trong lúc ta đang refresh. KHÔNG null hoá instance —
+      //    listener của component phải sống sót.
+      authRefreshAttempted = true;
+      Socket.instance?.disconnect();
+
+      try {
+        await ensureFreshAccessToken();
+        // 4) THÀNH CÔNG → KHÔNG LÀM GÌ THÊM.
+        //    Facade đã tự gọi onTokenRefreshedCallback() →
+        //    Socket.connectIfAuthenticated() → .connect() trên đúng instance
+        //    này. Tự gọi .connect() ở đây sẽ tạo chủ sở hữu thứ hai cho cùng
+        //    một sự kiện ⇒ 2 handshake/lần recovery. Đừng thêm dòng nào.
+      } catch {
+        // 5) THẤT BẠI → dừng hẳn. Đã disconnect ở bước 3.
+        //    KHÔNG redirect /login — việc đó thuộc response interceptor ở API
+        //    call kế tiếp (PRD Out of Scope cấm socket tự điều hướng).
+      }
     });
 
     if (getAccessToken()) Socket.instance.connect();
