@@ -192,6 +192,9 @@ const MessageInput = () => {
   return (
     <form
       className="msg-bar"
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
       style={{
         backgroundColor: conversationBackground?.backgroundColor,
         backgroundBlendMode: conversationBackground?.backgroundBlendMode,

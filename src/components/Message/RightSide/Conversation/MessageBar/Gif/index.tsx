@@ -22,13 +22,20 @@ const GifMsgBtn = ({ popup, onClose, onOpen, color = "" }) => {
       onClose={() => onClose()}
     >
       <PopoverTrigger>
-        <Button className="gif-btn-trigger">
+        <Button
+          type="button"
+          className="gif-btn-trigger"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onOpen(ACTIONS.GIF);
+          }}
+        >
           <RiFileGifLine
             style={{
               ...iconStyle,
               color: color ? color : undefined,
             }}
-            onClick={() => onOpen(ACTIONS.GIF)}
           />
         </Button>
       </PopoverTrigger>

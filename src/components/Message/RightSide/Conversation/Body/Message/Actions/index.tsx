@@ -23,7 +23,6 @@ import {
 } from "../../../../../../../store/MessageSlice";
 import { addEvent, getEmojiIcon } from "../../../../../../../util";
 import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
-import IconWrapper from "../../../MessageBar/IconWrapper";
 import "./index.css";
 
 const MessageAction = ({ ownMsg, msg, previousReact }) => {
@@ -140,16 +139,16 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
           setOpenBox(false);
         }}
       >
-        <IconWrapper
-          icon={
-            <BsThreeDots
-              cursor={"pointer"}
-              onClick={() => {
-                setOpenBox(!openBox);
-              }}
-            />
-          }
-        />
+        <div
+          className="msg-action__btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenBox(!openBox);
+          }}
+          title="More actions"
+        >
+          <BsThreeDots />
+        </div>
         <div
           className={`msg-action__menu${openBox ? " msg-action__menu--open" : ""}${
             ownMsg ? " msg-action__menu--own" : " msg-action__menu--other"
@@ -159,7 +158,8 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
             <div
               className="msg-action__menu-item"
               key={name}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 !!onClick && onClick();
               }}
             >
@@ -169,31 +169,37 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
           ))}
         </div>
       </ClickOutsideComponent>
+
       <ClickOutsideComponent onClose={() => setDisplayReactBox(false)}>
-        <IconWrapper
-          icon={
-            <MdEmojiEmotions
-              cursor={"pointer"}
-              onClick={() => setDisplayReactBox(!displayReactBox)}
-            />
-          }
-        />
+        <div
+          className={`msg-action__btn${displayReactBox ? " msg-action__btn--active" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setDisplayReactBox(!displayReactBox);
+          }}
+          title="React to message"
+        >
+          <MdEmojiEmotions />
+        </div>
         {displayReactBox && (
-          <div className="msg-action__emoji-box">
+          <div
+            className={`msg-action__emoji-box${
+              ownMsg ? " msg-action__emoji-box--own" : " msg-action__emoji-box--other"
+            }`}
+          >
             {defaultEmoji.map((emjStr) => (
-              <IconWrapper
+              <div
                 key={`emj-${emjStr}`}
-                addBg={previousReact === emjStr ? true : false}
-                icon={
-                  <Text
-                    onClick={() => {
-                      handleReactMsg(emjStr);
-                    }}
-                  >
-                    {getEmojiIcon(emjStr)}
-                  </Text>
-                }
-              />
+                className={`msg-action__emoji-item${
+                  previousReact === emjStr ? " msg-action__emoji-item--active" : ""
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReactMsg(emjStr);
+                }}
+              >
+                {getEmojiIcon(emjStr)}
+              </div>
             ))}
           </div>
         )}

@@ -1,4 +1,5 @@
 import { Text } from "../../../../ui/primitives";
+import { IoCloseOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import Socket from "../../../../../socket";
@@ -57,48 +58,61 @@ const ThemeModal = ({ setItemSelected }: { setItemSelected: Function }) => {
   };
 
   return (
-    <>
-      <div className="theme-modal">
+    <div className="theme-modal">
+      <div className="theme-modal__header">
         <Text className="theme-modal__title">Select your theme</Text>
-        <div className="theme-modal__list-wrap">
-          <div className="theme-modal__list">
-            {Object.keys(messageThemes).map((theme) => {
-              const themeInfo = messageThemes[theme];
-              const themeName = themeInfo.name;
-              const themeBg = themeInfo.conversationBackground.backgroundImage;
-              const textColor = themeInfo.user1Message.color;
-              const borderColor = themeInfo.user1Message.borderColor;
-              return (
-                <div
-                  className="theme-modal__item"
-                  key={theme}
-                  style={{
-                    backgroundImage: `url(${themeBg})`,
-                    backgroundColor: !themeBg
-                      ? themeInfo.conversationBackground.backgroundColor
-                      : undefined,
-                    border:
-                      selectedConversation?.theme === theme
-                        ? `4px solid ${borderColor}`
-                        : undefined,
-                  }}
-                  onClick={() => {
-                    handleChangeTheme(theme);
-                  }}
-                >
-                  <Text
-                    className="theme-modal__item-name"
-                    style={{ color: textColor }}
-                  >
+        <button
+          type="button"
+          className="theme-modal__close-btn"
+          onClick={() => setItemSelected("")}
+          aria-label="Close"
+        >
+          <IoCloseOutline size={22} />
+        </button>
+      </div>
+      <div className="theme-modal__list-wrap">
+        <div className="theme-modal__list">
+          {Object.keys(messageThemes).map((theme) => {
+            const themeInfo = messageThemes[theme];
+            const themeName = themeInfo.name;
+            const themeBg = themeInfo.conversationBackground.backgroundImage;
+            const textColor = themeInfo.user1Message.color;
+            const borderColor = themeInfo.user1Message.borderColor;
+            const isSelected = (selectedConversation?.theme || "default") === theme;
+
+            return (
+              <div
+                className={`theme-modal__item${
+                  isSelected ? " theme-modal__item--selected" : ""
+                }`}
+                key={theme}
+                style={{
+                  backgroundImage: themeBg ? `url(${themeBg})` : undefined,
+                  backgroundColor: !themeBg
+                    ? themeInfo.conversationBackground.backgroundColor || "#1e1e1e"
+                    : undefined,
+                  borderColor: isSelected ? (borderColor || "#3b82f6") : undefined,
+                }}
+                onClick={() => {
+                  handleChangeTheme(theme);
+                }}
+              >
+                {isSelected && (
+                  <div className="theme-modal__selected-badge">
+                    <IoCheckmarkCircle size={20} color="#3b82f6" />
+                  </div>
+                )}
+                <div className="theme-modal__item-overlay">
+                  <span className="theme-modal__item-name">
                     {themeName}
-                  </Text>
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

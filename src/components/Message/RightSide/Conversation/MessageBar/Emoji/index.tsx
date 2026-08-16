@@ -59,8 +59,13 @@ const EmojiMsgBtn = ({
         >
           <PopoverTrigger>
             <Button
+              type="button"
               className="emoji-btn-trigger"
-              onClick={() => onOpen(ACTIONS.EMOJI)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onOpen(ACTIONS.EMOJI);
+              }}
             >
               <MdEmojiEmotions
                 style={{

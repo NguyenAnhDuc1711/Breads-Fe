@@ -53,7 +53,7 @@ const DetailConversationTab = ({
   const { SEARCH, THEME, EMOJI, MEDIA, FILES, LINKS } = useTabItems();
   const router = useRouter();
   const selectedConversation = useAppSelector(
-    (state: AppState) => state.message.selectedConversation
+    (state: AppState) => state.message.selectedConversation,
   );
   const [itemSelected, setItemSelected] = useState("");
   const participant = selectedConversation?.participant;
@@ -100,7 +100,7 @@ const DetailConversationTab = ({
     },
   ];
   const { conversationBackground, user1Message } = getCurrentTheme(
-    selectedConversation?.theme
+    selectedConversation?.theme,
   );
   const borderColor = user1Message?.borderColor;
 
@@ -118,7 +118,6 @@ const DetailConversationTab = ({
           />
         );
       case EMOJI:
-      case THEME:
         return (
           <Modal isOpen={true} onClose={() => setItemSelected("")}>
             <ModalOverlay />
@@ -126,11 +125,25 @@ const DetailConversationTab = ({
               className="detail-tab__modal-content"
               style={{ width: "fit-content" }}
             >
-              {itemSelected === EMOJI ? (
-                <EmojiModal setItemSelected={setItemSelected} />
-              ) : (
-                <ThemeModal setItemSelected={setItemSelected} />
-              )}
+              <EmojiModal setItemSelected={setItemSelected} />
+            </ModalContent>
+          </Modal>
+        );
+      case THEME:
+        return (
+          <Modal isOpen={true} onClose={() => setItemSelected("")} size="xl">
+            <ModalOverlay />
+            <ModalContent
+              className="detail-tab__theme-modal-content"
+              style={{
+                maxWidth: "540px",
+                width: "92vw",
+                borderRadius: "16px",
+                padding: 0,
+                overflow: "hidden",
+              }}
+            >
+              <ThemeModal setItemSelected={setItemSelected} />
             </ModalContent>
           </Modal>
         );
@@ -154,7 +167,9 @@ const DetailConversationTab = ({
         <>
           <div
             className={`detail-tab__profile${
-              isMobile ? " detail-tab__profile--mobile" : " detail-tab__profile--desktop"
+              isMobile
+                ? " detail-tab__profile--mobile"
+                : " detail-tab__profile--desktop"
             }`}
           >
             {isMobile && (
@@ -190,14 +205,12 @@ const DetailConversationTab = ({
               const subItems = menu[itemName];
               return (
                 <AccordionItem key={itemName}>
-                  <h2>
-                    <AccordionButton>
-                      <Box as="span" flex="1" textAlign="left">
-                        {itemName}
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
+                  <AccordionButton>
+                    <Box as="span" flex="1" textAlign="left">
+                      {itemName}
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
                   <AccordionPanel
                     className={`detail-tab__accordion-panel${
                       isMobile

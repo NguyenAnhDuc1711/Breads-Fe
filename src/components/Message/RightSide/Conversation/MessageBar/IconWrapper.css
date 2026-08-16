@@ -1,19 +1,21 @@
 .msg-icon-wrapper {
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  padding: 4px;
+  padding: 6px;
   cursor: pointer;
   margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 22px;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
 .msg-icon-wrapper--active {
-  background-color: gray;
+  background-color: var(--bg-hover, rgba(128, 128, 128, 0.3));
 }
 
 .msg-icon-wrapper:hover {
-  background-color: gray;
+  background-color: var(--bg-hover, rgba(128, 128, 128, 0.2));
 }

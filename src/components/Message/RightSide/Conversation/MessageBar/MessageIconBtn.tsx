@@ -17,6 +17,8 @@ const MessageIconBtn = ({ handleSendMsg }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        fontSize: "22px",
+        lineHeight: 1,
       }}
       onClick={() => {
         handleSendMsg({ sendIcon: iconStr });

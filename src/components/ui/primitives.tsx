@@ -1339,6 +1339,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
+        type={rest.type ?? "button"}
         className={
           [pseudoClassName, className].filter(Boolean).join(" ") || undefined
         }
@@ -1478,17 +1479,21 @@ function getInitials(name?: string): string {
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
   (
-    { name, src, size = "md", style, ...rest },
+    { name, src, size = "md", style, className, ...rest },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
+    const customDim = rest.w || rest.width || rest.h || rest.height;
     const resolvedSize = resolveResponsive(size);
-    const dim = AVATAR_SIZE_PX[resolvedSize]
+    const dim = customDim
+      ? sizeProp(customDim)
+      : AVATAR_SIZE_PX[resolvedSize]
       ? `${AVATAR_SIZE_PX[resolvedSize]}px`
       : (sizeProp(resolvedSize) ?? "48px");
     const [errored, setErrored] = useState(false);
     return (
       <Box
         ref={ref}
+        className={className}
         position="relative"
         display="inline-flex"
         alignItems="center"
@@ -2385,6 +2390,8 @@ export const Tooltip = ({
   label,
   placement = "top",
   hasArrow: _hasArrow,
+  className,
+  style,
   ...rest
 }: any) => {
   const { colorMode } = useColorMode();
@@ -2408,7 +2415,8 @@ export const Tooltip = ({
     <>
       <span
         ref={setRef as any}
-        style={{ display: "inline-block" }}
+        className={className}
+        style={{ display: "inline-block", ...style }}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
         onFocus={() => setIsOpen(true)}

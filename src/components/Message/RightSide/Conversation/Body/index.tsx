@@ -263,13 +263,19 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
               };
               const allMsg = Object.values(messages)?.flat(Infinity);
               const participantSeen = allMsg?.filter((msg: any) =>
-                msg?.usersSeen?.includes(participant?._id)
+                msg?.usersSeen?.some(
+                  (u: any) => String(u?._id || u) === String(participant?._id)
+                )
               );
               const lastUserSeen: any =
                 participantSeen[participantSeen?.length - 1];
               const participantMsgsIndex: number[] = [];
-              msgs.forEach((msg, index) => {
-                if (msg?.sender !== userInfo?._id) {
+              msgs.forEach((msg: any, index: number) => {
+                const senderId =
+                  typeof msg?.sender === "object" && msg?.sender !== null
+                    ? msg?.sender?._id || msg?.sender?.id || String(msg?.sender)
+                    : msg?.sender;
+                if (String(senderId) !== String(userInfo?._id)) {
                   participantMsgsIndex.push(index);
                 }
               });

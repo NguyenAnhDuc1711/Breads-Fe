@@ -29,11 +29,17 @@ const Message = ({
 }) => {
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const selectedConversation = useAppSelector(
-    (state: AppState) => state.message.selectedConversation
+    (state: AppState) => state.message.selectedConversation,
   );
   const participant = selectedConversation?.participant;
   const [displayAction, setDisplayAction] = useState(false);
-  const ownMessage = msg?.sender === userInfo?._id;
+  const [showInfo, setShowInfo] = useState(false);
+  const senderId =
+    typeof msg?.sender === "object" && msg?.sender !== null
+      ? msg?.sender?._id || msg?.sender?.id || String(msg?.sender)
+      : msg?.sender;
+  const ownMessage =
+    !!userInfo?._id && !!senderId && String(senderId) === String(userInfo?._id);
   const {
     content,
     createdAt,
@@ -46,10 +52,11 @@ const Message = ({
     updatedAt,
   } = msg;
   const previousReact = reacts?.find(
-    ({ userId }) => userId === userInfo?._id
+    ({ userId }: any) =>
+      String(userId?._id || userId) === String(userInfo?._id),
   )?.react;
   const { user1Message, user2Message } = getCurrentTheme(
-    selectedConversation?.theme
+    selectedConversation?.theme,
   );
   const msgStyle = ownMessage ? user1Message : user2Message;
   const msgBg = msgStyle?.backgroundColor;
@@ -82,7 +89,7 @@ const Message = ({
       format = "LT";
     }
     return `Seen by ${participant?.username} at ${dayjs(createdAt).format(
-      format
+      format,
     )}`;
   };
 
@@ -164,7 +171,9 @@ const Message = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`message-link${
-                          ownMessage ? " message-link--own" : " message-link--other"
+                          ownMessage
+                            ? " message-link--own"
+                            : " message-link--other"
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -241,35 +250,48 @@ const Message = ({
   };
 
   return (
-    <>
-      <Tooltip
-        label={!isSettingMsg && getTooltipTime()}
-        placement={ownMessage ? "left" : "right"}
-      >
-        {isSettingMsg ? (
-          <div className="message-setting" id={`msg_${msg?._id}`}>
-            {handleSettingMsg()}
-          </div>
-        ) : (
-          <div
-            className={`message-wrap${
-              ownMessage ? " message-wrap--own" : " message-wrap--other"
-            }`}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            {msgContent()}
-          </div>
-        )}
-      </Tooltip>
-      {isLastSeen && msg?.sender === userInfo?._id && (
+    <div
+      className={`message-container${
+        ownMessage ? " message-container--own" : " message-container--other"
+      }`}
+    >
+      {isSettingMsg ? (
+        <div className="message-setting" id={`msg_${msg?._id}`}>
+          {handleSettingMsg()}
+        </div>
+      ) : (
+        <div
+          className={`message-wrap${
+            ownMessage ? " message-wrap--own" : " message-wrap--other"
+          }`}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => setShowInfo((prev) => !prev)}
+        >
+          {msgContent()}
+        </div>
+      )}
+      {showInfo && !isSettingMsg && (
+        <div
+          className={`message-info-row${
+            ownMessage ? " message-info-row--own" : " message-info-row--other"
+          }`}
+        >
+          <span className="message-info-text">{getTooltipTime()}</span>
+        </div>
+      )}
+      {isLastSeen && ownMessage && (
         <div className="message-seen-row">
           <Tooltip label={getUserSeenTooltip()} placement={"top"}>
-            <Avatar width={"16px"} height={"16px"} src={participant?.avatar} />
+            <Avatar
+              size="2xs"
+              className="message-seen-avatar"
+              src={participant?.avatar}
+            />
           </Tooltip>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

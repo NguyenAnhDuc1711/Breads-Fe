@@ -37,15 +37,18 @@ const PostDetail = ({ postId }: { postId: string }) => {
         },
       });
     }
-  }, []);
+  }, [postId]);
 
   const getContentRender = useMemo(() => {
+    if (!postSelected || !postSelected._id) {
+      return null;
+    }
+
     const postStatus = postSelected?.status;
     const postVisibility = postSelected?.visibility;
     const { DELETED } = Constants.POST_STATUS;
     const { ONLY_ME, ONLY_FOLLOWERS } = Constants.POST_VISIBILITY;
-    let ableToDisplayPost: boolean = !!userInfo?._id;
-    console.log("ableToDisplayPost: ", ableToDisplayPost);
+    let ableToDisplayPost: boolean = true;
 
     switch (postStatus) {
       case DELETED:
@@ -61,13 +64,14 @@ const PostDetail = ({ postId }: { postId: string }) => {
       default:
         switch (postVisibility) {
           case ONLY_ME:
-            ableToDisplayPost = userInfo?._id === postSelected?.authorId;
+            ableToDisplayPost = !!userInfo?._id && String(userInfo?._id) === String(postSelected?.authorId);
             break;
           case ONLY_FOLLOWERS: {
             const followers = userInfo?.followed;
-            ableToDisplayPost = !!followers?.length
-              ? [...followers, userInfo?._id]?.includes(userInfo?._id)
-              : false;
+            ableToDisplayPost =
+              !!userInfo?._id &&
+              (String(userInfo?._id) === String(postSelected?.authorId) ||
+                (Array.isArray(followers) && followers.map(String).includes(String(postSelected?.authorId))));
             break;
           }
           default:
@@ -77,7 +81,7 @@ const PostDetail = ({ postId }: { postId: string }) => {
     if (ableToDisplayPost) {
       return (
         <ContainerLayout>
-          {postSelected?._id && <Post post={postSelected} isDetail={true} />}
+          <Post post={postSelected} isDetail={true} />
         </ContainerLayout>
       );
     }

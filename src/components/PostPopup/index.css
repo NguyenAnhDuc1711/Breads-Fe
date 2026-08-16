@@ -188,7 +188,6 @@
 }
 
 .post-popup__footer {
-  padding: 12px 0 0 0;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -232,4 +231,3 @@
 [data-theme="dark"] .post-popup__submit-btn:hover:not(:disabled) {
   background-color: #e0e0e0;
 }
-

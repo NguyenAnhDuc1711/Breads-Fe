@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
 import { Route } from "../../../../src/Breads-Shared/APIConfig";
 import { Constants } from "../../../../src/Breads-Shared/Constants";
 import Post from "../../../../src/components/ListPost/Post";
@@ -8,11 +7,8 @@ import ContainerLayout from "../../../../src/components/MainBoxLayout";
 import PostDetail from "../../../../src/pages/PostDetail";
 import PostDetailHydrate from "./PostDetailHydrate";
 
-// New server-side fetch — separate from the client-only getPost Redux
-// thunk (Server Components can't dispatch thunks). Forwards the jwt
-// cookie so the backend sees the same identity a client request would
-// (parity with src/config/API.ts's Authorization header, just via
-// Cookie here since axios's withCredentials isn't available server-side).
+// Server-side fetch forwards cookies so backend sees identity if cookies present.
+// Parity with src/config/API.ts with fallback to localhost:8080.
 async function fetchPost(postId: string): Promise<any | null> {
   const refreshToken = cookies().get("refreshToken")?.value;
   const jwt = cookies().get("jwt")?.value;
@@ -22,9 +18,11 @@ async function fetchPost(postId: string): Promise<any | null> {
       ? `jwt=${jwt}`
       : undefined;
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api${Route.POST}/${postId}`,
+      `${apiUrl}/api${Route.POST}/${postId}`,
       {
         headers: cookieHeader ? { Cookie: cookieHeader } : {},
         cache: "no-store",
@@ -33,7 +31,7 @@ async function fetchPost(postId: string): Promise<any | null> {
     if (!res.ok) return null;
     const data = await res.json();
     return data?.metadata ?? data;
-  } catch {
+  } catch (err) {
     return null;
   }
 }
@@ -44,9 +42,12 @@ export async function generateMetadata({
   params: { postId: string };
 }): Promise<Metadata> {
   const post = await fetchPost(params.postId);
-  // Only PUBLIC posts get real OG content — anything else must not leak
-  // title/content into publicly-crawlable <head> metadata.
-  if (!post || post.status !== Constants.POST_STATUS.PUBLIC) {
+  const isPublic =
+    post &&
+    post.status !== Constants.POST_STATUS.DELETED &&
+    (post.visibility === Constants.POST_VISIBILITY.PUBLIC || post.visibility === undefined);
+
+  if (!isPublic) {
     return { title: "Bread" };
   }
   const text: string = post.content ?? "";
@@ -74,11 +75,12 @@ export async function generateMetadata({
 const Page = async ({ params }: { params: { postId: string } }) => {
   const post = await fetchPost(params.postId);
 
-  if (!post) {
-    notFound();
-  }
+  const isPublic =
+    post &&
+    post.status !== Constants.POST_STATUS.DELETED &&
+    (post.visibility === Constants.POST_VISIBILITY.PUBLIC || post.visibility === undefined);
 
-  if (post.status === Constants.POST_STATUS.PUBLIC) {
+  if (isPublic) {
     return (
       <ContainerLayout>
         <Post post={post} isDetail={true} />
@@ -87,12 +89,8 @@ const Page = async ({ params }: { params: { postId: string } }) => {
     );
   }
 
-  // PRE_ACCEPT/DELETED/ONLY_ME/ONLY_FOLLOWERS: no reliable server-side way to
-  // know the requester's identity (the app's identity source is
-  // localStorage, browser-only — see epic handoff notes), so these fall
-  // back to PostDetail.tsx's exact existing client-only gating, unchanged
-  // (Risk #2 — port exactly, don't rewrite). SSR has no SEO value for
-  // non-public content anyway.
+  // Fallback to client-side PostDetail component which has access to localStorage tokens
+  // and full client-side Redux gating for authenticated, private, or client-loaded posts
   return <PostDetail postId={params.postId} />;
 };
 

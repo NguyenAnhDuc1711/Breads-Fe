@@ -158,7 +158,13 @@ const SidebarMenu = () => {
   };
 
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {!isMenuOpen && (
         <Button className="sidebar-menu__toggle" onClick={handleMenuOpen}>
           <HiMenuAlt4 size={24} />
@@ -166,10 +172,16 @@ const SidebarMenu = () => {
       )}
       {isMenuOpen && !isSubMenuOpen && !isSubMenuOpen1 && (
         <Menu isOpen={isMenuOpen} placement={menuPlacement}>
-          <MenuButton className="sidebar-menu__toggle" onClick={handleCloseMenu}>
+          <MenuButton
+            className="sidebar-menu__toggle"
+            onClick={handleCloseMenu}
+          >
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList className="sidebar-menu__list" bg={colorMode === "dark" ? "#121212" : "#ffffff"}>
+          <MenuList
+            className="sidebar-menu__list"
+            bg={colorMode === "dark" ? "#121212" : "#ffffff"}
+          >
             {menuItems.map((item) => (
               <React.Fragment key={item.name}>
                 {(item.name === "Báo cáo sự cố" ||
@@ -199,10 +211,16 @@ const SidebarMenu = () => {
       )}
       {isSubMenuOpen && (
         <Menu isOpen={isSubMenuOpen} placement={menuPlacement}>
-          <MenuButton className="sidebar-menu__toggle" onClick={handleCloseMenu}>
+          <MenuButton
+            className="sidebar-menu__toggle"
+            onClick={handleCloseMenu}
+          >
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList className="sidebar-menu__list sidebar-menu__list--sub" bg={colorMode === "dark" ? "#121212" : "#ffffff"}>
+          <MenuList
+            className="sidebar-menu__list sidebar-menu__list--sub"
+            bg={colorMode === "dark" ? "#121212" : "#ffffff"}
+          >
             <MenuItem
               className="sidebar-menu__back-item"
               onClick={() => setIsSubMenuOpen(false)}
@@ -232,10 +250,16 @@ const SidebarMenu = () => {
       )}
       {isSubMenuOpen1 && (
         <Menu isOpen={isSubMenuOpen1} placement={menuPlacement}>
-          <MenuButton className="sidebar-menu__toggle" onClick={handleCloseMenu}>
+          <MenuButton
+            className="sidebar-menu__toggle"
+            onClick={handleCloseMenu}
+          >
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList className="sidebar-menu__list sidebar-menu__list--sub" bg={colorMode === "dark" ? "#121212" : "#ffffff"}>
+          <MenuList
+            className="sidebar-menu__list sidebar-menu__list--sub"
+            bg={colorMode === "dark" ? "#121212" : "#ffffff"}
+          >
             <MenuItem
               className="sidebar-menu__back-item"
               onClick={() => setIsSubMenuOpen1(false)}

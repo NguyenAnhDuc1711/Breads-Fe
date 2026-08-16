@@ -58,18 +58,6 @@ a {
   box-sizing: border-box;
 }
 
-
-
-
-#modal {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: fit-content;
-  height: fit-content;
-}
-
 .css-1u2cvaz {
   align-items: center !important;
 }

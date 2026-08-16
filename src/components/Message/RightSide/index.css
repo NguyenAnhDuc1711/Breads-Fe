@@ -2,6 +2,7 @@
   display: flex;
   width: 100%;
   min-width: 300px;
+  gap: 24px;
 }
 
 .msg-right-side__detail-wrap {

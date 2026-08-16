@@ -110,10 +110,13 @@ const msgSlice = createSlice({
       }
       const conversationId = msgsInfo[0]?.conversationId;
       if (conversationId === state.selectedConversation?._id) {
+        if (!state.messages) {
+          state.messages = {};
+        }
         const msgCreateDate = formatDateToDDMMYYYY(
           new Date(msgsInfo[0]?.createdAt)
         );
-        const isValidDate = Object.keys(state.messages).includes(msgCreateDate);
+        const isValidDate = Array.isArray(state.messages[msgCreateDate]);
         if (isValidDate) {
           state.messages[msgCreateDate] = [
             ...state.messages[msgCreateDate],
@@ -129,7 +132,7 @@ const msgSlice = createSlice({
         state.selectedConversation.lastMsg = lastMsg;
       }
       const conversationIndex = state.conversations.findIndex(
-        (item) => item._id === conversationId
+        (item: any) => item?._id === conversationId
       );
       if (conversationIndex !== -1) {
         state.conversations[conversationIndex] = {
@@ -145,16 +148,35 @@ const msgSlice = createSlice({
     },
     updateMsg: (state, action) => {
       const msgUpdate = action.payload;
-      if (msgUpdate?._id) {
-        const msgDateConvert = dayjs(msgUpdate?.createdAt).format(
-          "DD/MM/YYYY"
+      if (!msgUpdate?._id || !state.messages) {
+        return;
+      }
+      const msgDateConvert = msgUpdate?.createdAt
+        ? formatDateToDDMMYYYY(new Date(msgUpdate?.createdAt))
+        : dayjs(msgUpdate?.createdAt).format("DD/MM/YYYY");
+
+      // 1. Direct date bucket lookup
+      if (Array.isArray(state.messages[msgDateConvert])) {
+        const msgInListIndex = state.messages[msgDateConvert].findIndex(
+          (msg: any) => msg?._id === msgUpdate._id
         );
-        const msgInListIndex = state.messages[msgDateConvert]?.findIndex(
-          (msg) => msg._id === msgUpdate._id
-        );
-        console.log("msgIndex: ", msgInListIndex);
         if (msgInListIndex !== -1) {
           state.messages[msgDateConvert][msgInListIndex] = msgUpdate;
+          return;
+        }
+      }
+
+      // 2. Fallback: Search across all date buckets in state.messages
+      for (const dateKey of Object.keys(state.messages)) {
+        const list = state.messages[dateKey];
+        if (Array.isArray(list)) {
+          const idx = list.findIndex(
+            (msg: any) => msg?._id === msgUpdate._id
+          );
+          if (idx !== -1) {
+            state.messages[dateKey][idx] = msgUpdate;
+            return;
+          }
         }
       }
     },
