@@ -34,7 +34,7 @@ export const onTokenRefreshed = (callback: () => void): void => {
 // ---------------------------------------------------------------------------
 let isRefreshing = false;
 let failedQueue: {
-  resolve: (token: string | null) => void;
+  resolve: (token: string) => void;
   reject: (error: any) => void;
 }[] = [];
 
@@ -42,7 +42,7 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
-    } else {
+    } else if (token) {
       prom.resolve(token);
     }
   });
@@ -60,6 +60,7 @@ const refreshAccessToken = async (): Promise<string> => {
     {},
     {
       withCredentials: true,
+      timeout: 10000,
       // Send the (potentially expired) access token so the BE can identify
       // the user in case of token-reuse detection.
       headers: accessToken
@@ -72,6 +73,38 @@ const refreshAccessToken = async (): Promise<string> => {
   setAccessToken(newToken);
   return newToken;
 };
+
+/**
+ * Cửa DUY NHẤT để lấy access token mới. Single-flight: nhiều caller đồng
+ * thời (axios 401, socket auth-error, bootstrap sau SSR) chỉ sinh ra ĐÚNG 1
+ * request /refresh-token.
+ *
+ * Facade này — và chỉ facade này — chịu trách nhiệm notify listener
+ * (socket) sau khi có token mới. Caller KHÔNG được tự gọi reconnect sau
+ * khi await thành công.
+ */
+export const ensureFreshAccessToken = async (): Promise<string> => {
+  if (isRefreshing) {
+    return new Promise<string>((resolve, reject) => {
+      failedQueue.push({ resolve, reject });
+    });
+  }
+  isRefreshing = true;
+  try {
+    const newToken = await refreshAccessToken();
+    processQueue(null, newToken);
+    onTokenRefreshedCallback?.();
+    return newToken;
+  } catch (err) {
+    processQueue(err, null);
+    throw err;
+  } finally {
+    isRefreshing = false;
+  }
+};
+
+/** Notify listener (socket) rằng đã có access token mới mà không qua refresh (vd: login). */
+export const notifyTokenRefreshed = (): void => onTokenRefreshedCallback?.();
 
 // ---------------------------------------------------------------------------
 // Axios Interceptors
@@ -107,35 +140,14 @@ if (typeof window !== "undefined") {
         const isTokenExpired = responseData?.code === "TOKEN_EXPIRED";
 
         if (isTokenExpired) {
-          if (isRefreshing) {
-            // Another refresh is already in-flight — queue this request
-            return new Promise((resolve, reject) => {
-              failedQueue.push({ resolve, reject });
-            })
-              .then((token) => {
-                if (originalRequest.headers) {
-                  originalRequest.headers.Authorization = `Bearer ${token}`;
-                }
-                return axios(originalRequest);
-              })
-              .catch((err) => Promise.reject(err));
-          }
-
           originalRequest._retry = true;
-          isRefreshing = true;
-
           try {
-            const newToken = await refreshAccessToken();
-            processQueue(null, newToken);
+            const newToken = await ensureFreshAccessToken();
             if (originalRequest.headers) {
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
             }
-            // Notify listeners (e.g. socket) about the new token
-            onTokenRefreshedCallback?.();
             return axios(originalRequest);
           } catch (refreshError) {
-            processQueue(refreshError, null);
-            // Refresh failed — session is truly expired
             setAccessToken(null);
             localStorage.removeItem("userId");
             if (typeof document !== "undefined") {
@@ -144,8 +156,6 @@ if (typeof window !== "undefined") {
             }
             window.location.href = "/login";
             return Promise.reject(refreshError);
-          } finally {
-            isRefreshing = false;
           }
         }
 

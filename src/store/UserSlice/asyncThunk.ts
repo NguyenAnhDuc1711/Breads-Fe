@@ -7,7 +7,19 @@ import {
   USER_PATH,
 } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import { GET, PATCH, POST, PUT, setAccessToken } from "../../config/API";
+import {
+  GET,
+  PATCH,
+  POST,
+  PUT,
+  setAccessToken,
+  ensureFreshAccessToken,
+  notifyTokenRefreshed,
+} from "../../config/API";
+// LOAD-BEARING IMPORT — đừng xoá dù trông như chỉ dùng ở logout().
+// Chính import này làm module src/socket.ts được evaluate, và đó là nơi
+// onTokenRefreshed(...) đăng ký callback reconnect. Xoá import ⇒ toàn bộ
+// đường notify của FR-6 (login) và FR-8 (bootstrap) chết im lặng.
 import Socket from "../../socket";
 import { initialMsgState } from "../MessageSlice";
 import { initialPostState, updateListPost } from "../PostSlice";
@@ -70,6 +82,9 @@ export const login = createAsyncThunk(
         // Store access token in memory (not localStorage for security)
         if (data?.accessToken) {
           setAccessToken(data.accessToken);
+          // FR-6: báo cho socket biết đã có token mới để nó .connect() ngay,
+          // không phải chờ một lỗi 401 ngẫu nhiên nào khác xảy ra trước.
+          notifyTokenRefreshed();
         }
       }
       return data;
@@ -77,6 +92,34 @@ export const login = createAsyncThunk(
       if (err instanceof AxiosError) {
         return rejectWithValue(err.response?.data);
       }
+    }
+  },
+);
+
+/**
+ * FR-8: sau F5, accessToken in-memory đã mất nhưng SSR đã xác nhận có
+ * session qua cookie (hasInitialUser === true). Gọi thẳng /refresh-token
+ * qua facade single-flight để lấy token mới trong ĐÚNG 1 round-trip —
+ * không đi qua getMe() (sẽ tốn thêm 1 vòng 401 vô ích chỉ để biết điều
+ * SSR đã trả lời rồi).
+ *
+ * Thunk này CỐ Ý không có case reducer trong UserSlice: nó không đổi state
+ * nào cả. Nó tồn tại ở dạng thunk (thay vì gọi thẳng trong useEffect) để
+ * quan sát được trong Redux DevTools như mọi luồng auth khác, và để có một
+ * chỗ duy nhất tiến hoá xử lý thất bại về sau.
+ *
+ * Thất bại (vd: user chỉ còn cookie jwt legacy) được nuốt qua
+ * rejectWithValue — KHÔNG throw ra ngoài, KHÔNG điều hướng. Việc redirect
+ * /login thuộc response interceptor ở API call kế tiếp.
+ */
+export const bootstrapSession = createAsyncThunk(
+  "user/bootstrapSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      await ensureFreshAccessToken();
+      return true;
+    } catch (err) {
+      return rejectWithValue(err);
     }
   },
 );

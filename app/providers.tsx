@@ -12,7 +12,7 @@ import { initialUserState, IUser } from "../src/store/UserSlice";
 
 import { useEffect } from "react";
 import { useAppDispatch } from "../src/hooks/redux";
-import { getMe } from "../src/store/UserSlice/asyncThunk";
+import { bootstrapSession, getMe } from "../src/store/UserSlice/asyncThunk";
 
 const AuthSessionInit = ({
   children,
@@ -22,8 +22,27 @@ const AuthSessionInit = ({
   hasInitialUser: boolean;
 }) => {
   const dispatch = useAppDispatch();
+  // Lớp (1): chặn lần dispatch thứ hai do React StrictMode double-invoke
+  // effect ở dev. Xem thêm lớp (2) — single-flight — ở comment dưới.
+  const bootstrapRan = useRef(false);
 
   useEffect(() => {
+    // FR-8: SSR đã xác nhận có session qua cookie nhưng accessToken in-memory
+    // đã mất sau reload → lấy lại token trong ĐÚNG 1 round-trip (/refresh-token,
+    // không qua /me).
+    //
+    // Idempotency có HAI lớp, cố ý:
+    //   (1) ref guard trên — chặn StrictMode double-invoke, làm ý đồ tường minh;
+    //   (2) single-flight bên trong ensureFreshAccessToken() (config/API.ts) —
+    //       nếu guard (1) bị vượt qua (remount thật, mount ở cây khác), vẫn chỉ
+    //       có ĐÚNG 1 request /refresh-token được gửi đi.
+    // Đừng bỏ lớp nào: (1) không có (2) sẽ vỡ khi refactor; (2) không có (1)
+    // làm ý đồ mờ đi và hỏng phép đo ở dev.
+    if (hasInitialUser && !bootstrapRan.current) {
+      bootstrapRan.current = true;
+      dispatch(bootstrapSession());
+    }
+
     // Multi-tab logout sync listener
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "userId" && !e.newValue) {
