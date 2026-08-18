@@ -28,6 +28,7 @@ import {
   generateObjectId,
   handleUploadFiles,
   replaceEmojis,
+  uploadMediaToCloudinary,
 } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import TextArea from "../../util/TextArea";
@@ -229,6 +230,12 @@ const PostPopup = () => {
           userId: userInfo?._id,
         });
         payload.files = filesId;
+      }
+      if (payload?.media?.length) {
+        payload.media = await uploadMediaToCloudinary({
+          media: payload.media,
+          entityType: "post",
+        });
       }
       const socket = Socket.getInstant();
       payload.visibility = visibility;

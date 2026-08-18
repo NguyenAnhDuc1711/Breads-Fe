@@ -23,6 +23,7 @@ import {
   addEvent,
   handleUploadFiles,
   replaceEmojis,
+  uploadMediaToCloudinary,
 } from "../../../../../util";
 import { getCurrentTheme } from "../../../../../util/Themes";
 import "./index.css";
@@ -74,7 +75,7 @@ const MessageInput = () => {
     media?.length !== 0 ||
     msgInfo.icon;
   const { conversationBackground, user1Message } = getCurrentTheme(
-    selectedConversation?.theme
+    selectedConversation?.theme,
   );
   const bg = conversationBackground?.backgroundColor;
   const textColor = user1Message?.color;
@@ -86,7 +87,7 @@ const MessageInput = () => {
       updateMsgInfo({
         ...msgInfo,
         content: debouceContent,
-      })
+      }),
     );
   }, [debouceContent]);
 
@@ -151,6 +152,19 @@ const MessageInput = () => {
         },
       });
       payload.files = filesId;
+    }
+    if (payload.media?.length) {
+      try {
+        payload.media = await uploadMediaToCloudinary({
+          media: payload.media,
+          entityType: "message",
+          recipientId: participant?._id,
+        });
+      } catch (err) {
+        console.error("handleSendMsg: uploadMediaToCloudinary failed", err);
+        dispatch(updateLoadingUpload(false));
+        return;
+      }
     }
     if (sendIcon) {
       payload.content = sendIcon;
