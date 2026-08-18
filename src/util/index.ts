@@ -1,5 +1,10 @@
 import dayjs from "./dayjs";
-import { ANALYTICS_PATH, Route, UTIL_PATH } from "../Breads-Shared/APIConfig";
+import {
+  ANALYTICS_PATH,
+  MEDIA_PATH,
+  Route,
+  UTIL_PATH,
+} from "../Breads-Shared/APIConfig";
 import { POST } from "../config/API";
 
 export const emojiMap = {
@@ -379,6 +384,76 @@ export const handleUploadFiles = async ({
     console.error("handleUploadFiles: ", err);
     return [];
   }
+};
+
+/**
+ * Đổi media base64 (`data:` URI, từ `convertToBase64` lúc chọn file — dùng để preview local) thành
+ * URL Cloudinary thật, theo cơ chế Signed Upload (epic presigned-media-upload). Item nào KHÔNG phải
+ * base64 (vd. GIF — url ngoài, chọn từ thư viện GIF có sẵn) được giữ nguyên, không upload lại.
+ *
+ * Gọi 1 lần duy nhất cho cả batch (không phải 1 lần/file) — khớp đúng thiết kế FR-1/FR-2 phía BE.
+ */
+export const uploadMediaToCloudinary = async ({
+  media,
+  entityType,
+  recipientId,
+}: {
+  media: { url: string; type: string }[];
+  entityType: "message" | "post";
+  recipientId?: string;
+}) => {
+  if (!media?.length) return media;
+
+  const pending = media
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => item?.url?.startsWith?.("data:"));
+
+  if (!pending.length) return media;
+
+  const signBody: any = {
+    entityType,
+    count: pending.length,
+    items: pending.map(({ item }) => ({ type: item.type })),
+  };
+  if (entityType === "message") {
+    signBody.recipientId = recipientId;
+  }
+
+  const { signatures } = await POST({
+    path: Route.MEDIA + MEDIA_PATH.SIGN_UPLOAD,
+    payload: signBody,
+  });
+  if (!signatures?.length) {
+    throw new Error("uploadMediaToCloudinary: không lấy được chữ ký upload");
+  }
+
+  const newMedia = [...media];
+  await Promise.all(
+    pending.map(async ({ item, index }, i) => {
+      const sig = signatures[i];
+      const blob = await (await fetch(item.url)).blob();
+      const formData = new FormData();
+      formData.append("file", blob);
+      formData.append("public_id", sig.publicId);
+      formData.append("timestamp", String(sig.timestamp));
+      formData.append("api_key", sig.apiKey);
+      formData.append("signature", sig.signature);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${sig.cloudName}/${sig.resourceType}/upload`,
+        { method: "POST", body: formData }
+      );
+      const data = await res.json();
+      if (!data?.secure_url) {
+        throw new Error(
+          `uploadMediaToCloudinary: upload thất bại (${data?.error?.message || res.status})`
+        );
+      }
+      newMedia[index] = { ...item, url: data.secure_url };
+    })
+  );
+
+  return newMedia;
 };
 
 export const getUserTimezoneOffset = () => {
