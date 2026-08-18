@@ -79,21 +79,25 @@ const UserHeader = ({ user }: { user: IUser }) => {
   });
 
   const loadFollowPage = async (type: string, page: number) => {
-    const data = await GET({
-      path: `${Route.USER}${USER_PATH.USERS_FOLLOW}`,
-      params: { userId: user._id, type, page, limit: 20 },
-    });
-    setFollowLists((prev) => ({
-      ...prev,
-      [type]: {
-        items:
-          page === 1
-            ? data?.users ?? []
-            : [...prev[type].items, ...(data?.users ?? [])],
-        loaded: true,
-      },
-    }));
-    dispatch(updateHasMoreData(!!data?.hasMore));
+    try {
+      const data = await GET({
+        path: `${Route.USER}${USER_PATH.USERS_FOLLOW}`,
+        params: { userId: user._id, type, page, limit: 20 },
+      });
+      setFollowLists((prev) => ({
+        ...prev,
+        [type]: {
+          items:
+            page === 1
+              ? data?.users ?? []
+              : [...prev[type].items, ...(data?.users ?? [])],
+          loaded: true,
+        },
+      }));
+      dispatch(updateHasMoreData(!!data?.hasMore));
+    } catch (err) {
+      console.error("loadFollowPage failed", err);
+    }
   };
 
   const openFollowBox = (tab: string) => {

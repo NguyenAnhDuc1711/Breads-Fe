@@ -1,14 +1,20 @@
-import { Button, Text } from "../../../../ui/primitives";
-import { Fragment, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { FaAngleDown } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../Breads-Shared/Constants";
+import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import useSocket from "../../../../../hooks/useSocket";
 import Socket from "../../../../../socket";
+import { AppState } from "../../../../../store";
 import {
   addNewMsg,
-  IMessage,
   updateConversations,
   updateCurrentPageMsg,
   updateMsg,
@@ -22,39 +28,42 @@ import {
 } from "../../../../../util";
 import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
+import { Button, Text } from "../../../../ui/primitives";
+import "./index.css";
 import Message from "./Message";
 import SendNextBox from "./SendNextBox";
-import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
-import { AppState } from "../../../../../store";
-import "./index.css";
 
 const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { selectedConversation, messages, currentPageMsg } = useAppSelector(
-    (state: AppState) => state.message
+    (state: AppState) => state.message,
   );
   const lastMsg = selectedConversation?.lastMsg;
   const [scrollText, setScrollText] = useState("Move to current");
   const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);
   const conversationScreenRef = useRef<any>(null);
-  const layerRef = useRef<any>(null);
   const [firstLoad, setFirstLoad] = useState(true);
   const { conversationBackground, user1Message } = getCurrentTheme(
-    selectedConversation?.theme
+    selectedConversation?.theme,
   );
   const participant = selectedConversation?.participant;
 
+  const lastUserSeen = useMemo(() => {
+    const allMsg = Object.values(messages)?.flat(Infinity);
+    const participantSeen = allMsg?.filter((msg: any) =>
+      msg?.usersSeen?.some(
+        (u: any) => String(u?._id || u) === String(participant?._id),
+      ),
+    );
+    return participantSeen?.[participantSeen?.length - 1];
+  }, [messages, participant?._id]);
+
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
+      setFirstLoad(true);
       handleGetMsgs({ page: 1 });
-      if (layerRef?.current && conversationScreenRef?.current) {
-        layerRef.current.style.width =
-          conversationScreenRef.current?.clientWidth - 4 + "px";
-        layerRef.current.style.height =
-          conversationScreenRef.current?.clientHeight + "px";
-      }
     }
   }, [selectedConversation?._id, userInfo]);
 
@@ -65,7 +74,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
       if (msgs) {
         const msgDate = formatDateToDDMMYYYY(new Date(msgs[0]?.createdAt));
         const isValid = messages[msgDate]?.find(
-          ({ _id }) => msgs[0]?._id === _id
+          ({ _id }) => msgs[0]?._id === _id,
         );
         if (!isValid) {
           dispatch(addNewMsg(msgs));
@@ -76,7 +85,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
               updateUserInfo({
                 key: "hasNewMsg",
                 value: true,
-              })
+              }),
             );
           }
           if (msgs?.[0]?.type === Constants.MSG_TYPE.SETTING) {
@@ -87,7 +96,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
                 updateSelectedConversation({
                   key: "theme",
                   value: value,
-                })
+                }),
               );
             }
             if (splitContent?.includes("emoji")) {
@@ -95,7 +104,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
                 updateSelectedConversation({
                   key: "emoji",
                   value: getEmojiNameFromIcon(value),
-                })
+                }),
               );
             }
           }
@@ -111,7 +120,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
             updateSelectedConversation({
               key: "lastMsg",
               value: data,
-            })
+            }),
           );
         }
       }
@@ -144,9 +153,16 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
     }
   }, []);
 
+  useLayoutEffect(() => {
+    if (firstLoad && Object.keys(messages)?.length > 0) {
+      scrollToBottom(true);
+      setFirstLoad(false);
+    }
+  }, [messages, firstLoad]);
+
   useEffect(() => {
-    if ((firstLoad && Object.keys(messages)?.length > 0) || !!lastMsg) {
-      scrollToBottom();
+    if (!firstLoad && !!lastMsg) {
+      scrollToBottom(false);
     }
     if (
       lastMsg?._id &&
@@ -173,28 +189,22 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
             updateSelectedConversation({
               key: "lastMsg",
               value: data,
-            })
+            }),
           );
-        }
+        },
       );
     } catch (err) {
       console.error("handleUpdateLastSeen: ", err);
     }
   };
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (isInstant = false) => {
     if (conversationScreenRef?.current) {
       const listMsgEle = document.getElementById("list-msg");
       conversationScreenRef.current.scrollTo({
         top: listMsgEle?.scrollHeight,
-        behavior: "smooth",
+        behavior: isInstant ? "auto" : "smooth",
       });
-      setTimeout(() => {
-        layerRef.current.style.opacity = 0;
-        layerRef.current.style.visibility = "hidden";
-        layerRef.current.style.transition =
-          "opacity 0.3s ease-out, visibility 0.2s linear";
-      }, 2500);
     }
   };
 
@@ -217,14 +227,11 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
               getMsgs({
                 isNew: isNew ? true : false,
                 msgs: data,
-              })
+              }),
             );
             dispatch(updateCurrentPageMsg(page));
-            setTimeout(() => {
-              setFirstLoad(false);
-            }, 1500);
           }
-        }
+        },
       );
     } catch (err) {
       console.error("handleGetMsgs: ", err);
@@ -242,14 +249,6 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
           backgroundImage: `url(${conversationBackground?.backgroundImage})`,
         }}
       >
-        <div
-          ref={layerRef}
-          id="chat-hidden-layer"
-          className="chat-hidden-layer"
-          style={{
-            backgroundColor: conversationBackground?.backgroundColor,
-          }}
-        ></div>
         <div className="conversation-body__list" id="list-msg">
           <InfiniteScroll
             queryFc={(page) => {
@@ -257,18 +256,10 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
             }}
             data={Object.keys(messages)}
             cpnFc={(date) => {
-              const msgs = JSON.parse(JSON.stringify(messages[date]));
+              const msgs = messages[date] || [];
               const brStyle = {
                 backgroundColor: user1Message?.backgroundColor,
               };
-              const allMsg = Object.values(messages)?.flat(Infinity);
-              const participantSeen = allMsg?.filter((msg: any) =>
-                msg?.usersSeen?.some(
-                  (u: any) => String(u?._id || u) === String(participant?._id)
-                )
-              );
-              const lastUserSeen: any =
-                participantSeen[participantSeen?.length - 1];
               const participantMsgsIndex: number[] = [];
               msgs.forEach((msg: any, index: number) => {
                 const senderId =
@@ -292,11 +283,17 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
               return (
                 <Fragment key={date}>
                   <div className="conversation-body__date-row">
-                    <div className="conversation-body__date-line" style={brStyle} />
+                    <div
+                      className="conversation-body__date-line"
+                      style={brStyle}
+                    />
                     <Text px={2} color={user1Message?.backgroundColor}>
                       {date === currentDateFormat ? "Today" : date}
                     </Text>
-                    <div className="conversation-body__date-line" style={brStyle} />
+                    <div
+                      className="conversation-body__date-line"
+                      style={brStyle}
+                    />
                   </div>
                   {msgs.map((msg, index) => (
                     <Message

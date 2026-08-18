@@ -360,30 +360,32 @@ export const convertToBase64 = (file) =>
 export const handleUploadFiles = async ({
   files,
   userId,
+  entityType,
+  recipientId,
 }: {
   files: any;
   userId: string;
+  entityType: "message" | "post";
+  recipientId?: string;
 }) => {
-  try {
-    if (!!files && files?.length > 0 && !userId) {
-      return [];
-    }
-    const formData: any = new FormData();
-    const filesName: any = [];
-    for (let i = 0; i < files.length; i++) {
-      filesName.push(files[i].name);
-      formData.append("files", files[i]);
-    }
-    formData.append("filesName", filesName);
-    const filesId = await POST({
-      path: Route.UTIL + UTIL_PATH.UPLOAD + `?userId=${userId}`,
-      payload: formData,
-    });
-    return filesId;
-  } catch (err) {
-    console.error("handleUploadFiles: ", err);
+  if (!!files && files?.length > 0 && !userId) {
     return [];
   }
+  const formData: any = new FormData();
+  const filesName: any = [];
+  for (let i = 0; i < files.length; i++) {
+    filesName.push(files[i].name);
+    formData.append("files", files[i]);
+  }
+  formData.append("filesName", filesName);
+  formData.append("entityType", entityType);
+  if (recipientId) {
+    formData.append("recipientId", recipientId);
+  }
+  return await POST({
+    path: Route.UTIL + UTIL_PATH.UPLOAD + `?userId=${userId}`,
+    payload: formData,
+  });
 };
 
 /**

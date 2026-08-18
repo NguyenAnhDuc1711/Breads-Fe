@@ -196,20 +196,41 @@ const postSlice = createSlice({
       state.postInfo = defaultPostInfo;
     });
     builder.addCase(editPost.fulfilled, (state, action) => {
-      const postUpdatedData: IPost = action.payload;
+      const postUpdatedData: IPost = action.payload?.metadata || action.payload;
       const listPost: IPost[] = state.listPost;
-      const postInfo: IPost = state.postInfo;
+      
+      // Update in listPost (Feed / Profile)
       let postPrevUpdateIndex: number = listPost.findIndex(
         (post) => post._id === postUpdatedData._id
       );
-      listPost[postPrevUpdateIndex] = {
-        ...listPost[postPrevUpdateIndex],
-        ...postUpdatedData,
-      };
-      if (typeof postInfo != null) {
-        state.postSelected = postInfo;
-        state.postAction = "";
+      if (postPrevUpdateIndex !== -1) {
+        listPost[postPrevUpdateIndex] = {
+          ...listPost[postPrevUpdateIndex],
+          ...postUpdatedData,
+        };
       }
+
+      // Update in postSelected (Post Detail)
+      if (state.postSelected) {
+        if (state.postSelected._id === postUpdatedData._id) {
+          state.postSelected = {
+            ...state.postSelected,
+            ...postUpdatedData,
+          };
+        } else if (state.postSelected.replies) {
+          const replyIndex = state.postSelected.replies.findIndex(
+            (reply) => reply._id === postUpdatedData._id
+          );
+          if (replyIndex !== -1) {
+            state.postSelected.replies[replyIndex] = {
+              ...state.postSelected.replies[replyIndex],
+              ...postUpdatedData,
+            };
+          }
+        }
+      }
+
+      state.postAction = "";
     });
     builder.addCase(deletePost.fulfilled, (state, action) => {
       const postId: string = action.payload?.postId;

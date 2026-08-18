@@ -6,6 +6,7 @@ import { useState } from "react";
 import { REPORT_PATH, Route } from "../../../Breads-Shared/APIConfig";
 import { POST } from "../../../config/API";
 import { useAppSelector } from "../../../hooks/redux";
+import useShowToast from "../../../hooks/useShowToast";
 import { AppState } from "../../../store";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import UserBox from "../../UserFollowBox/UserBox";
@@ -21,6 +22,7 @@ const ReportBox = ({
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { content, media, userReport } = report;
   const [res, setRes] = useState("");
+  const showToast = useShowToast();
 
   const updateNewList = () => {
     const newReports = reports?.filter(({ _id }) => _id !== report?._id);
@@ -32,11 +34,16 @@ const ReportBox = ({
       userId: userInfo?._id,
       reportId: report?._id,
     };
-    await POST({
-      path: Route.REPORT + REPORT_PATH.REJECT,
-      payload,
-    });
-    updateNewList();
+    try {
+      await POST({
+        path: Route.REPORT + REPORT_PATH.REJECT,
+        payload,
+      });
+      updateNewList();
+    } catch (err) {
+      console.error("handleReject failed", err);
+      showToast("", "Failed to reject report", "error");
+    }
   };
 
   const handleSendMail = async () => {
@@ -49,12 +56,17 @@ const ReportBox = ({
       userId: userInfo?._id,
       reportId: report?._id,
     };
-    await POST({
-      path: Route.REPORT + REPORT_PATH.RESPONSE,
-      payload,
-    });
-    setSelectedReport(null);
-    updateNewList();
+    try {
+      await POST({
+        path: Route.REPORT + REPORT_PATH.RESPONSE,
+        payload,
+      });
+      setSelectedReport(null);
+      updateNewList();
+    } catch (err) {
+      console.error("handleSendMail failed", err);
+      showToast("", "Failed to send response", "error");
+    }
   };
 
   const reportContainer = () => {

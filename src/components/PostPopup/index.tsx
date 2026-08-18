@@ -48,6 +48,7 @@ import {
   ModalOverlay,
   Portal,
   Text,
+  useColorMode,
   useColorModeValue,
   VStack,
 } from "../ui/primitives";
@@ -72,6 +73,7 @@ const PostPopup = () => {
   );
   const isEditing = postAction === PostConstants.ACTIONS.EDIT;
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
+  const { colorMode } = useColorMode();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
@@ -138,6 +140,8 @@ const PostPopup = () => {
         postInfo.visibility ?? Constants.POST_VISIBILITY.PUBLIC;
       setContent(initialContent);
       setVisibility(initialVis);
+      setClickPost(false);
+      setFilesData([]);
       initialStateRef.current = {
         content: initialContent,
         visibility: initialVis,
@@ -149,6 +153,8 @@ const PostPopup = () => {
     } else if (!isEditing && postAction && init.current) {
       setContent("");
       setVisibility(Constants.POST_VISIBILITY.PUBLIC);
+      setClickPost(false);
+      setFilesData([]);
       initialStateRef.current = {
         content: "",
         visibility: Constants.POST_VISIBILITY.PUBLIC,
@@ -160,15 +166,14 @@ const PostPopup = () => {
     }
   }, [isEditing, postAction, postInfo]);
 
-  const closePostAction =
-    !!postInfo.media?.length ||
-    postInfo.survey.length !== 0 ||
-    postInfo.files.length !== 0;
+
 
   const resetAndClose = useCallback(() => {
     init.current = true;
     initialStateRef.current = null;
     setContent("");
+    setClickPost(false);
+    setFilesData([]);
     dispatch(updatePostAction(null));
     dispatch(updatePostInfo(defaultPostInfo));
     postAction === PostConstants.ACTIONS.REPLY
@@ -218,16 +223,38 @@ const PostPopup = () => {
   }, [postInfo]);
 
   const handleUploadPost = async () => {
+    // 1. Prepare data
+    const payload: IPost = {
+      authorId: userInfo._id,
+      type: postAction,
+      ...postInfo,
+    };
+    
+    // Capture state values before unmounting
+    const capturedVisibility = visibility;
+    const capturedIsEditing = isEditing;
+    const capturedPostAction = postAction;
+    const capturedPostSelected = postSelected;
+    const capturedPostReply = postReply;
+    const capturedFilesData = filesData;
+
+    // 2. Notify user and close popup immediately
+    dispatch(
+      showToast({
+        title: capturedIsEditing ? "Saving..." : "Posting...",
+        description: capturedIsEditing ? t("saving") || "Đang lưu bài viết..." : t("posting") || "Đang đăng bài...",
+        status: "info",
+      }),
+    );
+    resetAndClose();
+
+    // 3. Process upload in background
     try {
-      const payload: IPost = {
-        authorId: userInfo._id,
-        type: postAction,
-        ...postInfo,
-      };
       if (payload?.files?.length) {
         const filesId = await handleUploadFiles({
-          files: filesData,
+          files: capturedFilesData,
           userId: userInfo?._id,
+          entityType: "post",
         });
         payload.files = filesId;
       }
@@ -237,10 +264,12 @@ const PostPopup = () => {
           entityType: "post",
         });
       }
+      
       const socket = Socket.getInstant();
-      payload.visibility = visibility;
-      if (isEditing) {
-        dispatch(editPost(payload));
+      payload.visibility = capturedVisibility;
+      
+      if (capturedIsEditing) {
+        await dispatch(editPost(payload)).unwrap();
         addEvent({
           event: "edit_post",
           payload: {
@@ -250,40 +279,36 @@ const PostPopup = () => {
       } else {
         let notificationPayload: any = {};
         payload._id = generateObjectId();
-        payload.visibility = visibility;
-        if (postAction === PostConstants.ACTIONS.REPOST && !!postSelected) {
+        
+        if (capturedPostAction === PostConstants.ACTIONS.REPOST && !!capturedPostSelected) {
           payload.quote = {
-            _id: postSelected._id,
-            content: `${postSelected.authorInfo?.username}: ${postSelected.content}`,
+            _id: capturedPostSelected._id,
+            content: `${capturedPostSelected.authorInfo?.username}: ${capturedPostSelected.content}`,
           };
-          payload.parentPost = postSelected._id;
-          if (postSelected?.authorId !== userInfo?._id) {
+          payload.parentPost = capturedPostSelected._id;
+          if (capturedPostSelected?.authorId !== userInfo?._id) {
             notificationPayload.action = Constants.NOTIFICATION_ACTION.REPOST;
-            notificationPayload.toUsers = [postSelected?.authorId];
+            notificationPayload.toUsers = [capturedPostSelected?.authorId];
           }
           addEvent({
             event: "repost_post",
             payload: {
               postId: payload._id,
-              parentPostId: postSelected._id,
+              parentPostId: capturedPostSelected._id,
             },
           });
-        } else if (postAction === PostConstants.ACTIONS.REPLY) {
-          // Snapshot the parent post's visibility at creation time so a
-          // reply never leaks context from a non-PUBLIC thread — no
-          // later re-sync if the parent's visibility changes.
-          payload.visibility =
-            postReply?.visibility ?? Constants.POST_VISIBILITY.PUBLIC;
-          payload.parentPost = postReply?._id;
-          if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
+        } else if (capturedPostAction === PostConstants.ACTIONS.REPLY) {
+          payload.visibility = capturedPostReply?.visibility ?? Constants.POST_VISIBILITY.PUBLIC;
+          payload.parentPost = capturedPostReply?._id;
+          if (!!capturedPostReply?.authorId && capturedPostReply?.authorId !== userInfo?._id) {
             notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
-            notificationPayload.toUsers = [postReply?.authorId];
+            notificationPayload.toUsers = [capturedPostReply?.authorId];
           }
           addEvent({
             event: "reply_post",
             payload: {
               postId: payload._id,
-              parentPostId: postReply?._id,
+              parentPostId: capturedPostReply?._id,
             },
           });
         } else {
@@ -294,6 +319,7 @@ const PostPopup = () => {
             },
           });
         }
+        
         if (payload.usersTag?.length > 0) {
           let usersId = payload.usersTag.map(({ userId }) => userId);
           usersId = new Set(usersId);
@@ -305,9 +331,11 @@ const PostPopup = () => {
             target: payload._id,
           });
         }
-        const uploadPost = await dispatch(
-          createPost({ postPayload: payload, action: postAction }),
+        
+        await dispatch(
+          createPost({ postPayload: payload, action: capturedPostAction }),
         ).unwrap();
+        
         if (!!notificationPayload?.toUsers?.length) {
           notificationPayload = {
             ...notificationPayload,
@@ -320,13 +348,21 @@ const PostPopup = () => {
           );
         }
       }
-      resetAndClose();
+
+      // 4. Show success toast
+      dispatch(
+        showToast({
+          title: "Success",
+          description: capturedIsEditing ? "Lưu bài viết thành công!" : "Đăng bài thành công!",
+          status: "success",
+        }),
+      );
     } catch (err: any) {
       console.error("err: ", err);
       dispatch(
         showToast({
           title: "Error",
-          description: err.message,
+          description: err.message || "Có lỗi xảy ra",
           status: "error",
         }),
       );
@@ -436,7 +472,7 @@ const PostPopup = () => {
                   tagUsers={true}
                   placeholder={t("whatnew")}
                 />
-                {!isEditing && postAction !== PostConstants.ACTIONS.REPLY && (
+                {postAction !== PostConstants.ACTIONS.REPLY && (
                   <Menu placement="bottom-start">
                     <MenuButton className="post-popup__visibility-trigger">
                       <HStack spacing={1.5} alignItems="center">
@@ -450,6 +486,8 @@ const PostPopup = () => {
                     <Portal>
                       <MenuList
                         className="post-popup__visibility-list"
+                        bg={colorMode === "dark" ? "#1e1e1e" : "#ffffff"}
+                        borderColor={colorMode === "dark" ? "#2e2e2e" : "#e2e8f0"}
                         zIndex={3100}
                       >
                         {VISIBILITY_OPTIONS.map((option) => {
@@ -492,9 +530,7 @@ const PostPopup = () => {
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />
-                    {!closePostAction && (
-                      <PostPopupAction setFilesData={setFilesData} />
-                    )}
+                    <PostPopupAction setFilesData={setFilesData} />
                     {postInfo.survey.length !== 0 && <PostSurvey />}
                     {postSelected?._id &&
                       postAction === PostConstants.ACTIONS.REPOST && (

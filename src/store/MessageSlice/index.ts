@@ -238,22 +238,33 @@ const msgSlice = createSlice({
       if (isNew) {
         state.messages = msgs;
       } else {
-        let currentMsgState = JSON.parse(JSON.stringify(state.messages));
+        const newMessages: Record<string, any[]> = {};
         const listDate = Object.keys(msgs);
+        
+        // 1. Insert new (older) dates first to maintain order
         for (let i = listDate.length - 1; i >= 0; i--) {
-          let date = listDate[i];
-          if (date in currentMsgState) {
-            currentMsgState[date] = [...msgs[date], ...currentMsgState[date]];
-          } else {
-            const convertToEntries = Object.entries(currentMsgState);
-            convertToEntries.unshift([date, msgs[date]]);
-            currentMsgState = {};
-            convertToEntries.forEach(([key, value]) => {
-              currentMsgState[key] = value;
-            });
+          const date = listDate[i];
+          if (!(date in state.messages)) {
+            newMessages[date] = msgs[date];
           }
         }
-        state.messages = currentMsgState;
+
+        // 2. Copy over existing dates, merging if necessary
+        Object.entries(state.messages).forEach(([date, currentMsgs]: [string, any]) => {
+          if (date in msgs) {
+            // Merge msgs[date] (older) with currentMsgs (newer)
+            // Filter out any duplicates (messages already in currentMsgs)
+            const existingIds = new Set(currentMsgs.map((m: any) => m._id));
+            const filteredNewMsgs = msgs[date].filter(
+              (m: any) => !existingIds.has(m._id)
+            );
+            newMessages[date] = [...filteredNewMsgs, ...currentMsgs];
+          } else {
+            newMessages[date] = currentMsgs;
+          }
+        });
+
+        state.messages = newMessages;
       }
       state.loadingMsgs = false;
     });

@@ -1349,10 +1349,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {styleEl}
         {isLoading ? (
-          <>
-            <Spinner size="sm" />
-            {loadingText}
-          </>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+            }}
+          >
+            <Spinner size="sm" color="currentColor" />
+            {loadingText && <span>{loadingText}</span>}
+          </span>
         ) : (
           children
         )}
@@ -1425,22 +1432,24 @@ Input.displayName = "Input";
 // ---------------------------------------------------------------------------
 export const Spinner = ({
   size = "md",
-  color,
+  color = "currentColor",
 }: {
   size?: "sm" | "md" | "lg";
   color?: string;
 }) => {
-  const dim = size === "sm" ? "16px" : size === "lg" ? "32px" : "24px";
+  const dim = size === "sm" ? "14px" : size === "lg" ? "32px" : "20px";
   return (
     <div
       style={{
         width: dim,
         height: dim,
-        border: `2px solid ${color || "white"}`,
+        border: `2px solid ${color}`,
         borderTopColor: "transparent",
         borderRadius: "50%",
         animation: "spin 0.6s linear infinite",
         display: "inline-block",
+        verticalAlign: "middle",
+        flexShrink: 0,
       }}
     >
       <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
@@ -2889,15 +2898,15 @@ export const MenuList = forwardRef<HTMLDivElement, BoxProps>(
           position="fixed"
           top={`${coords.top}px`}
           left={`${coords.left}px`}
-          bg={colorMode === "dark" ? colorProp("gray.700") : "#fff"}
+          bg={colorMode === "dark" ? "#1e1e1e" : "#fff"}
           boxShadow={
             colorMode === "dark"
-              ? (SHADOWS["dark-lg"] ?? SHADOWS.lg)
+              ? "0 8px 30px rgba(0, 0, 0, 0.6)"
               : SHADOWS.sm
           }
           borderRadius="md"
           borderWidth="1px"
-          borderColor={colorProp("gray.200")}
+          borderColor={colorMode === "dark" ? "#2e2e2e" : colorProp("gray.200")}
           overflow="hidden"
           minW="14rem"
           py={2}

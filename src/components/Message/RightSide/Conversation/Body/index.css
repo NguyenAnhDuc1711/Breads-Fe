@@ -7,11 +7,7 @@
   background-size: cover;
 }
 
-.chat-hidden-layer {
-  position: fixed;
-  z-index: 5000;
-  display: none;
-}
+
 
 .conversation-body__list {
   display: flex;

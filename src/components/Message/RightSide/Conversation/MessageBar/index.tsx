@@ -10,6 +10,7 @@ import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import useDebounce from "../../../../../hooks/useDebounce";
+import useShowToast from "../../../../../hooks/useShowToast";
 import Socket from "../../../../../socket";
 import { AppState } from "../../../../../store";
 import {
@@ -52,6 +53,7 @@ export const iconStyle = {
 
 const MessageInput = () => {
   const dispatch = useAppDispatch();
+  const showToast = useShowToast();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const {
     msgInfo,
@@ -140,18 +142,26 @@ const MessageInput = () => {
       return;
     }
     if (payload.files?.length) {
-      const filesId = await handleUploadFiles({
-        files: filesData,
-        userId: userInfo._id,
-      });
-      addEvent({
-        event: "upload_msg_files",
-        payload: {
-          conversationId: selectedConversation?._id,
-          filesIds: filesId,
-        },
-      });
-      payload.files = filesId;
+      try {
+        payload.files = await handleUploadFiles({
+          files: filesData,
+          userId: userInfo._id,
+          entityType: "message",
+          recipientId: participant?._id,
+        });
+        addEvent({
+          event: "upload_msg_files",
+          payload: {
+            conversationId: selectedConversation?._id,
+            filesIds: payload.files,
+          },
+        });
+      } catch (err) {
+        console.error("handleSendMsg: handleUploadFiles failed", err);
+        showToast("", "Failed to upload files. Please try again.", "error");
+        dispatch(updateLoadingUpload(false));
+        return;
+      }
     }
     if (payload.media?.length) {
       try {
@@ -162,6 +172,7 @@ const MessageInput = () => {
         });
       } catch (err) {
         console.error("handleSendMsg: uploadMediaToCloudinary failed", err);
+        showToast("", "Failed to upload media. Please try again.", "error");
         dispatch(updateLoadingUpload(false));
         return;
       }
@@ -192,15 +203,29 @@ const MessageInput = () => {
       senderId: userInfo._id,
       message: payload,
     };
-    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, ({ data }) => {
-      const conversationInfo = data?.conversationInfo;
-      const msgs = data?.msgs;
-      dispatch(addNewMsg(msgs));
-      dispatch(updateLoadingUpload(false));
-      dispatch(updateMsgInfo(defaulMessageInfo));
-      dispatch(updateConversations([conversationInfo]));
-      setContent("");
-    });
+    socket.emit(
+      Route.MESSAGE + MESSAGE_PATH.CREATE,
+      msgPayload,
+      ({ status, message, data }) => {
+        if (status === "error") {
+          console.error("sendMessage rejected by server", message);
+          showToast(
+            "",
+            message || "Failed to send message. Please try again.",
+            "error"
+          );
+          dispatch(updateLoadingUpload(false));
+          return;
+        }
+        const conversationInfo = data?.conversationInfo;
+        const msgs = data?.msgs;
+        dispatch(addNewMsg(msgs));
+        dispatch(updateLoadingUpload(false));
+        dispatch(updateMsgInfo(defaulMessageInfo));
+        dispatch(updateConversations([conversationInfo]));
+        setContent("");
+      }
+    );
   };
 
   return (

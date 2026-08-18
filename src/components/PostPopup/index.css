@@ -101,33 +101,36 @@
 }
 
 .post-popup__visibility-list {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 16px;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
   min-width: 290px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 6px !important;
 }
 
 [data-theme="dark"] .post-popup__visibility-list {
-  background-color: #242424;
-  border-color: #333333;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  background-color: #1e1e1e !important;
+  border: 1px solid #2e2e2e !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65) !important;
 }
 
 .post-popup__visibility-item {
-  border-radius: 12px;
-  margin: 2px 4px;
-  padding: 8px 12px;
+  border-radius: 12px !important;
+  margin: 2px 0 !important;
+  padding: 8px 10px !important;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .post-popup__visibility-item:hover,
 .post-popup__visibility-item:focus {
-  background-color: #f0f0f0;
+  background-color: #f3f4f6 !important;
 }
 
 [data-theme="dark"] .post-popup__visibility-item:hover,
 [data-theme="dark"] .post-popup__visibility-item:focus {
-  background-color: #2c2c2c;
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .post-popup__visibility-row {
@@ -139,13 +142,13 @@
 
 .post-popup__visibility-icon-box {
   display: flex;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
   align-items: center;
   justify-content: center;
-  background-color: #edf2f7;
-  color: #4a5568;
+  background-color: #f1f5f9;
+  color: #475569;
   flex-shrink: 0;
 }
 
@@ -165,22 +168,23 @@
 }
 
 .post-popup__visibility-option-desc {
-  font-size: 11px;
-  color: #718096;
+  font-size: 12px;
+  color: #64748b;
   max-width: 190px;
+  line-height: 1.35;
 }
 
 [data-theme="dark"] .post-popup__visibility-option-desc {
-  color: #a0aec0;
+  color: #94a3b8;
 }
 
 .post-popup__visibility-check {
-  color: #1a202c;
+  color: #0f172a;
   margin-left: 8px;
 }
 
 [data-theme="dark"] .post-popup__visibility-check {
-  color: #edf2f7;
+  color: #f8fafc;
 }
 
 .post-popup__quote-wrap {
