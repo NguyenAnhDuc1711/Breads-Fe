@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { updateHasMoreData } from "../UtilSlice";
 import { formatDateToDDMMYYYY } from "../../util";
 import { GET } from "../../config/API";
-import { Route } from "../../Breads-Shared/APIConfig";
+import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { AxiosError } from "axios";
 
 export const getConversations = createAsyncThunk(
@@ -11,10 +11,11 @@ export const getConversations = createAsyncThunk(
     try {
       const data = payload.data;
       const isLoadNew = payload.isLoadNew;
+      const globalTotal = payload.globalTotal;
       const dispatch = thunkApi.dispatch;
       const hasMoreData = data?.length !== 0 ? true : false;
       dispatch(updateHasMoreData(hasMoreData));
-      return { data, isLoadNew };
+      return { data, isLoadNew, globalTotal };
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         return thunkApi.rejectWithValue(err.response?.data);
@@ -55,10 +56,13 @@ export const getConversationById = createAsyncThunk(
     try {
       const rootState: any = thunkApi.getState();
       const userId = rootState.user.userInfo._id;
+      // Task 021 (D-1): GET /messages/conversation/:id -> GET /messages/conversations/:id
+      // (số nhiều, T012) — hardcode "/conversation/" cũ bị lệch sau khi đổi route.
       const conversation = await GET({
-        path: Route.MESSAGE + `/conversation/${conversationId}`,
+        path:
+          Route.MESSAGE +
+          MESSAGE_PATH.GET_CONVERSATION_BY_ID.replace(":conversationId", conversationId),
         params: {
-          conversationId: conversationId,
           userId: userId ? userId : localStorage.getItem("userId"),
         },
       });

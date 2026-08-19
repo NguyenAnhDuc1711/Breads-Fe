@@ -9,7 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../Breads-Shared/Constants";
-import { POST } from "../../../../../config/API";
+import { GET } from "../../../../../config/API";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import { updateSeeMedia } from "../../../../../store/UtilSlice";
 import { addEvent } from "../../../../../util";
@@ -61,23 +61,22 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
   const handleGetDataByTab = async (tab) => {
     try {
       let data = [];
-      const query = (subPath) => {
-        return {
-          path: Route.MESSAGE + subPath,
-          payload: {
-            conversationId: selectedConversation?._id,
-          },
-        };
-      };
+      // Task 021 (D-1): POST /messages/conversation/media|files|links (conversationId trong body)
+      // -> GET /messages/conversations/:conversationId/media|files|links (id trong path, T012).
+      const query = (constant) => ({
+        path:
+          Route.MESSAGE +
+          constant.replace(":conversationId", selectedConversation?._id),
+      });
       switch (tab) {
         case TABS.MEDIA:
-          data = await POST(query(MESSAGE_PATH.GET_CONVERSATION_MEDIA));
+          data = await GET(query(MESSAGE_PATH.GET_CONVERSATION_MEDIA));
           break;
         case TABS.FILES:
-          data = await POST(query(MESSAGE_PATH.GET_CONVERSATION_FILES));
+          data = await GET(query(MESSAGE_PATH.GET_CONVERSATION_FILES));
           break;
         case TABS.LINKS:
-          data = await POST(query(MESSAGE_PATH.GET_CONVERSATION_LINKS));
+          data = await GET(query(MESSAGE_PATH.GET_CONVERSATION_LINKS));
           break;
         default:
           data = [];

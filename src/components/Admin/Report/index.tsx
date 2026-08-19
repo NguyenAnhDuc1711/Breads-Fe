@@ -4,7 +4,7 @@ import MDEditor from "@uiw/react-md-editor";
 import * as marked from "marked";
 import { useState } from "react";
 import { REPORT_PATH, Route } from "../../../Breads-Shared/APIConfig";
-import { POST } from "../../../config/API";
+import { PATCH } from "../../../config/API";
 import { useAppSelector } from "../../../hooks/redux";
 import { AppState } from "../../../store";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
@@ -27,18 +27,19 @@ const ReportBox = ({
     setReports(newReports);
   };
 
+  // Task 021 (D-1): POST /reports/reject -> PATCH /reports/:id/reject (id path, T014).
   const handleReject = async () => {
     const payload = {
       userId: userInfo?._id,
-      reportId: report?._id,
     };
-    await POST({
-      path: Route.REPORT + REPORT_PATH.REJECT,
+    await PATCH({
+      path: Route.REPORT + REPORT_PATH.REJECT.replace(":id", report?._id),
       payload,
     });
     updateNewList();
   };
 
+  // Task 021 (D-1): POST /reports/response -> PATCH /reports/:id/response (id path, T014).
   const handleSendMail = async () => {
     const htmlConverted = marked.parse(res);
     const payload = {
@@ -47,10 +48,9 @@ const ReportBox = ({
       subject: "Thanks for reporting the problem",
       html: htmlConverted,
       userId: userInfo?._id,
-      reportId: report?._id,
     };
-    await POST({
-      path: Route.REPORT + REPORT_PATH.RESPONSE,
+    await PATCH({
+      path: Route.REPORT + REPORT_PATH.RESPONSE.replace(":id", report?._id),
       payload,
     });
     setSelectedReport(null);
