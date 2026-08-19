@@ -31,7 +31,6 @@ const defaultUser: IUser = {
   collection: [],
   links: [],
   role: 1,
-  hasNewMsg: false,
   createdAt: new Date(),
 };
 

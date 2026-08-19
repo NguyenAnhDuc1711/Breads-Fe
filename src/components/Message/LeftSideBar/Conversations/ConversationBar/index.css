@@ -18,6 +18,8 @@
 
 .conversation-bar__stack {
   font-size: 1rem;
+  flex: 1;
+  min-width: 0;
 }
 
 @media (min-width: 768px) {
@@ -30,6 +32,9 @@
   font-weight: 700;
   display: flex;
   align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .conversation-bar__last-msg {
@@ -88,4 +93,19 @@
   white-space: nowrap;
   margin-left: 8px;
   min-width: 50px;
+}
+
+.conversation-bar__unread-badge {
+  flex-shrink: 0;
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background-color: red;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
 }

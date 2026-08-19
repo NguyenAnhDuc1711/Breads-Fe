@@ -83,12 +83,13 @@ const Conversations = ({
         searchValue,
       },
       (res) => {
-        const { data } = res;
+        const { data, globalTotal } = res;
         if (data) {
           dispatch(
             getConversations({
               data: data,
               isLoadNew: page === 1 ? true : false,
+              globalTotal,
             })
           );
           dispatch(updateCurrentPageConversation(page));

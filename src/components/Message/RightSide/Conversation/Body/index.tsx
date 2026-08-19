@@ -15,7 +15,6 @@ import {
   updateSelectedConversation,
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
-import { updateUserInfo } from "../../../../../store/UserSlice";
 import {
   formatDateToDDMMYYYY,
   getEmojiNameFromIcon,
@@ -71,14 +70,6 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
           dispatch(addNewMsg(msgs));
           dispatch(updateConversations([conversationInfo]));
           setScrollText("New message");
-          if (conversationInfo?._id !== selectedConversation?._id) {
-            dispatch(
-              updateUserInfo({
-                key: "hasNewMsg",
-                value: true,
-              })
-            );
-          }
           if (msgs?.[0]?.type === Constants.MSG_TYPE.SETTING) {
             const splitContent = msgs[0].content.split(" ");
             const value = splitContent[splitContent?.length - 1];

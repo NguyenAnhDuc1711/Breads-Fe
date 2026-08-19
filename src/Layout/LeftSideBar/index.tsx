@@ -12,7 +12,11 @@ import { FiSearch } from "react-icons/fi";
 import { GrHomeRounded, GrOverview } from "react-icons/gr";
 import { MdAdd } from "react-icons/md";
 import { TbMessageReport } from "react-icons/tb";
-import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
+import {
+  MESSAGE_PATH,
+  NOTIFICATION_PATH,
+  Route,
+} from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
@@ -23,9 +27,14 @@ import {
   addNotification,
   updateHasNotification,
 } from "../../store/NotificationSlice";
+import {
+  updateGlobalTotal,
+  updateUnreadCount,
+} from "../../store/MessageSlice";
 import { openLoginPopupAction } from "../../store/UtilSlice";
 import { updatePostAction } from "../../store/PostSlice";
 import { getCurrentPage, getPathForPage } from "../../util/route";
+import { formatUnreadBadge } from "../../util";
 import SidebarMenu from "./SidebarMenu";
 import "./index.css";
 
@@ -42,6 +51,9 @@ const LeftSideBar = () => {
   const hasNewNotification = useAppSelector(
     (state: AppState) => state.notification.hasNewNotification,
   );
+  const globalTotal = useAppSelector(
+    (state: AppState) => state.message.globalTotal,
+  );
 
   const linkIcon = useMemo(
     () => (
@@ -57,10 +69,14 @@ const LeftSideBar = () => {
     () => (
       <div className="left-sidebar__icon-wrap">
         <FaFacebookMessenger size={24} />
-        {userInfo.hasNewMsg && <div className="left-sidebar__badge" />}
+        {globalTotal > 0 && (
+          <div className="left-sidebar__badge left-sidebar__badge--count">
+            {formatUnreadBadge(globalTotal)}
+          </div>
+        )}
       </div>
     ),
-    [userInfo.hasNewMsg],
+    [globalTotal],
   );
 
   useSocket((socket) => {
@@ -68,6 +84,28 @@ const LeftSideBar = () => {
       dispatch(updateHasNotification(true));
       dispatch(addNotification(payload));
     });
+  }, []);
+
+  useSocket((socket) => {
+    const handleUnreadUpdate = (payload: {
+      conversationId: string;
+      unreadCount: number;
+      globalTotal: number;
+    }) => {
+      dispatch(
+        updateUnreadCount({
+          conversationId: payload?.conversationId,
+          unreadCount: payload?.unreadCount,
+        })
+      );
+      dispatch(updateGlobalTotal(payload?.globalTotal));
+    };
+
+    socket.on(Route.MESSAGE + MESSAGE_PATH.UNREAD_UPDATE, handleUnreadUpdate);
+
+    return () => {
+      socket.off(Route.MESSAGE + MESSAGE_PATH.UNREAD_UPDATE, handleUnreadUpdate);
+    };
   }, []);
 
   const getButtonColor = (isActive, colorMode) => {

@@ -19,6 +19,7 @@ export interface MsgState {
   currentPageMsg: number;
   currentPageConversation: number;
   limitConversation: number;
+  globalTotal: number;
   sendNextBox: {
     open: boolean;
     conversations: any;
@@ -73,6 +74,7 @@ export const initialMsgState: MsgState = {
   currentPageMsg: 1,
   currentPageConversation: 1,
   limitConversation: 15,
+  globalTotal: 0,
   sendNextBox: {
     open: false,
     conversations: [],
@@ -212,6 +214,21 @@ const msgSlice = createSlice({
     updateMsgAction: (state, action) => {
       state.msgAction = action.payload;
     },
+    updateUnreadCount: (state, action) => {
+      const { conversationId, unreadCount } = action.payload;
+      const conversationIndex = state.conversations.findIndex(
+        (item: any) => item?._id === conversationId
+      );
+      if (conversationIndex !== -1) {
+        state.conversations[conversationIndex].unreadCount = unreadCount;
+      }
+      if (state.selectedConversation?._id === conversationId) {
+        state.selectedConversation.unreadCount = unreadCount;
+      }
+    },
+    updateGlobalTotal: (state, action) => {
+      state.globalTotal = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getConversations.pending, (state, action) => {
@@ -228,6 +245,9 @@ const msgSlice = createSlice({
         }
         state.loadingConversations = false;
         state.limitConversation = 15;
+        if (typeof action.payload.globalTotal === "number") {
+          state.globalTotal = action.payload.globalTotal;
+        }
       }
     });
     builder.addCase(getMsgs.pending, (state) => {
@@ -277,5 +297,7 @@ export const {
   updateCurrentPageConversation,
   updateSendNextBox,
   updateMsgAction,
+  updateUnreadCount,
+  updateGlobalTotal,
 } = msgSlice.actions;
 export default msgSlice.reducer;

@@ -115,6 +115,19 @@
   border-color: #1a202c;
 }
 
+.left-sidebar__badge--count {
+  width: auto;
+  height: 16px;
+  min-width: 16px;
+  padding: 0 4px;
+  top: -6px;
+  right: -10px;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 .left-sidebar__mobile {
   display: block;
   position: fixed;

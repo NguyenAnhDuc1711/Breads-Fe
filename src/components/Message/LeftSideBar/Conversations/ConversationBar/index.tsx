@@ -4,6 +4,7 @@ import dayjs from "../../../../../util/dayjs";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import { AppState } from "../../../../../store";
 import { selectConversation } from "../../../../../store/MessageSlice";
+import { formatUnreadBadge } from "../../../../../util";
 import "./index.css";
 
 const ConversationBar = ({
@@ -14,7 +15,8 @@ const ConversationBar = ({
   onSelect: Function;
 }) => {
   const dispatch = useAppDispatch();
-  const { _id, emoji, updatedAt, lastMsg, participant } = conversation;
+  const { _id, emoji, updatedAt, lastMsg, participant, unreadCount } =
+    conversation;
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const selectedConversation = useAppSelector(
     (state) => state.message.selectedConversation
@@ -91,6 +93,11 @@ const ConversationBar = ({
           {handleLastMsgInfo()}
         </div>
       </div>
+      {unreadCount > 0 && (
+        <span className="conversation-bar__unread-badge">
+          {formatUnreadBadge(unreadCount)}
+        </span>
+      )}
     </div>
   );
 };

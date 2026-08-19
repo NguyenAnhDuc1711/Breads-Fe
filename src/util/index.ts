@@ -527,6 +527,11 @@ export const generateObjectId = () => {
   return timestamp + randomValue + counter;
 };
 
+const UNREAD_BADGE_MAX = 5;
+
+export const formatUnreadBadge = (count: number) =>
+  count > UNREAD_BADGE_MAX ? `${UNREAD_BADGE_MAX}+` : `${count}`;
+
 export const formatItemDate = (itemDate) => {
   const currentYear = new Date().getFullYear();
   const msgYear = new Date(itemDate).getFullYear();
