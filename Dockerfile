@@ -21,8 +21,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Pull/Initialize git submodules (Breads-Shared) if .git exists
-RUN if [ -d ".git" ]; then git submodule update --init --recursive; fi
+# Railway builds don't include .git, so the Breads-Shared submodule is left empty.
+# Clone it directly instead (public repo, no auth needed).
+RUN rm -rf src/Breads-Shared && \
+    git clone --depth 1 https://github.com/NguyenAnhDuc1711/Breads-Shared.git src/Breads-Shared
 
 # Build-time argument for Next.js (NEXT_PUBLIC_* must be present at build time)
 ARG NEXT_PUBLIC_API_URL
