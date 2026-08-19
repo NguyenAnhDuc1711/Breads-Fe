@@ -157,6 +157,34 @@ export const getPost = createAsyncThunk(
   }
 );
 
+// BE không còn nhúng `replies` đầy đủ trong response getPost (post.model.ts đã bỏ field mảng
+// nhúng) — danh sách reply giờ tải riêng, phân trang, cùng convention isNewPage/page với `getPosts`.
+export const getPostReplies = createAsyncThunk(
+  "post/getPostReplies",
+  async (
+    { postId, page, isNewPage }: { postId: string; page: number; isNewPage?: boolean },
+    thunkApi
+  ) => {
+    try {
+      const data: any = await GET({
+        path: Route.POST + POST_PATH.REPLIES.replace(":id", postId),
+        params: { page, limit: 20 },
+      });
+      const replies = Array.isArray(data?.replies) ? data.replies : [];
+      thunkApi.dispatch(updateHasMoreData(replies.length !== 0));
+      return {
+        postId,
+        replies,
+        isNewPage: isNewPage ?? false,
+      };
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        return thunkApi.rejectWithValue(err.response?.data);
+      }
+    }
+  }
+);
+
 export const getUserPosts = createAsyncThunk(
   "post/getUserPosts",
   async (userId: string, thunkApi) => {

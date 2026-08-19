@@ -64,7 +64,7 @@ const PostsCmsPage = () => {
       survey,
       type,
       status,
-      replies,
+      repliesCount,
       repostNum,
       likesCount,
     }: any) => ({
@@ -78,7 +78,7 @@ const PostsCmsPage = () => {
       status,
       statistic: {
         like: likesCount ?? 0,
-        reply: replies?.length,
+        reply: repliesCount ?? 0,
         repost: repostNum,
       },
     })

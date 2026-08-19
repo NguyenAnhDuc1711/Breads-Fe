@@ -17,10 +17,12 @@ import usePopupCancel from "../../../hooks/usePopupCancel";
 import useSocket from "../../../hooks/useSocket";
 import { AppState } from "../../../store";
 import { IPost, updatePostLike } from "../../../store/PostSlice";
+import { getPostReplies } from "../../../store/PostSlice/asyncThunk";
 import { getIsAdminPage } from "../../../util";
 import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import CustomLinkPreview from "../../../util/CustomLinkPreview";
 import PopupCancel from "../../../util/PopupCancel";
+import InfiniteScroll from "../../InfiniteScroll";
 import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
@@ -30,6 +32,7 @@ import Actions from "./Actions";
 import PostContent from "./Content";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
+import SkeletonPost from "./skeleton";
 import Survey from "./Survey";
 import { useTranslation } from "react-i18next";
 
@@ -76,6 +79,18 @@ const Post = ({
 
   const handleSeeDetail = () => {
     window.open(`/posts/${post._id}`, "_self");
+  };
+
+  // Chỉ dùng khi `isDetail` (xem JSX bên dưới) — trang reply của CHÍNH post này, phân trang qua
+  // `InfiniteScroll` (cùng cơ chế `ListPost` dùng cho feed chính, xem `ListPost/index.tsx`).
+  const handleGetReplies = ({ page }: { page: number }) => {
+    dispatch(
+      getPostReplies({
+        postId: post._id as string,
+        page,
+        isNewPage: page === 1,
+      })
+    );
   };
 
   return (
@@ -228,13 +243,17 @@ const Post = ({
               </div>
               <Divider />
               <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
-              {post.replies && post.replies?.length > 0 && (
-                <div className="post__replies">
-                  {post.replies.map((reply) => (
+              <div className="post__replies">
+                <InfiniteScroll
+                  queryFc={(page: number) => handleGetReplies({ page })}
+                  data={Array.isArray(post.replies) ? post.replies : []}
+                  cpnFc={(reply: IPost) => (
                     <Post key={reply._id} post={reply} isReply={true} />
-                  ))}
-                </div>
-              )}
+                  )}
+                  skeletonCpn={<SkeletonPost />}
+                  reloadPageDeps={[post._id]}
+                />
+              </div>
             </>
           )}
         </CardBody>

@@ -7,6 +7,7 @@ import {
   deletePost,
   editPost,
   getPost,
+  getPostReplies,
   getPosts,
   getUserPosts,
   selectSurveyOption,
@@ -138,8 +139,21 @@ const postSlice = createSlice({
       const postSelected = action.payload;
       console.log("postSelected: ", postSelected);
       if (postSelected) {
-        state.postSelected = postSelected;
+        // BE không còn nhúng `replies` trong response này (post.model.ts đã bỏ field mảng nhúng) —
+        // khởi tạo mảng rỗng để `Post/index.tsx` (InfiniteScroll) và các reducer bên dưới luôn có
+        // 1 array để `.push`/`.filter`, không phải guard `undefined` ở khắp nơi.
+        state.postSelected = { ...postSelected, replies: [] };
       }
+    });
+    builder.addCase(getPostReplies.fulfilled, (state, action) => {
+      const payload: any = action.payload;
+      if (!payload || !state.postSelected || state.postSelected._id !== payload.postId) {
+        return;
+      }
+      const existing = state.postSelected.replies ?? [];
+      state.postSelected.replies = payload.isNewPage
+        ? payload.replies
+        : [...existing, ...payload.replies];
     });
     builder.addCase(getPosts.pending, (state) => {
       state.isLoading = true;
@@ -180,7 +194,11 @@ const postSlice = createSlice({
               ({ _id }) => _id === postSelected._id
             );
             if (state.postAction === REPLY) {
+              // `postSelected` có thể đến từ 1 thẻ trong feed (chọn Reply thẳng từ list, không
+              // qua trang detail) — post đó chưa từng có `.replies` (list/feed không nhúng nữa).
+              clonePostSelected.replies = clonePostSelected.replies ?? [];
               clonePostSelected.replies.push(newPost);
+              clonePostSelected.repliesCount = (clonePostSelected.repliesCount ?? 0) + 1;
             } else {
               clonePostSelected.repostNum += 1;
             }
@@ -220,10 +238,21 @@ const postSlice = createSlice({
         currentPage === PageConstant.POST_DETAIL
       ) {
         if (state.postSelected.replies) {
+          const hadReply = state.postSelected.replies.some(
+            (post) => post._id === postId
+          );
           state.listPost = state.postSelected.replies.filter(
             (post) => post._id !== postId
           );
           state.postSelected.replies = state.listPost;
+          // Badge (`Actions`/`ViewActivity`) đọc `repliesCount` riêng, không còn suy ra từ
+          // `replies.length` (trang hiện tải chỉ là 1 phần) — phải tự trừ khi xoá đúng 1 reply.
+          if (hadReply) {
+            state.postSelected.repliesCount = Math.max(
+              0,
+              (state.postSelected.repliesCount ?? 1) - 1
+            );
+          }
         }
       } else {
         const listPost = JSON.parse(JSON.stringify(state.listPost));

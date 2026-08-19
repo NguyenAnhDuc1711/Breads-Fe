@@ -121,7 +121,7 @@ const ViewActivity = ({
       tab: "comments" as TabType,
       icon: TbMessageReply,
       activeIcon: FaRegCommentDots,
-      num: post.replies?.length ?? 0,
+      num: post.repliesCount ?? 0,
       name: t("countCmt") || "Comments",
       color: "#3182ce",
       btnText: "Xem bình luận",

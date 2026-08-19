@@ -120,7 +120,9 @@ const Actions = ({ post }: { post: IPost }) => {
     },
     {
       name: ACTIONS_NAME.REPLY,
-      statistic: post.replies?.length,
+      // `repliesCount` là counter riêng trên post (không còn suy từ `replies.length` — danh sách
+      // reply giờ tải phân trang, không có mặt trên card feed/list, chỉ trang detail mới tải).
+      statistic: post.repliesCount ?? 0,
       icon: <ReplyIcon />,
       onClick: () => {
         if (!userInfo?._id) {
