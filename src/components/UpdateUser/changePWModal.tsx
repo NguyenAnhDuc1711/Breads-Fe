@@ -47,8 +47,9 @@ export const handleUpdatePW = async ({
       );
       return;
     }
+    // Task 020 (D-1): PUT /users/change-pw/:id -> PUT /users/:id/password (id trong constant).
     await PUT({
-      path: Route.USER + USER_PATH.CHANGE_PW + userId,
+      path: Route.USER + USER_PATH.CHANGE_PW.replace(":id", userId),
       payload: {
         currentPW: currentPWValue,
         newPW: newPWValue,

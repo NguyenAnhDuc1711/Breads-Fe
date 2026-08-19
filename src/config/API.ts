@@ -54,7 +54,7 @@ const processQueue = (error: any, token: string | null = null) => {
  * The refresh token is sent automatically via httpOnly cookie.
  */
 const refreshAccessToken = async (): Promise<string> => {
-  const url = serverUrl + "/api" + Route.USER + USER_PATH.REFRESH_TOKEN;
+  const url = serverUrl + "/v1" + Route.USER + USER_PATH.REFRESH_TOKEN;
   const { data } = await axios.post(
     url,
     {},
@@ -178,7 +178,7 @@ if (typeof window !== "undefined") {
 // ---------------------------------------------------------------------------
 export const GET = async ({ path, params }: ApiOptions) => {
   try {
-    const url = serverUrl + "/api" + path;
+    const url = serverUrl + "/v1" + path;
     let result: any = null;
     if (params) {
       result = (
@@ -205,7 +205,7 @@ export const GET = async ({ path, params }: ApiOptions) => {
 
 export const POST = async ({ path, payload, params }: ApiOptions) => {
   try {
-    const url = serverUrl + "/api" + path;
+    const url = serverUrl + "/v1" + path;
     const { data } = await axios.post(url, payload, {
       params,
       withCredentials: true,
@@ -225,7 +225,7 @@ export const POST = async ({ path, payload, params }: ApiOptions) => {
 
 export const PUT = async ({ path, payload }: ApiOptions) => {
   try {
-    const url = serverUrl + "/api" + path;
+    const url = serverUrl + "/v1" + path;
     const { data } = await axios.put(url, payload, {
       withCredentials: true,
     });
@@ -244,7 +244,7 @@ export const PUT = async ({ path, payload }: ApiOptions) => {
 
 export const PATCH = async ({ path, payload }: ApiOptions) => {
   try {
-    const url = serverUrl + "/api" + path;
+    const url = serverUrl + "/v1" + path;
     const { data } = await axios.patch(url, payload, {
       withCredentials: true,
     });
@@ -263,7 +263,7 @@ export const PATCH = async ({ path, payload }: ApiOptions) => {
 
 export const DELETE = async ({ path, params }: ApiOptions) => {
   try {
-    const url = serverUrl + "/api" + path;
+    const url = serverUrl + "/v1" + path;
     const { data } = await axios.delete(url, {
       params,
       withCredentials: true,

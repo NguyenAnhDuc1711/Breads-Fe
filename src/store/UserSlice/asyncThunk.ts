@@ -8,6 +8,7 @@ import {
 } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import {
+  DELETE,
   GET,
   PATCH,
   POST,
@@ -171,8 +172,9 @@ export const getUserInfo = createAsyncThunk(
     try {
       const userId: string = payload.userId;
       const getCurrentUser = payload.getCurrentUser;
+      // Task 020 (D-1): GET /users/profile/:userId -> GET /users/:userId (id trong constant).
       const data = await GET({
-        path: Route.USER + USER_PATH.PROFILE + userId,
+        path: Route.USER + USER_PATH.PROFILE.replace(":userId", userId),
       });
       return {
         user: data,
@@ -194,8 +196,9 @@ export const updateUser = createAsyncThunk(
       if (userId) {
         delete payload.userId;
       }
+      // Task 020 (D-1): PUT /users/update/:id -> PUT /users/:id (id trong constant).
       const data = await PUT({
-        path: Route.USER + USER_PATH.UPDATE + userId,
+        path: Route.USER + USER_PATH.UPDATE.replace(":id", userId),
         payload,
       });
       return data;
@@ -212,10 +215,11 @@ export const addPostToCollection = createAsyncThunk(
   async (payload: any, thunkAPI) => {
     try {
       const { userId, postId } = payload;
+      // Task 013/021 (D-1): PATCH /collections/add -> PATCH /collections/:userId/items
+      // (userId trong path, postId trong body).
       await PATCH({
-        path: Route.COLLECTION + COLLECTION_PATH.ADD,
+        path: Route.COLLECTION + COLLECTION_PATH.ADD.replace(":userId", userId),
         payload: {
-          userId: userId,
           postId: postId,
         },
       });
@@ -236,12 +240,13 @@ export const removePostFromCollection = createAsyncThunk(
       const dispatch = thunkAPI.dispatch;
       const displayPageData = rootState.util.displayPageData;
       const { userId, postId } = payload;
-      await PATCH({
-        path: Route.COLLECTION + COLLECTION_PATH.REMOVE,
-        payload: {
-          userId: userId,
-          postId: postId,
-        },
+      // Task 013/021 (D-1): PATCH /collections/remove -> DELETE /collections/:userId/items/:postId
+      // (method đổi PATCH -> DELETE, cả 2 id trong path, không còn body).
+      await DELETE({
+        path: Route.COLLECTION + COLLECTION_PATH.REMOVE.replace(":userId", userId).replace(
+          ":postId",
+          postId,
+        ),
       });
       if (displayPageData === PageConstant.SAVED) {
         const newListPost = rootState.post.listPost.filter(

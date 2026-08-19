@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 import { IPost } from ".";
 import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import { DELETE, GET, POST, PUT } from "../../config/API";
+import { DELETE, GET, PATCH, POST, PUT } from "../../config/API";
 import { openNewPostNotify, showToast, updateHasMoreData } from "../UtilSlice";
 
 export const createPost = createAsyncThunk(
@@ -69,8 +69,9 @@ export const editPost = createAsyncThunk(
         ...payload,
         userId: userInfo._id,
       };
+      // Task 020 (D-1): PUT /posts/update -> PUT /posts/:id — id giờ nằm trong path (T011).
       const data = await PUT({
-        path: Route.POST + POST_PATH.UPDATE,
+        path: Route.POST + POST_PATH.UPDATE.replace(":id", payload._id),
         payload,
       });
       return data;
@@ -185,8 +186,10 @@ export const selectSurveyOption = createAsyncThunk(
   "post/tickSurvey",
   async (payload: any, thunkApi) => {
     try {
-      await PUT({
-        path: Route.POST + POST_PATH.TICK_SURVEY,
+      // Task 020 (D-1): PUT /posts/tick-post-survey -> POST /posts/:id/survey-ticks (method đổi
+      // PUT -> POST, id post vào path; postId có sẵn trong payload từ caller).
+      await POST({
+        path: Route.POST + POST_PATH.TICK_SURVEY.replace(":id", payload.postId),
         payload,
       });
       return payload;
@@ -202,9 +205,12 @@ export const updatePostStatus = createAsyncThunk(
   "post/updatePostStatus",
   async (payload: any, thunkApi) => {
     try {
-      await POST({
-        path: Route.POST + POST_PATH.UPDATE_POST_STATUS,
-        payload,
+      // Task 020 (D-1): POST /posts/update-post-status -> PATCH /posts/:id/status (method đổi
+      // POST -> PATCH, postId chuyển từ body vào path — body chỉ còn userId/status).
+      const { postId, ...body } = payload;
+      await PATCH({
+        path: Route.POST + POST_PATH.UPDATE_POST_STATUS.replace(":id", postId),
+        payload: body,
       });
       return payload.postId;
     } catch (err: unknown) {
@@ -219,9 +225,12 @@ export const updatePostVisibility = createAsyncThunk(
   "post/updatePostVisibility",
   async (payload: any, thunkApi) => {
     try {
-      await POST({
-        path: Route.POST + POST_PATH.UPDATE_POST_VISIBILITY,
-        payload,
+      // Task 020 (D-1): POST /posts/update-post-visibility -> PATCH /posts/:id/visibility (method
+      // đổi POST -> PATCH, postId chuyển từ body vào path — body chỉ còn userId/visibility).
+      const { postId, ...body } = payload;
+      await PATCH({
+        path: Route.POST + POST_PATH.UPDATE_POST_VISIBILITY.replace(":id", postId),
+        payload: body,
       });
       return payload.postId;
     } catch (err: unknown) {
