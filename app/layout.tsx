@@ -15,7 +15,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://breads.social",
+    process.env.NEXT_PUBLIC_APP_URL || "https://breads.social",
   ),
   title: {
     default: "Breads – Share Your World",
