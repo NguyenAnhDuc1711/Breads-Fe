@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { POST_PATH, Route } from "../../src/Breads-Shared/APIConfig";
+import { API_PREFIX, POST_PATH, Route } from "../../src/Breads-Shared/APIConfig";
 import { IPost } from "../../src/store/PostSlice";
 
 // Server-side equivalent of the first getPosts() dispatch HomePage fires
@@ -29,7 +29,7 @@ export async function getInitialPosts(
     params.set("page", "1");
     params.set("limit", "20");
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api${Route.POST}${POST_PATH.GET_ALL}?${params.toString()}`,
+      `${process.env.NEXT_PUBLIC_API_URL}${API_PREFIX}${Route.POST}${POST_PATH.GET_ALL}?${params.toString()}`,
       {
         headers: cookieHeader ? { Cookie: cookieHeader } : {},
         cache: "no-store",

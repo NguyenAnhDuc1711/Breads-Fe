@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { Route, USER_PATH } from "../../src/Breads-Shared/APIConfig";
+import { API_PREFIX, Route, USER_PATH } from "../../src/Breads-Shared/APIConfig";
 import { IUser } from "../../src/store/UserSlice";
 
 // Resolves identity server-side during SSR.
@@ -21,7 +21,7 @@ export async function getCurrentUser(): Promise<IUser | null> {
       : `jwt=${legacyJwt}`;
 
     const res = await fetch(
-      `${apiUrl}/api${Route.USER}${USER_PATH.ME}`,
+      `${apiUrl}${API_PREFIX}${Route.USER}${USER_PATH.ME}`,
       {
         headers: {
           Cookie: cookieHeader,

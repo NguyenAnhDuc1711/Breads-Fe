@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { Route, USER_PATH } from "../../../../src/Breads-Shared/APIConfig";
+import { API_PREFIX, Route, USER_PATH } from "../../../../src/Breads-Shared/APIConfig";
 import ContainerLayout from "../../../../src/components/MainBoxLayout";
 import UserHeader from "../../../../src/components/UserHeader";
 import UserPageHydrate from "./UserPageHydrate";
@@ -16,7 +16,7 @@ import UserPageHydrate from "./UserPageHydrate";
 // existing userId, unlike posts/[postId] which forks on status.
 async function fetchJson(path: string, cookieHeader: string | undefined) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api${path}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${API_PREFIX}${path}`, {
       headers: cookieHeader ? { Cookie: cookieHeader } : {},
       cache: "no-store",
     });

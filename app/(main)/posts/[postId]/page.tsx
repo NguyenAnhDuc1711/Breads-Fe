@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Route } from "../../../../src/Breads-Shared/APIConfig";
+import { API_PREFIX, Route } from "../../../../src/Breads-Shared/APIConfig";
 import { Constants } from "../../../../src/Breads-Shared/Constants";
 import Post from "../../../../src/components/ListPost/Post";
 import ContainerLayout from "../../../../src/components/MainBoxLayout";
@@ -22,7 +22,7 @@ async function fetchPost(postId: string): Promise<any | null> {
 
   try {
     const res = await fetch(
-      `${apiUrl}/api${Route.POST}/${postId}`,
+      `${apiUrl}${API_PREFIX}${Route.POST}/${postId}`,
       {
         headers: cookieHeader ? { Cookie: cookieHeader } : {},
         cache: "no-store",
