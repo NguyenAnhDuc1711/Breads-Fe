@@ -31,7 +31,7 @@ const SidebarMenu = () => {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [isSubMenuOpen1, setIsSubMenuOpen1] = useState(false);
   const [menuPlacement, setMenuPlacement] = useState<string>("top-start");
-  const { setColorMode } = useColorMode();
+  const { colorMode, setColorMode } = useColorMode();
 
   useEffect(() => {
     const updatePlacement = () => {
