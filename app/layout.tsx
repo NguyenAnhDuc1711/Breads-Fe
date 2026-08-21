@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { GoogleTagManager } from "@next/third-parties/google";
 import "../src/index.css";
 import "../src/animations.css";
 import { getCurrentUser } from "./lib/getCurrentUser";
+import GtmPageviewTracker from "./GtmPageviewTracker";
 import Providers from "./providers";
 
 const inter = Inter({
@@ -75,6 +76,9 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
         }}
       >
         {gtmId && <GoogleTagManager gtmId={gtmId} />}
+        <Suspense fallback={null}>
+          <GtmPageviewTracker />
+        </Suspense>
         <Providers initialUser={initialUser}>{children}</Providers>
       </body>
     </html>
