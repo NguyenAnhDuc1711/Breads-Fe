@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
+import { GoogleTagManager } from "@next/third-parties/google";
 import "../src/index.css";
 import "../src/animations.css";
 import { getCurrentUser } from "./lib/getCurrentUser";
@@ -63,6 +64,7 @@ export const metadata: Metadata = {
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   const initialUser = await getCurrentUser();
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body
@@ -72,6 +74,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
             "var(--font-inter), Inter, system-ui, -apple-system, sans-serif",
         }}
       >
+        {gtmId && <GoogleTagManager gtmId={gtmId} />}
         <Providers initialUser={initialUser}>{children}</Providers>
       </body>
     </html>
