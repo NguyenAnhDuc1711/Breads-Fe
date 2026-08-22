@@ -3,7 +3,7 @@ import { IPost } from "../../../../store/PostSlice";
 
 const useCopyLink = () => {
   const toast = useToast();
-  const copyURL = (postInfo: IPost): void => {
+  const copyURL = (postInfo: IPost, onSuccess?: () => void): void => {
     const postURL = `${window.location.origin}/posts/${postInfo?._id}`;
     navigator.clipboard.writeText(postURL).then(() => {
       toast({
@@ -13,6 +13,7 @@ const useCopyLink = () => {
         duration: 3000,
         isClosable: true,
       });
+      onSuccess?.();
     });
   };
 

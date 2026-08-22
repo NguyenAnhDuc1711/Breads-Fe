@@ -23,6 +23,7 @@ import {
   removePostFromCollection,
 } from "../../../../store/UserSlice/asyncThunk";
 import { addEvent } from "../../../../util";
+import { GA_EVENTS, sendGaEvent } from "../../../../util/gtmEvents";
 import useCopyLink from "./CopyLink";
 import { openLoginPopupAction, showToast } from "../../../../store/UtilSlice";
 
@@ -147,7 +148,16 @@ const PostMoreActionBox = ({
             postId: postId,
           },
         });
-        copyURL(post);
+        copyURL(post, () => {
+          sendGaEvent({
+            event: GA_EVENTS.SHARE,
+            params: {
+              content_type: "post",
+              item_id: post._id,
+              method: "copy_link",
+            },
+          });
+        });
       },
     },
     ...(userInfo._id === post.authorId

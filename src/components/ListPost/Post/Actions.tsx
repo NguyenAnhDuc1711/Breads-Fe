@@ -246,7 +246,16 @@ const Actions = ({ post }: { post: IPost }) => {
                   <PopoverBody
                     className="post-actions__share-item"
                     onClick={() => {
-                      copyURL(post);
+                      copyURL(post, () => {
+                        sendGaEvent({
+                          event: GA_EVENTS.SHARE,
+                          params: {
+                            content_type: "post",
+                            item_id: post._id,
+                            method: "copy_link",
+                          },
+                        });
+                      });
                       setOpenSubBox(false);
                       addEvent({
                         event: "copy_post_link",
