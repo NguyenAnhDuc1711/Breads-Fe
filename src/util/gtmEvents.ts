@@ -7,6 +7,10 @@ export const GA_EVENTS = {
   COMMENT_POST: "comment_post",
   FOLLOW_USER: "follow_user",
   SEARCH: "search",
+  CREATE_POST: "create_post",
+  REPOST_POST: "repost_post",
+  EDIT_POST: "edit_post",
+  SHARE: "share",
 } as const;
 
 // Post chưa có field "content type" lưu sẵn — suy theo thứ tự: poll > media > text.
