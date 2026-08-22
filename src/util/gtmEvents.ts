@@ -13,6 +13,16 @@ export const GA_EVENTS = {
   SEARCH: "search",
 } as const;
 
+// Post chưa có field "content type" lưu sẵn — suy theo thứ tự: poll > media > text.
+export const getPostContentType = (post: {
+  survey?: unknown[];
+  media?: { type?: string }[];
+}) => {
+  if (post?.survey && post.survey.length > 0) return "poll";
+  if (post?.media && post.media.length > 0) return post.media[0]?.type ?? "text";
+  return "text";
+};
+
 export const sendGaEvent = ({
   event,
   params,
