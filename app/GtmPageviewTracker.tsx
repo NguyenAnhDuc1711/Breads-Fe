@@ -2,12 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-
-declare global {
-  interface Window {
-    dataLayer?: Record<string, unknown>[];
-  }
-}
+import { sendGAEvent } from "@next/third-parties/google";
 
 const GtmPageviewTracker = () => {
   const pathname = usePathname();
@@ -15,13 +10,12 @@ const GtmPageviewTracker = () => {
 
   useEffect(() => {
     try {
-      // GTM script (app/layout.tsx) có thể bị ad-blocker/mạng chặn trước khi
-      // kịp khởi tạo window.dataLayer — không giả định nó luôn tồn tại
-      // (plan-review ARCH-1, đảm bảo NFR-2 không throw crash UI).
-      window.dataLayer = window.dataLayer || [];
+      // GA script (app/layout.tsx) có thể bị ad-blocker/mạng chặn trước khi
+      // kịp khởi tạo window.dataLayer — sendGAEvent tự warn (không throw)
+      // nếu GA chưa init, nhưng vẫn bọc try/catch cho chắc (plan-review
+      // ARCH-1, đảm bảo NFR-2 không throw crash UI).
       const query = searchParams?.toString();
-      window.dataLayer.push({
-        event: "page_view",
+      sendGAEvent("event", "page_view", {
         page_path: pathname + (query ? `?${query}` : ""),
         page_title: document.title,
       });
