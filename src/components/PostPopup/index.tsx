@@ -23,6 +23,7 @@ import {
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
 import { showToast } from "../../store/UtilSlice";
+import { GA_EVENTS, sendGaEvent } from "../../util/gtmEvents";
 import {
   addEvent,
   generateObjectId,
@@ -308,6 +309,12 @@ const PostPopup = () => {
         const uploadPost = await dispatch(
           createPost({ postPayload: payload, action: postAction }),
         ).unwrap();
+        if (postAction === PostConstants.ACTIONS.REPLY) {
+          sendGaEvent({
+            event: GA_EVENTS.COMMENT_POST,
+            params: { post_id: postReply?._id },
+          });
+        }
         if (!!notificationPayload?.toUsers?.length) {
           notificationPayload = {
             ...notificationPayload,
