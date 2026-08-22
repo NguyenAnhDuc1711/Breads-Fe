@@ -1,8 +1,4 @@
-declare global {
-  interface Window {
-    dataLayer?: Record<string, unknown>[];
-  }
-}
+import { sendGAEvent } from "@next/third-parties/google";
 
 export const GA_EVENTS = {
   VIEW_POST: "view_post",
@@ -23,6 +19,10 @@ export const getPostContentType = (post: {
   return "text";
 };
 
+// Hướng B: gọi thẳng gtag.js qua sendGAEvent (đúng cú pháp gtag('event', tên,
+// params)) — không qua GTM container, không cần cấu hình trigger/tag nào cho
+// event mới. sendGAEvent tự warn (không throw) nếu GA chưa init, nhưng vẫn
+// bọc try/catch cho chắc (đảm bảo không crash UI nếu load thất bại).
 export const sendGaEvent = ({
   event,
   params,
@@ -31,8 +31,7 @@ export const sendGaEvent = ({
   params?: Record<string, unknown>;
 }) => {
   try {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event, ...params });
+    sendGAEvent("event", event, params ?? {});
   } catch (err) {
     console.error("sendGaEvent: ", err);
   }
