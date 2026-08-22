@@ -40,6 +40,7 @@ import {
   updatePostVisibility,
 } from "../../../store/PostSlice/asyncThunk";
 import { addEvent, getIsAdminPage } from "../../../util";
+import { GA_EVENTS, sendGaEvent } from "../../../util/gtmEvents";
 import useCopyLink from "./MoreAction/CopyLink";
 import { openLoginPopupAction } from "../../../store/UtilSlice";
 
@@ -115,6 +116,10 @@ const Actions = ({ post }: { post: IPost }) => {
           payload: {
             postId: post._id,
           },
+        });
+        sendGaEvent({
+          event: wasLiked ? GA_EVENTS.UNLIKE_POST : GA_EVENTS.LIKE_POST,
+          params: { post_id: post._id },
         });
       },
     },
