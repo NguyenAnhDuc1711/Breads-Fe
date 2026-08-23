@@ -18,6 +18,7 @@ import { IUser } from "../store/UserSlice";
 import { updateHasMoreData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
+import { GA_EVENTS, sendGaEvent } from "../util/gtmEvents";
 import "./SearchPage.css";
 
 const SearchPage = () => {
@@ -52,6 +53,14 @@ const SearchPage = () => {
             searchValue,
           },
         });
+        // Chỉ tính là 1 lượt "search" thật khi: có từ khoá (không phải lần
+        // fetch ban đầu rỗng lúc vào trang) và không phải trang phân trang.
+        if (!isFetchMore && searchValue) {
+          sendGaEvent({
+            event: GA_EVENTS.SEARCH,
+            params: { search_term: searchValue },
+          });
+        }
         if (!!data && data.length > 0) {
           if (isFetchMore) {
             setUsers((prev) => [...prev, ...data]);

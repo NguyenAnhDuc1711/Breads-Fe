@@ -11,6 +11,7 @@ import { AppState } from "../store";
 import { getPost } from "../store/PostSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
+import { GA_EVENTS, getPostContentType, sendGaEvent } from "../util/gtmEvents";
 import { showToast } from "../store/UtilSlice";
 import { useTranslation } from "react-i18next";
 import "./PostDetail.css";
@@ -29,7 +30,15 @@ const PostDetail = ({ postId }: { postId: string }) => {
   useEffect(() => {
     if (postId) {
       dispatch(changePage({ currentPage, nextPage: PageConstant.POST_DETAIL }));
-      dispatch(getPost(postId));
+      dispatch(getPost(postId))
+        .unwrap()
+        .then((post) => {
+          sendGaEvent({
+            event: GA_EVENTS.VIEW_POST,
+            params: { post_id: postId, content_type: getPostContentType(post) },
+          });
+        })
+        .catch(() => {});
       addEvent({
         event: "see_detail_post",
         payload: {

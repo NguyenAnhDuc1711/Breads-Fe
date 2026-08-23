@@ -10,6 +10,7 @@ import { IUserShortInfo } from "../../store/PostSlice";
 import { IUser } from "../../store/UserSlice";
 import { followUser } from "../../store/UserSlice/asyncThunk";
 import { addEvent } from "../../util";
+import { GA_EVENTS, sendGaEvent } from "../../util/gtmEvents";
 import UnFollowPopup from "./UnfollowPopup";
 import { openLoginPopupAction, showToast } from "../../store/UtilSlice";
 import "./index.css";
@@ -17,17 +18,29 @@ import "./index.css";
 export const handleFollow = async (
   userInfo: IUser,
   user: IUserShortInfo,
-  dispatch: any
+  dispatch: any,
+  isFollowAction: boolean = true
 ) => {
   if (!userInfo?._id) {
     return;
   }
-  dispatch(
-    followUser({
-      userFlId: user._id,
-      userId: userInfo._id,
-    })
-  );
+  try {
+    // plan-review ARCH-1: trước đây dispatch không await/unwrap nên lỗi
+    // network được Redux thunk tự xử lý êm. Giờ cần await để biết chính
+    // xác thời điểm thành công (cho sendGaEvent) — bắt buộc bọc try/catch
+    // để không biến lỗi network thành unhandled promise rejection.
+    await dispatch(
+      followUser({
+        userFlId: user._id,
+        userId: userInfo._id,
+      })
+    ).unwrap();
+    if (isFollowAction) {
+      sendGaEvent({ event: GA_EVENTS.FOLLOW_USER, params: {} });
+    }
+  } catch (err) {
+    console.error("handleFollow: ", err);
+  }
   try {
     const socket = Socket.getInstant();
     socket.emit(Route.NOTIFICATION + NOTIFICATION_PATH.CREATE, {
@@ -75,7 +88,7 @@ const FollowBtn = ({
           userId: user._id,
         },
       });
-      handleFollow(userInfo, user, dispatch);
+      handleFollow(userInfo, user, dispatch, true);
     }
   };
   const isFullWidth = currentPage === PageConstant.FRIEND && !inUserFlBox;
@@ -106,7 +119,7 @@ const FollowBtn = ({
               userId: user._id,
             },
           });
-          handleFollow(userInfo, user, dispatch);
+          handleFollow(userInfo, user, dispatch, false);
           setOpenCancelPopup(false);
         }}
       />

@@ -7,6 +7,7 @@ import { AppState } from "../../../../src/store";
 import { getPost } from "../../../../src/store/PostSlice/asyncThunk";
 import { changePage } from "../../../../src/store/UtilSlice/asyncThunk";
 import { addEvent } from "../../../../src/util";
+import { GA_EVENTS, getPostContentType, sendGaEvent } from "../../../../src/util/gtmEvents";
 
 // Renders nothing — reproduces PostDetail.tsx's original mount effect
 // (populate Redux `postSelected` via the existing thunk, page-tracking,
@@ -19,7 +20,15 @@ const PostDetailHydrate = ({ postId }: { postId: string }) => {
 
   useEffect(() => {
     dispatch(changePage({ currentPage, nextPage: PageConstant.POST_DETAIL }));
-    dispatch(getPost(postId));
+    dispatch(getPost(postId))
+      .unwrap()
+      .then((post) => {
+        sendGaEvent({
+          event: GA_EVENTS.VIEW_POST,
+          params: { post_id: postId, content_type: getPostContentType(post) },
+        });
+      })
+      .catch(() => {});
     addEvent({
       event: "see_detail_post",
       payload: {

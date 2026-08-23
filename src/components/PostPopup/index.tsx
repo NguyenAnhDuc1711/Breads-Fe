@@ -23,6 +23,7 @@ import {
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
 import { showToast } from "../../store/UtilSlice";
+import { GA_EVENTS, sendGaEvent, getPostContentType } from "../../util/gtmEvents";
 import {
   addEvent,
   generateObjectId,
@@ -240,13 +241,21 @@ const PostPopup = () => {
       const socket = Socket.getInstant();
       payload.visibility = visibility;
       if (isEditing) {
-        dispatch(editPost(payload));
         addEvent({
           event: "edit_post",
           payload: {
             postId: payload?._id,
           },
         });
+        try {
+          await dispatch(editPost(payload)).unwrap();
+          sendGaEvent({
+            event: GA_EVENTS.EDIT_POST,
+            params: { post_id: payload._id },
+          });
+        } catch (err) {
+          console.error("handleUploadPost (edit): ", err);
+        }
       } else {
         let notificationPayload: any = {};
         payload._id = generateObjectId();
@@ -308,6 +317,25 @@ const PostPopup = () => {
         const uploadPost = await dispatch(
           createPost({ postPayload: payload, action: postAction }),
         ).unwrap();
+        if (postAction === PostConstants.ACTIONS.REPLY) {
+          sendGaEvent({
+            event: GA_EVENTS.COMMENT_POST,
+            params: { post_id: postReply?._id },
+          });
+        } else if (postAction === PostConstants.ACTIONS.REPOST) {
+          sendGaEvent({
+            event: GA_EVENTS.REPOST_POST,
+            params: { post_id: payload._id, parent_post_id: postSelected?._id },
+          });
+        } else {
+          sendGaEvent({
+            event: GA_EVENTS.CREATE_POST,
+            params: {
+              post_id: payload._id,
+              content_type: getPostContentType(uploadPost?.data),
+            },
+          });
+        }
         if (!!notificationPayload?.toUsers?.length) {
           notificationPayload = {
             ...notificationPayload,

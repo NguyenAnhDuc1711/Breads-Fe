@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "../src/index.css";
 import "../src/animations.css";
 import { getCurrentUser } from "./lib/getCurrentUser";
+import GtmPageviewTracker from "./GtmPageviewTracker";
 import Providers from "./providers";
 
 const inter = Inter({
@@ -63,6 +65,7 @@ export const metadata: Metadata = {
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   const initialUser = await getCurrentUser();
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body
@@ -72,6 +75,10 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
             "var(--font-inter), Inter, system-ui, -apple-system, sans-serif",
         }}
       >
+        {gaId && <GoogleAnalytics gaId={gaId} />}
+        <Suspense fallback={null}>
+          <GtmPageviewTracker />
+        </Suspense>
         <Providers initialUser={initialUser}>{children}</Providers>
       </body>
     </html>
