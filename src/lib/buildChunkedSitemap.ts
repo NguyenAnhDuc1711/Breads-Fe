@@ -110,8 +110,31 @@ export function buildChunkedSitemap<T>({
   chunkSize,
 }: BuildChunkedSitemapParams<T>) {
   async function generateSitemaps(): Promise<{ id: number }[]> {
-    const chunks = await fetchAllChunks({ fetchPage, chunkSize });
-    return chunks.map((_, id) => ({ id }));
+    // Orchestrator fix (discovered right after Task 010 closed): Next.js calls
+    // generateSitemaps() during `next build`'s static-param collection, so an
+    // unreachable/misconfigured backend at BUILD time (missing
+    // SITEMAP_SHARED_SECRET, backend down, wrong port, CI with no live
+    // backend at all) crashed the ENTIRE production build, not just this
+    // route — confirmed by reproducing a real `npm run build` failure.
+    // getChunk() below deliberately keeps the strict FAIL-1 throw (a failure
+    // there only 500s that one request, at runtime, when it should be loud);
+    // this function degrades instead, since a build-time failure here has a
+    // much larger blast radius than the problem it would be protecting against.
+    try {
+      const chunks = await fetchAllChunks({ fetchPage, chunkSize });
+      return chunks.map((_, id) => ({ id }));
+    } catch (err) {
+      console.warn(
+        "[buildChunkedSitemap] generateSitemaps() failed at build/collection time " +
+          "(backend unreachable or misconfigured) — returning zero static params so " +
+          "`next build` can complete instead of crashing the whole build. This relies " +
+          "on Next's default `dynamicParams: true` (not overridden by this route) so " +
+          "an actual request to a chunk URL at runtime still generates on-demand once " +
+          "the backend is reachable, rather than 404ing. Underlying error:",
+        err,
+      );
+      return [];
+    }
   }
 
   async function getChunk(id: number): Promise<MetadataRoute.Sitemap> {
