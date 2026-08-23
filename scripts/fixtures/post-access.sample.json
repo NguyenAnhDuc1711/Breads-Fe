@@ -1,0 +1,7 @@
+{
+  "_comment": "Sample fixture shape for scripts/verify-post-page-access.mjs. Replace with real postIds curated from the DB/admin panel before running for real (SC-2 target: 50 deleted, 50 private, 30 preAcceptPublic, 20 publicHappyPath). Empty arrays are skipped by the script, not failed.",
+  "deleted": [],
+  "private": [],
+  "preAcceptPublic": [],
+  "publicHappyPath": []
+}
