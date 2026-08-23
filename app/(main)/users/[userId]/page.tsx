@@ -79,6 +79,22 @@ const Page = async ({ params }: { params: { userId: string } }) => {
 
   return (
     <ContainerLayout>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            mainEntity: {
+              "@type": "Person",
+              name: user.username,
+              image: user.avatar,
+              description: user.bio || undefined,
+              url: `${process.env.NEXT_PUBLIC_APP_URL || "https://breads.social"}/users/${params.userId}`,
+            },
+          }),
+        }}
+      />
       <UserHeader user={user} />
       <UserPageHydrate userId={params.userId} />
     </ContainerLayout>

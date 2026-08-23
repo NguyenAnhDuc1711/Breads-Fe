@@ -79,6 +79,32 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
         <Suspense fallback={null}>
           <GtmPageviewTracker />
         </Suspense>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  name: "Breads",
+                  url: process.env.NEXT_PUBLIC_APP_URL || "https://breads.social",
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: `${process.env.NEXT_PUBLIC_APP_URL || "https://breads.social"}/search?q={search_term_string}`,
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+                {
+                  "@type": "Organization",
+                  name: "Breads",
+                  url: process.env.NEXT_PUBLIC_APP_URL || "https://breads.social",
+                  logo: `${process.env.NEXT_PUBLIC_APP_URL || "https://breads.social"}/bread-logo.png`,
+                },
+              ],
+            }),
+          }}
+        />
         <Providers initialUser={initialUser}>{children}</Providers>
       </body>
     </html>
