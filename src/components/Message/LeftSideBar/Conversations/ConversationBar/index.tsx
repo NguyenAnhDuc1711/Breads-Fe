@@ -3,7 +3,10 @@ import { WrapItem } from "../../../../ui/primitives";
 import dayjs from "../../../../../util/dayjs";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import { AppState } from "../../../../../store";
-import { selectConversation } from "../../../../../store/MessageSlice";
+import {
+  selectConversation,
+  IConversation,
+} from "../../../../../store/MessageSlice";
 import { formatUnreadBadge } from "../../../../../util";
 import "./index.css";
 
@@ -11,7 +14,7 @@ const ConversationBar = ({
   conversation,
   onSelect,
 }: {
-  conversation: any;
+  conversation: IConversation;
   onSelect: Function;
 }) => {
   const dispatch = useAppDispatch();
@@ -93,9 +96,9 @@ const ConversationBar = ({
           {handleLastMsgInfo()}
         </div>
       </div>
-      {unreadCount > 0 && (
+      {(unreadCount ?? 0) > 0 && (
         <span className="conversation-bar__unread-badge">
-          {formatUnreadBadge(unreadCount)}
+          {formatUnreadBadge(unreadCount ?? 0)}
         </span>
       )}
     </div>

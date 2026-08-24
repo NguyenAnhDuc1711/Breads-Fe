@@ -3,13 +3,18 @@ import { updateHasMoreData } from "../UtilSlice";
 import { formatDateToDDMMYYYY } from "../../util";
 import { GET } from "../../config/API";
 import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig";
+import {
+  MessageResponse,
+  ConversationResponse,
+} from "../../Breads-Shared/Types";
 import { AxiosError } from "axios";
 
 export const getConversations = createAsyncThunk(
   "message/getConversations",
   async (payload: any, thunkApi) => {
     try {
-      const data = payload.data;
+      const rawData = payload.data ?? [];
+      const data = rawData.map((c: any) => new ConversationResponse(c));
       const isLoadNew = payload.isLoadNew;
       const globalTotal = payload.globalTotal;
       const dispatch = thunkApi.dispatch;
@@ -29,14 +34,19 @@ export const getMsgs = createAsyncThunk(
   (data: any, thunkApi) => {
     try {
       const { msgs, isNew } = data;
+      const normalizedMsgs = (msgs ?? []).map(
+        (msg: any) => new MessageResponse(msg)
+      );
       const dateSet = [
         ...new Set(
-          msgs.map((msg) => formatDateToDDMMYYYY(new Date(msg?.createdAt)))
+          normalizedMsgs.map((msg) =>
+            formatDateToDDMMYYYY(new Date(msg?.createdAt))
+          )
         ),
       ];
       const splitMsgsByDate: Record<string, any> = {};
       dateSet.forEach((date: any) => {
-        const msgsByDate = msgs.filter(
+        const msgsByDate = normalizedMsgs.filter(
           (msg) => formatDateToDDMMYYYY(new Date(msg?.createdAt)) === date
         );
         splitMsgsByDate[date] = msgsByDate;
@@ -61,12 +71,17 @@ export const getConversationById = createAsyncThunk(
       const conversation = await GET({
         path:
           Route.MESSAGE +
-          MESSAGE_PATH.GET_CONVERSATION_BY_ID.replace(":conversationId", conversationId),
+          MESSAGE_PATH.GET_CONVERSATION_BY_ID.replace(
+            ":conversationId",
+            conversationId
+          ),
         params: {
           userId: userId ? userId : localStorage.getItem("userId"),
         },
       });
-      return conversation;
+      return conversation
+        ? new ConversationResponse(conversation)
+        : conversation;
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         return thunkApi.rejectWithValue(err.response?.data);
@@ -74,6 +89,7 @@ export const getConversationById = createAsyncThunk(
     }
   }
 );
+
 
 export const getMsgsFromSearchValue = createAsyncThunk(
   "message/getMsgsFromSearchValue",

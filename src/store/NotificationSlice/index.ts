@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getNotificattions } from "./asyncThunk";
+import { INotification, NotificationResponse } from "../../Breads-Shared/Types";
+
+export type { INotification };
 
 export interface NotificationState {
-  notifications: any;
+  notifications: INotification[];
   hasNewNotification: boolean;
   isLoading: boolean;
 }
@@ -21,7 +24,9 @@ const notificationSlice = createSlice({
       state.hasNewNotification = action.payload;
     },
     addNotification: (state, action) => {
-      state.notifications.unshift(action.payload);
+      if (action.payload) {
+        state.notifications.unshift(new NotificationResponse(action.payload));
+      }
     },
   },
   extraReducers: (builder) => {
@@ -29,16 +34,22 @@ const notificationSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getNotificattions.fulfilled, (state, action) => {
-      const notifications = action.payload;
+      const rawNotifications = action.payload;
+      const normalizedNotifications: INotification[] = Array.isArray(
+        rawNotifications
+      )
+        ? rawNotifications.map((item) => new NotificationResponse(item))
+        : [];
       if (state.notifications.length) {
-        state.notifications.push(...notifications);
+        state.notifications.push(...normalizedNotifications);
       } else {
-        state.notifications = notifications;
+        state.notifications = normalizedNotifications;
       }
       state.isLoading = false;
     });
   },
 });
+
 
 export const { updateHasNotification, addNotification } =
   notificationSlice.actions;

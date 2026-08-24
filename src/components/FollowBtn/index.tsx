@@ -64,7 +64,7 @@ const FollowBtn = ({
   user,
   inUserFlBox = false,
 }: {
-  user: IUser;
+  user: IUserShortInfo;
   inUserFlBox?: boolean;
 }) => {
   const { t } = useTranslation();
