@@ -1,7 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
-import { IPost, IPostDraft, ISurveyOption, IUserShortInfo } from "../../Breads-Shared/Types";
+import {
+  IPost,
+  IPostDraft,
+  ISurveyOption,
+  IUserShortInfo,
+  PostResponse,
+} from "../../Breads-Shared/Types";
 import {
   createPost,
   deletePost,
@@ -137,12 +143,10 @@ const postSlice = createSlice({
     });
     builder.addCase(getPost.fulfilled, (state, action) => {
       const postSelected = action.payload;
-      console.log("postSelected: ", postSelected);
       if (postSelected) {
-        // BE không còn nhúng `replies` trong response này (post.model.ts đã bỏ field mảng nhúng) —
-        // khởi tạo mảng rỗng để `Post/index.tsx` (InfiniteScroll) và các reducer bên dưới luôn có
-        // 1 array để `.push`/`.filter`, không phải guard `undefined` ở khắp nơi.
-        state.postSelected = { ...postSelected, replies: [] };
+        // PostResponse default `replies: []` khi BE không gửi (không còn nhúng trong response này,
+        // post.model.ts đã bỏ field mảng nhúng) — FR-3, thay cho spread thủ công trước đây.
+        state.postSelected = new PostResponse(postSelected);
       }
     });
     builder.addCase(getPostReplies.fulfilled, (state, action) => {
@@ -150,10 +154,14 @@ const postSlice = createSlice({
       if (!payload || !state.postSelected || state.postSelected._id !== payload.postId) {
         return;
       }
-      const existing = state.postSelected.replies ?? [];
+      const newReplies = (payload.replies ?? []).map(
+        (reply: Partial<IPost>) => new PostResponse(reply as any)
+      );
+      // Runtime luôn có array (PostResponse default ở getPost.fulfilled) — `?? []` ở đây chỉ để
+      // thoả TS (`IPost.replies` vẫn khai optional ở type-level), không phải guard thực sự cần.
       state.postSelected.replies = payload.isNewPage
-        ? payload.replies
-        : [...existing, ...payload.replies];
+        ? newReplies
+        : [...(state.postSelected.replies ?? []), ...newReplies];
     });
     builder.addCase(getPosts.pending, (state) => {
       state.isLoading = true;
@@ -161,7 +169,9 @@ const postSlice = createSlice({
     builder.addCase(getPosts.fulfilled, (state, action) => {
       state.isLoading = false;
       if (Array.isArray(action.payload?.posts)) {
-        const newPosts: IPost[] = action.payload.posts;
+        const newPosts: IPost[] = action.payload.posts.map(
+          (p: Partial<IPost>) => new PostResponse(p as any)
+        );
         const isNewPage = action.payload.isNewPage;
         if (!isNewPage && Array.isArray(state.listPost)) {
           state.listPost.push(...newPosts);
@@ -178,7 +188,12 @@ const postSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
-      const newPost: IPost = action.payload?.data;
+      const rawNewPost = action.payload?.data;
+      // Create trả về post MỚI hoàn toàn (không phải patch/merge) — an toàn để wrap qua
+      // PostResponse như getPost/getPosts (FR-3), khác `editPost.fulfilled` bên dưới.
+      const newPost: IPost | undefined = rawNewPost
+        ? new PostResponse(rawNewPost)
+        : undefined;
       const listPost: IPost[] = state.listPost;
       const currentPage: string = action.payload?.currentPage;
       if (!!newPost) {
@@ -194,9 +209,8 @@ const postSlice = createSlice({
               ({ _id }) => _id === postSelected._id
             );
             if (state.postAction === REPLY) {
-              // `postSelected` có thể đến từ 1 thẻ trong feed (chọn Reply thẳng từ list, không
-              // qua trang detail) — post đó chưa từng có `.replies` (list/feed không nhúng nữa).
-              clonePostSelected.replies = clonePostSelected.replies ?? [];
+              // `clonePostSelected.replies` luôn là array (mọi entry point vào `postSelected`/
+              // `listPost` đã qua PostResponse, default `replies: []`) — không cần guard nữa.
               clonePostSelected.replies.push(newPost);
               clonePostSelected.repliesCount = (clonePostSelected.repliesCount ?? 0) + 1;
             } else {
@@ -214,6 +228,11 @@ const postSlice = createSlice({
       state.postInfo = defaultPostInfo;
     });
     builder.addCase(editPost.fulfilled, (state, action) => {
+      // (T5 audit) CHỦ Ý không wrap qua PostResponse ở đây: payload được spread-merge vào
+      // `listPost[idx]` hiện có (`{...old, ...postUpdatedData}`), không phải full-replace như
+      // getPost/getPosts/createPost — nếu API edit trả về patch RỖNG cho field không đổi (chưa xác
+      // nhận), PostResponse sẽ default `content`/`media` thiếu về `undefined`, GHI ĐÈ nhầm giá trị
+      // cũ đang đúng khi merge. Cần xác nhận shape response thật của endpoint edit trước khi wrap.
       const postUpdatedData: IPost = action.payload;
       const listPost: IPost[] = state.listPost;
       const postInfo: IPost = state.postInfo;
@@ -311,7 +330,9 @@ const postSlice = createSlice({
       state.isLoading = false;
       const userPosts = action.payload;
       if (Array.isArray(userPosts)) {
-        state.listPost = userPosts;
+        state.listPost = userPosts.map(
+          (p: Partial<IPost>) => new PostResponse(p as any)
+        );
       }
     });
     builder.addCase(getUserPosts.rejected, (state) => {
