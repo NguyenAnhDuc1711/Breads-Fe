@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
-import { IPost, ISurveyOption, IUserShortInfo } from "../../Breads-Shared/Types";
+import { IPost, IPostDraft, ISurveyOption, IUserShortInfo } from "../../Breads-Shared/Types";
 import {
   createPost,
   deletePost,
@@ -15,7 +15,7 @@ import {
   updatePostVisibility,
 } from "./asyncThunk";
 
-export type { IPost, ISurveyOption, IUserShortInfo };
+export type { IPost, IPostDraft, ISurveyOption, IUserShortInfo };
 
 export const surveyTemplate = ({
   placeholder,
@@ -35,13 +35,13 @@ export interface ILink {}
 export interface PostState {
   listPost: IPost[];
   postSelected: IPost | null;
-  postInfo: IPost;
+  postInfo: IPostDraft;
   postAction: string;
   postReply: IPost | null;
   isLoading: boolean;
 }
 
-export const defaultPostInfo: IPost = {
+export const defaultPostInfo: IPostDraft = {
   content: "",
   media: [],
   survey: [],
@@ -274,18 +274,19 @@ const postSlice = createSlice({
       const postTickedIndex = state.listPost.findIndex(
         ({ _id }) => _id === postId
       );
-      const optionIndex = state.listPost[postTickedIndex].survey.findIndex(
+      const survey = state.listPost[postTickedIndex]?.survey;
+      const optionIndex = survey?.findIndex(
         (option) => option._id === optionId
       );
-      if (optionIndex !== -1) {
-        let selectedSurveyOption: any =
-          state.listPost[postTickedIndex].survey[optionIndex].usersId;
+      if (survey && optionIndex !== undefined && optionIndex !== -1) {
+        let selectedSurveyOption: any = survey[optionIndex].usersId;
         const currentUsersId = JSON.parse(JSON.stringify(selectedSurveyOption));
         if (isAdd) {
           selectedSurveyOption.push(userId);
         } else {
-          state.listPost[postTickedIndex].survey[optionIndex].usersId =
-            currentUsersId.filter((id) => id !== userId);
+          survey[optionIndex].usersId = currentUsersId.filter(
+            (id) => id !== userId
+          );
         }
       }
       //Update share post with survey
