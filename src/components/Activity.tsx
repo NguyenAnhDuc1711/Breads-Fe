@@ -15,7 +15,8 @@ import { Constants } from "../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import FollowBtn from "./FollowBtn";
-import { updateHasNotification } from "../store/NotificationSlice";
+import { INotification, updateHasNotification } from "../store/NotificationSlice";
+import { IUserShortInfo } from "../store/PostSlice";
 
 const Activity = ({ currentPage }: { currentPage: string }) => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,9 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
   const { notifications, isLoading } = useAppSelector(
     (state: AppState) => state.notification
   );
-  const [uniqueNotifications, setUniqueNotifications] = useState<any>([]);
+  const [uniqueNotifications, setUniqueNotifications] = useState<
+    INotification[]
+  >([]);
 
   useEffect(() => {
     const seen = new Set();
@@ -226,7 +229,7 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
                       </span>
                     </div>
 
-                    {item.name !== FOLLOW && (
+                    {item.action !== FOLLOW && (
                       <span className="activity-item__action-text">
                         {actionDetails?.actionText}
                       </span>
@@ -235,7 +238,13 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
                 </div>
 
                 <div className="activity-item__follow-row">
-                  <FollowBtn user={item.FromUserDetails} />
+                  {item.FromUserDetails && (
+                    // Nhánh này chỉ render khi action === FOLLOW — BE trả FromUserDetails đầy đủ
+                    // (có _id) cho action này (xem notification.controller.ts $cond), khác nhánh
+                    // else (like/reply/...) chỉ có username/avatar. TS không narrow được theo
+                    // action nên assert thủ công.
+                    <FollowBtn user={item.FromUserDetails as IUserShortInfo} />
+                  )}
                 </div>
               </div>
             )}

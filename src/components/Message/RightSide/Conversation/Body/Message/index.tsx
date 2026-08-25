@@ -95,9 +95,8 @@ const Message = ({
 
   const msgContent = () => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const contentArr = content
-      ?.split(urlRegex)
-      ?.filter((part) => !!part.trim());
+    const contentArr =
+      content?.split(urlRegex)?.filter((part) => !!part.trim()) ?? [];
 
     const reactBox = () => {
       return (
@@ -186,26 +185,26 @@ const Message = ({
                 }
                 return <span key={index}>{part}</span>;
               })}
-              {reacts?.length > 0 &&
+              {(reacts?.length ?? 0) > 0 &&
                 !links?.length &&
                 !media?.length &&
                 !file?._id && <>{reactBox()}</>}
             </div>
           )}
-          {links?.length > 0 && (
+          {(links?.length ?? 0) > 0 && (
             <div className="message-link-preview-wrap">
               <CustomLinkPreview
-                link={links[links?.length - 1]}
+                link={links?.[(links?.length ?? 0) - 1]}
                 bg={msgBg}
                 color={msgColor}
                 borderColor={borderColor}
               />
-              {msg?.reacts?.length > 0 && !media?.length && !file?._id && (
+              {(msg?.reacts?.length ?? 0) > 0 && !media?.length && !file?._id && (
                 <>{reactBox()}</>
               )}
             </div>
           )}
-          {media?.length > 0 && <MsgMediaLayout media={media} />}
+          {(media?.length ?? 0) > 0 && <MsgMediaLayout media={media} />}
           {file?._id && <FileMsg file={file} bg={msgBg} color={msgColor} />}
         </div>
         {!ownMessage && displayAction && (
@@ -220,7 +219,7 @@ const Message = ({
   };
 
   const handleSettingMsg = () => {
-    const splitArr = msg?.content.split(" ");
+    const splitArr = (msg?.content ?? "").split(" ");
     const lastWord = splitArr[splitArr.length - 1];
     const isTheme = lastWord in messageThemes;
     const bgImg =

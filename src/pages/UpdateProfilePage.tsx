@@ -143,11 +143,12 @@ const UpdateProfilePage = () => {
     } else if (payload.bio !== userInfo.bio) {
       needUpdate = true;
     } else {
-      if (payload.links.length !== userInfo.links.length) {
+      const existingLinks = userInfo.links ?? [];
+      if (payload.links.length !== existingLinks.length) {
         needUpdate = true;
       } else {
         const isSameLinks = payload.links.every(
-          (link, index) => link === userInfo.links[index]
+          (link, index) => link === existingLinks[index]
         );
         if (!isSameLinks) {
           needUpdate = true;

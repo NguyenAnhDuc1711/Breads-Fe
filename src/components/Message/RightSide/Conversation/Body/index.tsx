@@ -300,7 +300,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
                 </Fragment>
               );
             }}
-            condition={!!userInfo?._id && selectedConversation?._id}
+            condition={!!userInfo?._id && !!selectedConversation?._id}
             reverseScroll={true}
             elementId={"conversation-body"}
             updatePageValue={currentPageMsg}

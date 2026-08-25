@@ -3,15 +3,25 @@ import { getConversationById, getConversations, getMsgs } from "./asyncThunk";
 import { formatDateToDDMMYYYY } from "../../util";
 import dayjs from "../../util/dayjs";
 import { IUser } from "../UserSlice";
-import { Media } from "../../Breads-Shared/Types";
+import {
+  Media,
+  IMessage,
+  IMessageDraft,
+  IConversation,
+  MessageResponse,
+  ConversationResponse,
+} from "../../Breads-Shared/Types";
+
+export type { Media, IMessage, IMessageDraft, IConversation };
+export { MessageResponse, ConversationResponse };
 
 export interface MsgState {
-  conversations: any;
+  conversations: IConversation[];
   userSelected: IUser | null;
   messages: any;
-  selectedConversation: any;
-  selectedMsg: any;
-  msgInfo: any;
+  selectedConversation: IConversation | null;
+  selectedMsg: IMessage | null;
+  msgInfo: IMessageDraft;
   loadingConversations: boolean;
   loadingUploadMsg: boolean;
   loadingMsgs: boolean;
@@ -27,27 +37,8 @@ export interface MsgState {
   msgAction: string;
 }
 
-export type { Media };
 
-export interface IMessage {
-  _id?: string;
-  content: string;
-  files: any;
-  media: Media[];
-  icon: string;
-  sender?: any;
-  usersSeen?: string[];
-  createdAt?: Date | string | null;
-  file?: any;
-  links?: any;
-  reacts?: any;
-  isRetrieve?: boolean;
-  respondTo?: IMessage;
-  updatedAt?: Date | string | null;
-  type?: string;
-}
-
-export const defaulMessageInfo: IMessage = {
+export const defaulMessageInfo: IMessageDraft = {
   content: "",
   files: [],
   media: [],
@@ -93,7 +84,9 @@ const msgSlice = createSlice({
       state.msgInfo = action.payload;
     },
     selectConversation: (state, action) => {
-      state.selectedConversation = action.payload;
+      state.selectedConversation = action.payload
+        ? new ConversationResponse(action.payload)
+        : null;
       state.messages = {};
     },
     updateSelectedConversation: (state, action) => {
@@ -106,10 +99,11 @@ const msgSlice = createSlice({
       }
     },
     addNewMsg: (state, action) => {
-      const msgsInfo = action.payload;
-      if (!msgsInfo?.length) {
+      const rawMsgs = action.payload;
+      if (!rawMsgs?.length) {
         return;
       }
+      const msgsInfo = rawMsgs.map((m: any) => new MessageResponse(m));
       const conversationId = msgsInfo[0]?.conversationId;
       if (conversationId === state.selectedConversation?._id) {
         if (!state.messages) {
@@ -130,7 +124,7 @@ const msgSlice = createSlice({
       }
       // Update last message
       const lastMsg = msgsInfo[msgsInfo.length - 1];
-      if (state.selectedConversation?._id === conversationId) {
+      if (state.selectedConversation && state.selectedConversation._id === conversationId) {
         state.selectedConversation.lastMsg = lastMsg;
       }
       const conversationIndex = state.conversations.findIndex(
@@ -149,10 +143,10 @@ const msgSlice = createSlice({
       state.loadingUploadMsg = action.payload;
     },
     updateMsg: (state, action) => {
-      const msgUpdate = action.payload;
-      if (!msgUpdate?._id || !state.messages) {
+      if (!action.payload?._id || !state.messages) {
         return;
       }
+      const msgUpdate = new MessageResponse(action.payload);
       const msgDateConvert = msgUpdate?.createdAt
         ? formatDateToDDMMYYYY(new Date(msgUpdate?.createdAt))
         : dayjs(msgUpdate?.createdAt).format("DD/MM/YYYY");
@@ -183,10 +177,15 @@ const msgSlice = createSlice({
       }
     },
     selectMsg: (state, action) => {
-      state.selectedMsg = action.payload;
+      state.selectedMsg = action.payload
+        ? new MessageResponse(action.payload)
+        : null;
     },
     updateConversations: (state, action) => {
-      const conversations = action.payload;
+      const rawConversations = action.payload ?? [];
+      const conversations = rawConversations.map(
+        (c: any) => new ConversationResponse(c)
+      );
       for (let conversation of conversations) {
         const converstaionIndex = state.conversations.findIndex(
           ({ _id }) => _id === conversation?._id
@@ -222,7 +221,7 @@ const msgSlice = createSlice({
       if (conversationIndex !== -1) {
         state.conversations[conversationIndex].unreadCount = unreadCount;
       }
-      if (state.selectedConversation?._id === conversationId) {
+      if (state.selectedConversation && state.selectedConversation._id === conversationId) {
         state.selectedConversation.unreadCount = unreadCount;
       }
     },
@@ -236,7 +235,10 @@ const msgSlice = createSlice({
     });
     builder.addCase(getConversations.fulfilled, (state, action) => {
       if (action.payload) {
-        const newConversations = action.payload.data;
+        const rawConversations = action.payload.data ?? [];
+        const newConversations = rawConversations.map(
+          (c: any) => new ConversationResponse(c)
+        );
         const isLoadNew = action.payload.isLoadNew;
         if (!isLoadNew) {
           state.conversations.push(...newConversations);
@@ -279,10 +281,13 @@ const msgSlice = createSlice({
     });
     builder.addCase(getConversationById.fulfilled, (state, action) => {
       const conversation = action.payload;
-      state.selectedConversation = conversation;
+      state.selectedConversation = conversation
+        ? new ConversationResponse(conversation)
+        : conversation;
     });
   },
 });
+
 
 export const {
   updateMsgInfo,

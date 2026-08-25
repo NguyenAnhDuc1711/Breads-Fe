@@ -5,7 +5,10 @@ import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { POST } from "../../config/API";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
-import { selectConversation } from "../../store/MessageSlice";
+import {
+  selectConversation,
+  ConversationResponse,
+} from "../../store/MessageSlice";
 import { IUser } from "../../store/UserSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { openLoginPopupAction } from "../../store/UtilSlice";
@@ -29,14 +32,16 @@ const ConversationBtn = ({ user }: { user: IUser }) => {
         },
       });
       if (!!data) {
+        const normalized = new ConversationResponse(data);
         dispatch(changePage({ nextPage: PageConstant.CHAT }));
-        dispatch(selectConversation(data));
+        dispatch(selectConversation(normalized));
         router.push(`/chat/${data._id}`);
       }
     } catch (err) {
       console.error("handleClickChat: ", err);
     }
   };
+
 
   return (
     <Button

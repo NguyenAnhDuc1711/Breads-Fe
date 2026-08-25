@@ -36,7 +36,7 @@ const SurveyOption = ({
     );
   };
   const percent = useMemo(() => {
-    const total = post.survey.reduce(
+    const total = (post.survey ?? []).reduce(
       (count, option) => count + (option.usersId?.length ?? 0),
       0
     );

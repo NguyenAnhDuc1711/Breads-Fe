@@ -27,7 +27,9 @@ const PostReplied = () => {
             </Text>
             <Text>{postReply.content}</Text>
             <MediaDisplay post={postReply} />
-            {postReply.survey.length !== 0 && <Survey post={postReply} />}
+            {(postReply.survey?.length ?? 0) !== 0 && (
+              <Survey post={postReply} />
+            )}
           </div>
         </div>
       )}

@@ -208,7 +208,7 @@ const Post = ({
             </div>
           )}
           <MediaDisplay post={post} isDetail={isDetail} isFirst={isFirst} />
-          {post?.survey?.length > 0 && <Survey post={post} />}
+          {(post?.survey?.length ?? 0) > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>
               {post?.quote?._id && isParentPost ? (

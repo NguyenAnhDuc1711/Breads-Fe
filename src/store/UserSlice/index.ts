@@ -9,7 +9,7 @@ import {
   removePostFromCollection,
   updateUser,
 } from "./asyncThunk";
-import { IUser } from "../../Breads-Shared/Types";
+import { IUser, UserResponse } from "../../Breads-Shared/Types";
 
 export type { IUser };
 
@@ -58,7 +58,7 @@ const userSlice = createSlice({
     });
     builder.addCase(login.fulfilled, (state, action) => {
       if (action.payload) {
-        state.userInfo = action.payload;
+        state.userInfo = new UserResponse(action.payload);
         state.isLoading = false;
       }
     });
@@ -70,7 +70,7 @@ const userSlice = createSlice({
     });
     builder.addCase(getMe.fulfilled, (state, action) => {
       if (action.payload) {
-        state.userInfo = action.payload;
+        state.userInfo = new UserResponse(action.payload);
       }
       state.isLoading = false;
     });
@@ -83,27 +83,33 @@ const userSlice = createSlice({
     });
     builder.addCase(getUserInfo.fulfilled, (state, action) => {
       const { user, getCurrentUser }: any = action.payload;
+      const normalized = user ? new UserResponse(user) : user;
       if (getCurrentUser) {
-        state.userInfo = user;
+        state.userInfo = normalized;
       } else {
-        state.userSelected = user;
+        state.userSelected = normalized;
       }
       state.isLoading = false;
     });
     builder.addCase(addPostToCollection.fulfilled, (state, action) => {
       const postAddId = action.payload;
-      state.userInfo.collection = [...state.userInfo.collection, postAddId];
+      state.userInfo.collection = [
+        ...(state.userInfo.collection ?? []),
+        postAddId,
+      ];
     });
     builder.addCase(removePostFromCollection.fulfilled, (state, action) => {
       const { postId: postRemoveId }: any = action.payload;
-      state.userInfo.collection = state.userInfo.collection.filter(
+      state.userInfo.collection = (state.userInfo.collection ?? []).filter(
         (postId) => postId !== postRemoveId
       );
     });
     builder.addCase(updateUser.fulfilled, (state, action) => {
       const newUserData = action.payload;
+      // Full-replace (không merge) -> an toàn để wrap qua UserResponse, khác editPost bên
+      // PostSlice (merge-patch, chủ ý không wrap).
       if (newUserData?._id === state.userInfo?._id) {
-        state.userInfo = newUserData;
+        state.userInfo = new UserResponse(newUserData);
       }
     });
     builder.addCase(followUser.fulfilled, (state, action) => {
@@ -115,7 +121,7 @@ const userSlice = createSlice({
           (userId) => userId !== userFlId
         );
       } else {
-        newFollowList = [...userInfo.following, userFlId];
+        newFollowList = [...(userInfo.following ?? []), userFlId];
       }
       if (state.userSelected?._id) {
         let newFlList: string[] = [];
