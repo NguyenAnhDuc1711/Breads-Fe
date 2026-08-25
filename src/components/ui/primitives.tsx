@@ -1421,7 +1421,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input";
 
 // ---------------------------------------------------------------------------
-// Spinner (used by Button's isLoading state)
+// Spinner (used by Button's isLoading state and Loading screen)
 // ---------------------------------------------------------------------------
 export const Spinner = ({
   size = "md",
@@ -1430,14 +1430,18 @@ export const Spinner = ({
   size?: "sm" | "md" | "lg";
   color?: string;
 }) => {
-  const dim = size === "sm" ? "16px" : size === "lg" ? "32px" : "24px";
+  const dim = size === "sm" ? "16px" : size === "lg" ? "36px" : "24px";
+  const borderThickness =
+    size === "sm" ? "2px" : size === "lg" ? "3px" : "2.5px";
   return (
     <div
       style={{
         width: dim,
         height: dim,
-        border: `2px solid ${color || "white"}`,
-        borderTopColor: "transparent",
+        border: `${borderThickness} solid ${
+          color ? "rgba(128, 128, 128, 0.2)" : "rgba(128, 128, 128, 0.25)"
+        }`,
+        borderTopColor: color || "var(--text-primary, #ffffff)",
         borderRadius: "50%",
         animation: "spin 0.6s linear infinite",
         display: "inline-block",
@@ -1447,6 +1451,7 @@ export const Spinner = ({
     </div>
   );
 };
+
 
 // ---------------------------------------------------------------------------
 // Avatar — size scale copied from Chakra's avatar.mjs (getSize(n) against
@@ -1479,7 +1484,7 @@ function getInitials(name?: string): string {
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
   (
-    { name, src, size = "md", style, className, ...rest },
+    { name, src, size = "md", style, className, children, ...rest },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
     const customDim = rest.w || rest.width || rest.h || rest.height;
@@ -1501,29 +1506,40 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         verticalAlign="top"
         w={dim}
         h={dim}
-        borderRadius="50%"
-        overflow="hidden"
-        bg="var(--bg-hover)"
-        color="var(--text-secondary)"
         style={{
           flexShrink: 0,
-          fontWeight: 600,
-          fontSize: `calc(${dim} / 2.5)`,
           ...style,
         }}
         {...rest}
       >
-        {src && !errored ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={src}
-            alt={name || "avatar"}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            onError={() => setErrored(true)}
-          />
-        ) : (
-          <span>{getInitials(name)}</span>
-        )}
+        <Box
+          w="100%"
+          h="100%"
+          borderRadius="50%"
+          overflow="hidden"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          bg="var(--bg-hover)"
+          color="var(--text-secondary)"
+          style={{
+            fontWeight: 600,
+            fontSize: `calc(${dim} / 2.5)`,
+          }}
+        >
+          {src && !errored ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src}
+              alt={name || "avatar"}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              onError={() => setErrored(true)}
+            />
+          ) : (
+            <span>{getInitials(name)}</span>
+          )}
+        </Box>
+        {children}
       </Box>
     );
   },
@@ -1532,7 +1548,7 @@ Avatar.displayName = "Avatar";
 
 export const AvatarBadge = forwardRef<HTMLDivElement, BoxProps>(
   (
-    { boxSize = "14px", bg = "#38a169", style, ...rest }: any,
+    { boxSize = "14px", bg = "#38a169", style, children, ...rest }: any,
     ref: ForwardedRef<HTMLDivElement>,
   ) => (
     <Box
@@ -1544,9 +1560,19 @@ export const AvatarBadge = forwardRef<HTMLDivElement, BoxProps>(
       h={boxSize}
       borderRadius="50%"
       bg={bg}
-      style={{ border: "0.2em solid var(--bg-card)", ...style }}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      style={{
+        border: "2px solid var(--bg-card, #202020)",
+        transform: "translate(15%, 15%)",
+        zIndex: 1,
+        ...style,
+      }}
       {...rest}
-    />
+    >
+      {children}
+    </Box>
   ),
 );
 AvatarBadge.displayName = "AvatarBadge";

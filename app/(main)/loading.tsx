@@ -12,15 +12,10 @@ import "./loading.css";
 // same fallback covers everything under (main) — feed, chat, search,
 // admin, auth.
 const Loading = () => (
-  <div
-    className="route-loading"
-    style={{
-      height: `calc(100vh - ${HeaderHeight}px)`,
-      marginTop: `${HeaderHeight}px`,
-    }}
-  >
+  <div className="route-loading">
     <Spinner size="lg" />
   </div>
 );
 
 export default Loading;
+

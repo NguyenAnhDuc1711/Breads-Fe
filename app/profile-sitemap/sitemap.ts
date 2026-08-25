@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
-import { API_PREFIX, USER_PATH, Route } from "../../src/Breads-Shared/APIConfig";
+import {
+  API_PREFIX,
+  USER_PATH,
+  Route,
+} from "../../src/Breads-Shared/APIConfig";
 import { buildChunkedSitemap } from "../../src/lib/buildChunkedSitemap";
 
 /**
@@ -29,8 +33,8 @@ interface SitemapEligibleResponse {
   totalCount: number | null;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://breads.social";
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://breads.sytes.net";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 async function fetchPage(
   cursor: string | null,

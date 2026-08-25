@@ -229,11 +229,9 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
                       </span>
                     </div>
 
-                    {item.action !== FOLLOW && (
-                      <span className="activity-item__action-text">
-                        {actionDetails?.actionText}
-                      </span>
-                    )}
+                    <span className="activity-item__action-text">
+                      {actionDetails?.actionText}
+                    </span>
                   </div>
                 </div>
 

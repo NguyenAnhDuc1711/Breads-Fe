@@ -25,7 +25,7 @@ import { generateSitemaps as generateProfileSitemaps } from "./profile-sitemap/s
  * sitemap lines until the backend is reachable again.
  */
 export default async function robots(): Promise<MetadataRoute.Robots> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://breads.social";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://breads.sytes.net";
 
   const [postChunks, profileChunks] = await Promise.all([
     generatePostSitemaps(),

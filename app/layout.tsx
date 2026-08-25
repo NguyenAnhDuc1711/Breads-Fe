@@ -17,7 +17,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://breads.social",
+    process.env.NEXT_PUBLIC_APP_URL || "https://breads.sytes.net",
   ),
   title: {
     default: "Breads – Share Your World",
@@ -88,18 +88,22 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
                 {
                   "@type": "WebSite",
                   name: "Breads",
-                  url: process.env.NEXT_PUBLIC_APP_URL || "https://breads.social",
+                  url:
+                    process.env.NEXT_PUBLIC_APP_URL ||
+                    "https://breads.sytes.net",
                   potentialAction: {
                     "@type": "SearchAction",
-                    target: `${process.env.NEXT_PUBLIC_APP_URL || "https://breads.social"}/search?q={search_term_string}`,
+                    target: `${process.env.NEXT_PUBLIC_APP_URL || "https://breads.sytes.net"}/search?q={search_term_string}`,
                     "query-input": "required name=search_term_string",
                   },
                 },
                 {
                   "@type": "Organization",
                   name: "Breads",
-                  url: process.env.NEXT_PUBLIC_APP_URL || "https://breads.social",
-                  logo: `${process.env.NEXT_PUBLIC_APP_URL || "https://breads.social"}/bread-logo.png`,
+                  url:
+                    process.env.NEXT_PUBLIC_APP_URL ||
+                    "https://breads.sytes.net",
+                  logo: `${process.env.NEXT_PUBLIC_APP_URL || "https://breads.sytes.net"}/bread-logo.png`,
                 },
               ],
             }),

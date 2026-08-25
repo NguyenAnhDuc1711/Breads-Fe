@@ -1,5 +1,20 @@
 .route-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 998;
+  pointer-events: none;
 }
+
+@media (min-width: 768px) {
+  .route-loading {
+    left: 76px;
+    width: calc(100vw - 76px);
+  }
+}
+
