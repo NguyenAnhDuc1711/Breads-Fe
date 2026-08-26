@@ -464,7 +464,7 @@ const PostPopup = () => {
                   tagUsers={true}
                   placeholder={t("whatnew")}
                 />
-                {!isEditing && postAction !== PostConstants.ACTIONS.REPLY && (
+                {postAction !== PostConstants.ACTIONS.REPLY && (
                   <Menu placement="bottom-start">
                     <MenuButton className="post-popup__visibility-trigger">
                       <HStack spacing={1.5} alignItems="center">
@@ -478,6 +478,8 @@ const PostPopup = () => {
                     <Portal>
                       <MenuList
                         className="post-popup__visibility-list"
+                        bg={useColorModeValue("#ffffff", "#242424")}
+                        borderColor={useColorModeValue("#e0e0e0", "#333333")}
                         zIndex={3100}
                       >
                         {VISIBILITY_OPTIONS.map((option) => {
@@ -520,9 +522,7 @@ const PostPopup = () => {
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />
-                    {!closePostAction && (
-                      <PostPopupAction setFilesData={setFilesData} />
-                    )}
+                    <PostPopupAction setFilesData={setFilesData} />
                     {postInfo.survey.length !== 0 && <PostSurvey />}
                     {postSelected?._id &&
                       postAction === PostConstants.ACTIONS.REPOST && (

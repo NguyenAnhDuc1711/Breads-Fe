@@ -22,6 +22,7 @@ import {
 import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
+import MessagesSkeleton from "./Message/skeleton";
 import SendNextBox from "./SendNextBox";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
 import { AppState } from "../../../../../store";
@@ -35,8 +36,8 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
     (state: AppState) => state.message
   );
   const lastMsg = selectedConversation?.lastMsg;
-  const [scrollText, setScrollText] = useState("Move to current");
   const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);
+  const [isFetchingMsgs, setIsFetchingMsgs] = useState(true);
   const conversationScreenRef = useRef<any>(null);
   const layerRef = useRef<any>(null);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -47,6 +48,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
+      setIsFetchingMsgs(true);
       handleGetMsgs({ page: 1 });
       if (layerRef?.current && conversationScreenRef?.current) {
         layerRef.current.style.width =
@@ -69,7 +71,6 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
         if (!isValid) {
           dispatch(addNewMsg(msgs));
           dispatch(updateConversations([conversationInfo]));
-          setScrollText("New message");
           if (msgs?.[0]?.type === Constants.MSG_TYPE.SETTING) {
             const splitContent = msgs[0].content.split(" ");
             const value = splitContent[splitContent?.length - 1];
@@ -215,6 +216,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
               setFirstLoad(false);
             }, 1500);
           }
+          setIsFetchingMsgs(false);
         }
       );
     } catch (err) {
@@ -242,6 +244,9 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
           }}
         ></div>
         <div className="conversation-body__list" id="list-msg">
+          {isFetchingMsgs && Object.keys(messages).length === 0 ? (
+            <MessagesSkeleton />
+          ) : (
           <InfiniteScroll
             queryFc={(page) => {
               handleGetMsgs({ page: page });
@@ -305,6 +310,7 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
             elementId={"conversation-body"}
             updatePageValue={currentPageMsg}
           />
+          )}
         </div>
       </div>
       {noticeNewMsgBox && (
@@ -317,13 +323,9 @@ const ConversationBody = ({ openDetailTab }: { openDetailTab: boolean }) => {
           onClick={() => {
             scrollToBottom();
             setNoticeNewMsgBox(false);
-            setScrollText("Move to current");
           }}
         >
-          <div className="conversation-body__scroll-btn-inner">
-            {scrollText}
-            <FaAngleDown />
-          </div>
+          <FaAngleDown />
         </Button>
       )}
       <SendNextBox />

@@ -32,7 +32,7 @@ const ConversationHeader = ({
 
   return (
     <div
-      className="conv-header"
+      className={`conv-header${isMobile ? " conv-header--mobile" : ""}`}
       style={{
         backgroundColor: conversationBackground?.backgroundColor,
         backgroundBlendMode: conversationBackground?.backgroundBlendMode,

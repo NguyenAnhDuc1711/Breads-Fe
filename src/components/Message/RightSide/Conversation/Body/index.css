@@ -1,5 +1,6 @@
 .conversation-body {
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
   max-height: calc(100% - 112px);
   position: relative;
@@ -37,8 +38,14 @@
   position: fixed;
   bottom: 72px;
   z-index: 3000;
-  border-radius: 9999px;
-  padding: 8px 16px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #f0f0f0;
   color: #1a202c;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -63,10 +70,4 @@
 
 .conversation-body__scroll-btn--full {
   right: 30px;
-}
-
-.conversation-body__scroll-btn-inner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }

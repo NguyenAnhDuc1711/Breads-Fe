@@ -157,14 +157,6 @@ const Actions = ({ post }: { post: IPost }) => {
           },
         ]
       : []),
-    {
-      name: ACTIONS_NAME.SHARE,
-      statistic: post?.share?.length,
-      icon: <ShareIcon />,
-      onClick: () => {
-        setOpenSubBox(!openSubBox);
-      },
-    },
   ];
 
   const handleUpdatePostStatus = (status) => {
@@ -173,7 +165,7 @@ const Actions = ({ post }: { post: IPost }) => {
         userId: userInfo._id,
         postId: post._id,
         status: status,
-      })
+      }),
     );
   };
 
@@ -183,7 +175,7 @@ const Actions = ({ post }: { post: IPost }) => {
         userId: userInfo._id,
         postId: post._id,
         visibility: visibility,
-      })
+      }),
     );
   };
 
@@ -284,25 +276,6 @@ const Actions = ({ post }: { post: IPost }) => {
             );
           }
         })}
-        {isAuthor && (
-          <Menu>
-            <MenuButton className="post-actions__btn">
-              <MdPublic size={20} />
-            </MenuButton>
-            <Portal>
-              <MenuList zIndex={3100}>
-                {VISIBILITY_OPTIONS.map((option) => (
-                  <MenuItem
-                    key={option.value}
-                    onClick={() => handleUpdatePostVisibility(option.value)}
-                  >
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Portal>
-          </Menu>
-        )}
       </div>
     </>
   );

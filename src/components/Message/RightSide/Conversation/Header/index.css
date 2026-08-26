@@ -7,6 +7,11 @@
   height: 56px;
 }
 
+.conv-header--mobile {
+  height: 44px;
+  padding: 2px 4px;
+}
+
 .conv-header__user {
   display: flex;
   width: fit-content;
@@ -15,6 +20,12 @@
   gap: 8px;
   padding: 0 8px;
   cursor: pointer;
+}
+
+.conv-header--mobile .conv-header__user {
+  height: 36px;
+  gap: 6px;
+  padding: 0 4px;
 }
 
 .conv-header__back {
@@ -32,4 +43,8 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
+}
+
+.conv-header--mobile .conv-header__info-icon {
+  margin-right: 8px;
 }

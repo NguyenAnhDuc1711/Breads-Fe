@@ -19,14 +19,12 @@ import UserPageHydrate from "./UserPageHydrate";
 // src/pages/UserPage.tsx` — zero matches) — SSR is unconditional for any
 // existing userId, unlike posts/[postId] which forks on status.
 async function fetchJson(path: string, cookieHeader: string | undefined) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}${API_PREFIX}${path}`,
-      {
-        headers: cookieHeader ? { Cookie: cookieHeader } : {},
-        cache: "no-store",
-      },
-    );
+    const res = await fetch(`${apiUrl}${API_PREFIX}${path}`, {
+      headers: cookieHeader ? { Cookie: cookieHeader } : {},
+      cache: "no-store",
+    });
     if (!res.ok) return null;
     const data = await res.json();
     return data?.metadata ?? data;
@@ -43,8 +41,12 @@ async function fetchUser(userId: string) {
     : jwt
       ? `jwt=${jwt}`
       : undefined;
-  return fetchJson(Route.USER + USER_PATH.PROFILE.replace(":userId", userId), cookieHeader);
+  return fetchJson(
+    `${Route.USER}${USER_PATH.PROFILE.replace(":userId", userId)}`,
+    cookieHeader
+  );
 }
+
 
 export async function generateMetadata({
   params,
