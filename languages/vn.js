@@ -45,6 +45,10 @@ const vnTranslations = {
   errOops: "Ôi! Có điều gì đó không đúng.",
   errMsg: "Trang bạn đang tìm kiếm không tồn tại hoặc đã xảy ra lỗi.",
   goBack: "Quay lại",
+  goHome: "Về trang chủ",
+  notFoundTitle: "Không tìm thấy trang",
+  notFoundMsg: "Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.",
+
   bannedTitle: "Tài khoản của bạn đã bị cấm",
   bannedMsg:
     "Điều này xảy ra bởi có thể bạn đã vi phạm chính sách của chúng tôi",

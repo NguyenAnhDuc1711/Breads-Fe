@@ -45,6 +45,10 @@ const enTranslations = {
   errOops: "Oops! Something went wrong.",
   errMsg: "The page you're looking for doesn't exist or an error occurred.",
   goBack: "Go Back",
+  goHome: "Go Home",
+  notFoundTitle: "Page not found",
+  notFoundMsg: "Sorry, the page you are looking for does not exist or has been moved.",
+
   bannedTitle: "Your account has been banned",
   bannedMsg: "This happened because you might violate our policy",
   Suggested_follow_up: "Suggested follow-up",
