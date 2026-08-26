@@ -43,7 +43,7 @@ async function fetchUser(userId: string) {
     : jwt
       ? `jwt=${jwt}`
       : undefined;
-  return fetchJson(`${Route.USER}${USER_PATH.PROFILE}${userId}`, cookieHeader);
+  return fetchJson(Route.USER + USER_PATH.PROFILE.replace(":userId", userId), cookieHeader);
 }
 
 export async function generateMetadata({
