@@ -4,7 +4,7 @@ import { ChevronRightIcon } from "../../../assests/chakraIcons";
 import { Button, Card, CardBody, Divider, Menu, MenuButton, MenuList, Portal, Text, Tooltip, useColorMode } from "../../ui/primitives";
 import dayjs from "../../../util/dayjs";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdLock, MdPeopleAlt } from "react-icons/md";
 import { RiDoubleQuotesL } from "react-icons/ri";
@@ -265,4 +265,4 @@ const Post = ({
   );
 };
 
-export default Post;
+export default memo(Post);

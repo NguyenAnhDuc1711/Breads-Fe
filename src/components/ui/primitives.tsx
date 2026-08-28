@@ -1452,7 +1452,6 @@ export const Spinner = ({
   );
 };
 
-
 // ---------------------------------------------------------------------------
 // Avatar — size scale copied from Chakra's avatar.mjs (getSize(n) against
 // the space/sizes table): 2xs=16px, xs=24px, sm=32px, md=48px, lg=64px,
@@ -1492,8 +1491,8 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
     const dim = customDim
       ? sizeProp(customDim)
       : AVATAR_SIZE_PX[resolvedSize]
-      ? `${AVATAR_SIZE_PX[resolvedSize]}px`
-      : (sizeProp(resolvedSize) ?? "48px");
+        ? `${AVATAR_SIZE_PX[resolvedSize]}px`
+        : (sizeProp(resolvedSize) ?? "48px");
     const [errored, setErrored] = useState(false);
     return (
       <Box
@@ -2351,14 +2350,19 @@ function useFloatingPosition(
       // Auto-flip horizontal placement if it would overflow the screen
       if (placement.endsWith("start") && rect.left > window.innerWidth / 2) {
         effectivePlacement = placement.replace("start", "end");
-      } else if (placement.endsWith("end") && rect.right < window.innerWidth / 2) {
+      } else if (
+        placement.endsWith("end") &&
+        rect.right < window.innerWidth / 2
+      ) {
         effectivePlacement = placement.replace("end", "start");
       }
 
       setComputedPlacement(effectivePlacement);
 
       const isTop = effectivePlacement.startsWith("top");
-      const isEnd = effectivePlacement.endsWith("end") || effectivePlacement.endsWith("right");
+      const isEnd =
+        effectivePlacement.endsWith("end") ||
+        effectivePlacement.endsWith("right");
       setCoords({
         top: isTop ? rect.top : rect.bottom,
         left: isEnd ? rect.right : rect.left,
@@ -2374,7 +2378,8 @@ function useFloatingPosition(
   }, [isOpen, placement, triggerRef]);
 
   const isTop = computedPlacement.startsWith("top");
-  const isEnd = computedPlacement.endsWith("end") || computedPlacement.endsWith("right");
+  const isEnd =
+    computedPlacement.endsWith("end") || computedPlacement.endsWith("right");
   return {
     coords,
     transform:
@@ -2852,7 +2857,13 @@ export const Menu = ({
   );
 };
 
-export const MenuButton = ({ as: Comp, children, onClick, style, ...rest }: any) => {
+export const MenuButton = ({
+  as: Comp,
+  children,
+  onClick,
+  style,
+  ...rest
+}: any) => {
   const ctx = useContext(MenuContext);
   const setRef = (node: HTMLElement | null) => {
     if (ctx) (ctx.triggerRef as any).current = node;
@@ -3297,7 +3308,6 @@ export const ModalContent = forwardRef<HTMLDivElement, BoxProps>(
         borderRadius="md"
         color="inherit"
         maxW={maxW}
-        w="calc(100% - 32px)"
         // zIndex as a normal prop so callers can override it via {...rest}.
         // No zIndex in the hardcoded style object to avoid overriding caller values.
         zIndex={1}

@@ -58,7 +58,6 @@ const ReportPage = () => {
             setReports={setReports}
           />
         )}
-        deps={[searchValue]}
         preloadIndex={10}
       />
       {firstLoad && reports?.length === 0 && (

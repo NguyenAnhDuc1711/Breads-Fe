@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { IPost } from ".";
 import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
-import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { DELETE, GET, PATCH, POST, PUT } from "../../config/API";
 import { openNewPostNotify, showToast, updateHasMoreData } from "../UtilSlice";
 
@@ -138,25 +137,6 @@ export const getPosts = createAsyncThunk(
   }
 );
 
-export const getPost = createAsyncThunk(
-  "post/getPost",
-  async (postId: string, thunkApi) => {
-    try {
-      const data = await GET({
-        path: Route.POST + "/" + postId,
-      });
-      if (data?._id) {
-        return data;
-      }
-      return thunkApi.rejectWithValue(data);
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        return thunkApi.rejectWithValue(err.response?.data);
-      }
-    }
-  }
-);
-
 // BE không còn nhúng `replies` đầy đủ trong response getPost (post.model.ts đã bỏ field mảng
 // nhúng) — danh sách reply giờ tải riêng, phân trang, cùng convention isNewPage/page với `getPosts`.
 export const getPostReplies = createAsyncThunk(
@@ -177,31 +157,6 @@ export const getPostReplies = createAsyncThunk(
         replies,
         isNewPage: isNewPage ?? false,
       };
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        return thunkApi.rejectWithValue(err.response?.data);
-      }
-    }
-  }
-);
-
-export const getUserPosts = createAsyncThunk(
-  "post/getUserPosts",
-  async (userId: string, thunkApi) => {
-    try {
-      const rootState: any = thunkApi.getState();
-      const displayPageData = rootState.util.displayPageData;
-      const data = await GET({
-        path: Route.POST + POST_PATH.GET_ALL,
-        params: {
-          userId: userId,
-          filter: { page: PageConstant.USER, value: displayPageData },
-        },
-      });
-      if (Array.isArray(data)) {
-        return data;
-      }
-      return thunkApi.rejectWithValue(data);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         return thunkApi.rejectWithValue(err.response?.data);

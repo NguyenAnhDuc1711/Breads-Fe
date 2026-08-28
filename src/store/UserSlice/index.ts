@@ -3,7 +3,6 @@ import {
   addPostToCollection,
   followUser,
   getMe,
-  getUserInfo,
   login,
   logout,
   removePostFromCollection,
@@ -76,19 +75,6 @@ const userSlice = createSlice({
     });
     builder.addCase(getMe.rejected, (state) => {
       state.userInfo = defaultUser;
-      state.isLoading = false;
-    });
-    builder.addCase(getUserInfo.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(getUserInfo.fulfilled, (state, action) => {
-      const { user, getCurrentUser }: any = action.payload;
-      const normalized = user ? new UserResponse(user) : user;
-      if (getCurrentUser) {
-        state.userInfo = normalized;
-      } else {
-        state.userSelected = normalized;
-      }
       state.isLoading = false;
     });
     builder.addCase(addPostToCollection.fulfilled, (state, action) => {

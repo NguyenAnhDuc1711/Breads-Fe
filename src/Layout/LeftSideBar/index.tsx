@@ -23,10 +23,8 @@ import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import useSocket from "../../hooks/useSocket";
 import { AppState } from "../../store";
-import {
-  addNotification,
-  updateHasNotification,
-} from "../../store/NotificationSlice";
+import { updateHasNotification } from "../../store/NotificationSlice";
+import { api } from "../../store/api/baseApi";
 import {
   updateGlobalTotal,
   updateUnreadCount,
@@ -80,9 +78,12 @@ const LeftSideBar = () => {
   );
 
   useSocket((socket) => {
-    socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
+    socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, () => {
       dispatch(updateHasNotification(true));
-      dispatch(addNotification(payload));
+      // Refetches only if an Activity page query is actively subscribed —
+      // replaces the old client-side unshift-into-slice (addNotification),
+      // now that `notifications` lives in RTK Query cache (notificationApi).
+      dispatch(api.util.invalidateTags(["Notification"]));
     });
   }, []);
 

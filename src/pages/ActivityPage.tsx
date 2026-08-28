@@ -5,7 +5,6 @@ import ContainerLayout from "../components/MainBoxLayout";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import { changeDisplayPageData } from "../store/UtilSlice";
-import { getNotificattions } from "../store/NotificationSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 
@@ -26,13 +25,6 @@ const ActivityPage = ({ tab }: { tab: string }) => {
     );
     dispatch(changeDisplayPageData(tab));
     if (userInfo?._id) {
-      dispatch(
-        getNotificattions({
-          userId: userInfo?._id,
-          page: 1,
-          limit: 15,
-        })
-      );
       addEvent({
         event: "see_page",
         payload: {

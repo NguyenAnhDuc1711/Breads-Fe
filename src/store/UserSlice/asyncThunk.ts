@@ -166,28 +166,6 @@ export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
   }
 });
 
-export const getUserInfo = createAsyncThunk(
-  "user/getUserInfo",
-  async (payload: any, thunkAPI) => {
-    try {
-      const userId: string = payload.userId;
-      const getCurrentUser = payload.getCurrentUser;
-      // Task 020 (D-1): GET /users/profile/:userId -> GET /users/:userId (id trong constant).
-      const data = await GET({
-        path: Route.USER + USER_PATH.PROFILE.replace(":userId", userId),
-      });
-      return {
-        user: data,
-        getCurrentUser: getCurrentUser,
-      };
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        return thunkAPI.rejectWithValue(err.response?.data);
-      }
-    }
-  },
-);
-
 export const updateUser = createAsyncThunk(
   "user/updateUser",
   async (payload: any, thunkAPI) => {

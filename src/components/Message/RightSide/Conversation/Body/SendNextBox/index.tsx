@@ -157,7 +157,6 @@ const SendNextBox = () => {
                     setSelectedConversations={setSelectedConversations}
                   />
                 )}
-                deps={[userInfo._id]}
                 preloadIndex={5}
               />
             ) : (

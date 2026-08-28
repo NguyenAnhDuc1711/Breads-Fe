@@ -8,7 +8,8 @@ import Post from "../components/ListPost/Post";
 import ContainerLayout from "../components/MainBoxLayout";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
-import { getPost } from "../store/PostSlice/asyncThunk";
+import { selectPost } from "../store/PostSlice";
+import { useLazyGetPostQuery } from "../store/api/postApi";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 import { GA_EVENTS, getPostContentType, sendGaEvent } from "../util/gtmEvents";
@@ -26,13 +27,15 @@ const PostDetail = ({ postId }: { postId: string }) => {
   const currentPage = useAppSelector(
     (state: AppState) => state.util.currentPage
   );
+  const [triggerGetPost] = useLazyGetPostQuery();
 
   useEffect(() => {
     if (postId) {
       dispatch(changePage({ currentPage, nextPage: PageConstant.POST_DETAIL }));
-      dispatch(getPost(postId))
+      triggerGetPost(postId)
         .unwrap()
         .then((post) => {
+          dispatch(selectPost(post));
           sendGaEvent({
             event: GA_EVENTS.VIEW_POST,
             params: { post_id: postId, content_type: getPostContentType(post) },

@@ -19,7 +19,7 @@ import {
   useDisclosure,
 } from "./ui/primitives";
 import "./UserHeader.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CgDanger, CgMoreO } from "react-icons/cg";
 import { FaLink } from "react-icons/fa";
@@ -30,7 +30,8 @@ import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { GET } from "../config/API";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
-import { getUserPosts } from "../store/PostSlice/asyncThunk";
+import { updateListPost, updatePostListLoading } from "../store/PostSlice";
+import { useGetUserPostsQuery } from "../store/api/postApi";
 import { IUser } from "../store/UserSlice";
 import {
   changeDisplayPageData,
@@ -68,7 +69,21 @@ const UserHeader = ({ user }: { user: IUser }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
-  const { isLoading } = useAppSelector((state: AppState) => state.post);
+  const displayPageData = useAppSelector(
+    (state: AppState) => state.util.displayPageData,
+  );
+  const { data: userPosts, isFetching: isLoading } = useGetUserPostsQuery(
+    { userId: user._id, displayPageData },
+    { skip: !user._id },
+  );
+
+  useEffect(() => {
+    dispatch(updatePostListLoading(isLoading));
+    if (userPosts) {
+      dispatch(updateListPost(userPosts));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userPosts, isLoading]);
   const [followBox, setFollowBox] = useState({
     open: false,
     currentTab: FOLLOW_TAB.FOLLOWED,
@@ -279,7 +294,6 @@ const UserHeader = ({ user }: { user: IUser }) => {
                     },
                   });
                   dispatch(changeDisplayPageData(TABS[key]));
-                  dispatch(getUserPosts(user._id));
                 }}
               >
                 <Text fontWeight={"bold"}>{t(key)}</Text>

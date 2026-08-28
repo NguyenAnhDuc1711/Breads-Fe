@@ -7,6 +7,7 @@ import ReportReducer, { ReportState } from "./ReportSlice";
 import UserReducer, { UserState } from "./UserSlice";
 import UtilReducer, { UtilState } from "./UtilSlice";
 import { logout } from "./UserSlice/asyncThunk";
+import { api } from "./api/baseApi";
 import { AnyAction, combineReducers } from "@reduxjs/toolkit";
 
 export interface AppState {
@@ -17,6 +18,7 @@ export interface AppState {
   notification: NotificationState;
   admin: AdminState;
   report: ReportState;
+  [api.reducerPath]: ReturnType<typeof api.reducer>;
 }
 
 // Combine all reducers
@@ -28,6 +30,7 @@ const appReducer = combineReducers({
   notification: NotificationReducer,
   admin: AdminReducer,
   report: ReportReducer,
+  [api.reducerPath]: api.reducer,
 });
 
 // Root reducer that will handle resetting all state on logout
@@ -53,7 +56,7 @@ export const makeStore = (preloadedState?: Partial<AppState>) =>
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,
-      }),
+      }).concat(api.middleware),
   });
 
 export type AppStore = ReturnType<typeof makeStore>;

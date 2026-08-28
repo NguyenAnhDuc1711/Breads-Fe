@@ -14,7 +14,6 @@ const InfiniteScroll = ({
   queryFc,
   data,
   cpnFc,
-  deps = [],
   condition = true,
   skeletonCpn,
   hasInitialFetch,
@@ -28,7 +27,6 @@ const InfiniteScroll = ({
   queryFc: Function;
   data: any;
   cpnFc: any;
-  deps?: any;
   condition?: boolean;
   skeletonCpn?: any;
   hasInitialFetch?: boolean;
@@ -49,6 +47,15 @@ const InfiniteScroll = ({
   const observer = useRef<IntersectionObserver>();
   const isFirstRender = useRef<boolean>(true);
   const prevPage = useRef<number>(page);
+  // Guards against the IntersectionObserver firing again (fast scroll / slow
+  // network) before the in-flight page fetch's result has actually landed in
+  // `data` — queryFc is fire-and-forget (not awaited), so without this a
+  // second/third page could be requested before the first resolves, and
+  // out-of-order responses could merge into the list in the wrong order.
+  // 15s safety-release covers the (pre-existing, unrelated) case where the
+  // fetch fails and `data` never changes, so scrolling isn't permanently
+  // blocked for that list instance.
+  const isFetchInFlight = useRef<boolean>(false);
 
   const shouldInitialFetch =
     hasInitialFetch !== undefined
@@ -60,17 +67,25 @@ const InfiniteScroll = ({
       if (observer.current) {
         observer.current.disconnect();
       }
-      observer.current = new IntersectionObserver((entries) => {
-        if (
-          entries[0].isIntersecting &&
-          hasMoreData &&
-          !reverseScroll &&
-          !isLoading
-        ) {
-          setPage((prevPage) => prevPage + 1);
-          // setIsLoading(true);
-        }
-      });
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (
+            entries[0].isIntersecting &&
+            hasMoreData &&
+            !reverseScroll &&
+            !isLoading &&
+            !isFetchInFlight.current
+          ) {
+            setPage((prevPage) => prevPage + 1);
+            // setIsLoading(true);
+          }
+        },
+        // Fetch the next page ~1 viewport height before the sentinel actually
+        // enters view, instead of only once it's already on-screen — gives
+        // slow networks a head start so the skeleton fallback (rendered
+        // below the sentinel) is less likely to actually be seen mid-scroll.
+        { rootMargin: "800px 0px" },
+      );
       if (node) {
         observer.current.observe(node);
       }
@@ -88,7 +103,11 @@ const InfiniteScroll = ({
         }
       } else if (page !== prevPage.current) {
         prevPage.current = page;
+        isFetchInFlight.current = true;
         queryFc && queryFc(page);
+        setTimeout(() => {
+          isFetchInFlight.current = false;
+        }, 15000);
       }
     }
     setIsLoading(false);
@@ -132,6 +151,10 @@ const InfiniteScroll = ({
   );
 
   useEffect(() => {
+    isFetchInFlight.current = false;
+  }, [data]);
+
+  useEffect(() => {
     if (reverseScroll && currentScrollY && elementId) {
       const containerEle = document.getElementById(elementId);
       if (containerEle) {
@@ -157,7 +180,7 @@ const InfiniteScroll = ({
           {skeletonCpn && (
             <>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                <div>{skeletonCpn}</div>
+                <div key={num}>{skeletonCpn}</div>
               ))}
             </>
           )}
@@ -165,6 +188,7 @@ const InfiniteScroll = ({
       ) : (
         <>
           {data?.map((ele, index) => {
+            const itemKey = ele?._id ?? index;
             if (
               (data.length >= preloadIndex
                 ? index === data.length - preloadIndex
@@ -173,22 +197,26 @@ const InfiniteScroll = ({
             ) {
               if (gridColSpan !== -1) {
                 return (
-                  <GridItem colSpan={gridColSpan} ref={lastUserElementRef}>
+                  <GridItem key={itemKey} colSpan={gridColSpan} ref={lastUserElementRef}>
                     {cpnFc(ele, index)}
                   </GridItem>
                 );
               }
 
-              return <div ref={lastUserElementRef}>{cpnFc(ele, index)}</div>;
+              return (
+                <div key={itemKey} ref={lastUserElementRef}>
+                  {cpnFc(ele, index)}
+                </div>
+              );
             } else if (index === data.length - 1) {
               if (gridColSpan !== -1) {
                 return (
-                  <GridItem colSpan={gridColSpan}>
+                  <GridItem key={itemKey} colSpan={gridColSpan}>
                     {cpnFc(ele, index)}
                     {hasMoreData && !reverseScroll && (
                       <>
                         {[1, 2, 3, 4, 5].map((num) => (
-                          <div>{skeletonCpn}</div>
+                          <div key={num}>{skeletonCpn}</div>
                         ))}
                       </>
                     )}
@@ -196,19 +224,19 @@ const InfiniteScroll = ({
                 );
               }
               return (
-                <Fragment>
+                <Fragment key={itemKey}>
                   {cpnFc(ele, index)}
                   {hasMoreData && !reverseScroll && (
                     <>
                       {[1, 2, 3, 4, 5].map((num) => (
-                        <div>{skeletonCpn}</div>
+                        <div key={num}>{skeletonCpn}</div>
                       ))}
                     </>
                   )}
                 </Fragment>
               );
             } else {
-              return <Fragment>{cpnFc(ele, index)}</Fragment>;
+              return <Fragment key={itemKey}>{cpnFc(ele, index)}</Fragment>;
             }
           })}
         </>

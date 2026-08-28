@@ -16,14 +16,17 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
 import FollowBtn from "./FollowBtn";
 import { INotification, updateHasNotification } from "../store/NotificationSlice";
+import { useGetNotificationsQuery } from "../store/api/notificationApi";
 import { IUserShortInfo } from "../store/PostSlice";
 
 const Activity = ({ currentPage }: { currentPage: string }) => {
   const dispatch = useAppDispatch();
   const navigate = useRouter().push;
   const { t } = useTranslation();
-  const { notifications, isLoading } = useAppSelector(
-    (state: AppState) => state.notification
+  const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
+  const { data: notifications, isLoading } = useGetNotificationsQuery(
+    { userId: userInfo?._id as string, page: 1, limit: 15 },
+    { skip: !userInfo?._id },
   );
   const [uniqueNotifications, setUniqueNotifications] = useState<
     INotification[]

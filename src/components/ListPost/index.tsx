@@ -83,7 +83,6 @@ const ListPost = () => {
               </Fragment>
             )}
             condition={!isAdmin || !!filterPostValidation}
-            deps={[userInfo?._id, currentPage, filterPostValidation]}
             skeletonCpn={<SkeletonPost />}
             reloadPageDeps={isAdmin ? [filterPostValidation] : null}
           />

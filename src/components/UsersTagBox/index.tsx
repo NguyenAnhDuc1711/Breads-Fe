@@ -113,7 +113,6 @@ const UsersTagBox = ({
           />
         )}
         condition={!!userInfo._id}
-        deps={[userInfo._id, debounceValue]}
         skeletonCpn={<UserBoxSekeleton smallAvatar={true} />}
         reloadPageDeps={[debounceValue]}
       />

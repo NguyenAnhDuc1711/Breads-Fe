@@ -120,7 +120,6 @@ const Conversations = ({
               />
             )}
             condition={!init}
-            deps={[userInfo._id, currentPage]}
             skeletonCpn={<ConversationSkeleton />}
             preloadIndex={1}
             updatePageValue={currentPageConversation}

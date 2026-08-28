@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { sendReport } from "./asyncThunk";
 
 export interface ReportState {
   openPopup: boolean;
@@ -9,7 +8,7 @@ export interface ReportState {
   };
 }
 
-export const intialReportState = {
+export const intialReportState: ReportState = {
   openPopup: false,
   reportInfo: {
     content: "",
@@ -28,16 +27,6 @@ const reportSlice = createSlice({
       const { key, value } = action.payload;
       state.reportInfo[key] = value;
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(sendReport.fulfilled, (state, action) => {
-      state = intialReportState;
-      state.openPopup = false;
-    });
-    builder.addCase(sendReport.rejected, (state, action) => {
-      state = intialReportState;
-      state.openPopup = false;
-    });
   },
 });
 

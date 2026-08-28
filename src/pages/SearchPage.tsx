@@ -141,7 +141,6 @@ const SearchPage = () => {
             data={users}
             cpnFc={(user) => <UserFollowBox user={user} />}
             condition={!!userInfo._id}
-            deps={[userInfo._id, searchValue]}
             skeletonCpn={<UserFollowBoxSkeleton />}
           />
         )}

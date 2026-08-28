@@ -22,6 +22,9 @@ const LoginPopupScreen = dynamic(
   () => import("../../src/components/LoginPopupScreen"),
   { ssr: false },
 );
+const ReportPopup = dynamic(() => import("../../src/components/Report"), {
+  ssr: false,
+});
 
 // Ports src/Layout/index.tsx (LeftSideBar always, Header only once a user is
 // loaded). HeaderHeight / LeftSideBarWidth stay exported from src/Layout so the
@@ -49,6 +52,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
       {children}
       <PostPopup />
       <SeeMedia />
+      <ReportPopup />
       {openLoginPopup && <LoginPopupScreen />}
     </>
   );

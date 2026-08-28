@@ -12,10 +12,8 @@ import {
   createPost,
   deletePost,
   editPost,
-  getPost,
   getPostReplies,
   getPosts,
-  getUserPosts,
   selectSurveyOption,
   updatePostStatus,
   updatePostVisibility,
@@ -81,6 +79,12 @@ const postSlice = createSlice({
     updateListPost: (state, action) => {
       state.listPost = Array.isArray(action.payload) ? action.payload : [];
     },
+    // Bridge for RTK Query-backed list fetches (e.g. useGetUserPostsQuery in
+    // UserHeader.tsx) to keep this shared flag in sync — ListPost's own
+    // skeleton/empty branch still reads state.post.isLoading directly.
+    updatePostListLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
     selectPostReply: (state, action) => {
       state.postReply = action.payload;
     },
@@ -138,17 +142,6 @@ const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getPost.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(getPost.fulfilled, (state, action) => {
-      const postSelected = action.payload;
-      if (postSelected) {
-        // PostResponse default `replies: []` khi BE không gửi (không còn nhúng trong response này,
-        // post.model.ts đã bỏ field mảng nhúng) — FR-3, thay cho spread thủ công trước đây.
-        state.postSelected = new PostResponse(postSelected);
-      }
-    });
     builder.addCase(getPostReplies.fulfilled, (state, action) => {
       const payload: any = action.payload;
       if (!payload || !state.postSelected || state.postSelected._id !== payload.postId) {
@@ -323,21 +316,6 @@ const postSlice = createSlice({
         }
       }
     });
-    builder.addCase(getUserPosts.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(getUserPosts.fulfilled, (state, action) => {
-      state.isLoading = false;
-      const userPosts = action.payload;
-      if (Array.isArray(userPosts)) {
-        state.listPost = userPosts.map(
-          (p: Partial<IPost>) => new PostResponse(p as any)
-        );
-      }
-    });
-    builder.addCase(getUserPosts.rejected, (state) => {
-      state.isLoading = false;
-    });
     builder.addCase(updatePostStatus.fulfilled, (state, action) => {
       const postId = action.payload;
       let newListPost = JSON.parse(JSON.stringify(state.listPost));
@@ -368,6 +346,7 @@ export const {
   updatePostInfo,
   updatePostAction,
   updateListPost,
+  updatePostListLoading,
   selectPostReply,
   updatePostLike,
   toggleLikedByMe,

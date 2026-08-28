@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import useDebounce from "../../hooks/useDebounce";
 import { AppState } from "../../store";
 import { openPopup, updateReportInfo } from "../../store/ReportSlice";
-import { sendReport } from "../../store/ReportSlice/asyncThunk";
+import { useSendReportMutation } from "../../store/api/reportApi";
 import { showToast } from "../../store/UtilSlice";
 import { convertToBase64 } from "../../util";
 import TextArea from "../../util/TextArea";
@@ -26,6 +26,7 @@ const ReportPopup = () => {
     (state: AppState) => state.report.reportInfo
   );
   const containMedia = reportInfo.media?.length > 0;
+  const [sendReport] = useSendReportMutation();
 
   const imageRef = useRef<HTMLInputElement>(null);
 
@@ -66,13 +67,11 @@ const ReportPopup = () => {
   };
 
   const handleSubmitReport = () => {
-    dispatch(
-      sendReport({
-        userId: userInfo?._id,
-        content: reportInfo.content,
-        media: reportInfo.media,
-      })
-    );
+    sendReport({
+      userId: userInfo?._id,
+      content: reportInfo.content,
+      media: reportInfo.media,
+    });
     dispatch(openPopup());
     dispatch(
       showToast({

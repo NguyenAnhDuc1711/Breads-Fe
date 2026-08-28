@@ -195,7 +195,6 @@ const PostsFilterBar = () => {
                     </div>
                   )}
                   condition={!!userInfo._id}
-                  deps={[userSearch]}
                   preloadIndex={2}
                 />
               </div>
