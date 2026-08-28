@@ -64,17 +64,10 @@ export const login = createAsyncThunk(
   "user/login",
   async (payload: any, { rejectWithValue }) => {
     try {
-      let data: IUser | undefined | null;
-      if (payload?.loginAsAdmin) {
-        data = await GET({
-          path: Route.USER + USER_PATH.ADMIN,
-        });
-      } else {
-        data = await POST({
-          path: Route.USER + USER_PATH.LOGIN,
-          payload,
-        });
-      }
+      const data: IUser | undefined | null = await POST({
+        path: Route.USER + USER_PATH.LOGIN,
+        payload,
+      });
       if (data) {
         const objectIdRegex = /^[a-fA-F0-9]{24}$/;
         if (data?._id && objectIdRegex.test(data?._id)) {

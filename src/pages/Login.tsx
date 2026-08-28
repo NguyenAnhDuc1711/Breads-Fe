@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Avatar,
   Button,
   Heading,
   Input,
@@ -22,9 +21,8 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { encodedString } from "../Breads-Shared/util";
 import { genRandomCode } from "../Breads-Shared/util/index";
 import CodePopup from "../components/CodePopup";
-import { GET, POST } from "../config/API";
+import { POST } from "../config/API";
 import { useAppDispatch } from "../hooks/redux";
-import { IUser } from "../store/UserSlice";
 import { login } from "../store/UserSlice/asyncThunk";
 import { closeLoginPopupAction, showToast } from "../store/UtilSlice";
 import "./Login.css";
@@ -32,10 +30,8 @@ import "./Login.css";
 type LoginInput = {
   email: string;
   password: string;
-  loginAsAdmin?: boolean;
 };
 
-// Fix #9: Separate error type — loginAsAdmin is not a validation field
 type LoginErrors = Partial<Pick<LoginInput, "email" | "password">>;
 
 const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
@@ -43,33 +39,14 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [countClick, setCountClick] = useState<number>(0);
-  const [countClickGetFullAcc, setCountClickGetFullAcc] = useState<number>(0);
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [displayUsers, setDisplayUsers] = useState<IUser[]>([]);
   const [openCodeBox, setOpenCodeBox] = useState<boolean>(false);
   const [inputs, setInputs] = useState<LoginInput>({
     email: "",
     password: "",
   });
-  // Fix #9: Use LoginErrors instead of LoginInput
   const [errors, setErrors] = useState<LoginErrors>({});
-  // Fix #7: Add loading state so button properly shows spinner
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const codeSend = useRef(genRandomCode());
-
-  // Fix #5: Split into two separate effects, use === 5 to trigger exactly once
-  useEffect(() => {
-    if (countClick === 5) {
-      handleLogin(true);
-    }
-  }, [countClick]);
-
-  useEffect(() => {
-    if (countClickGetFullAcc === 5) {
-      handleGetAllAcc();
-    }
-  }, [countClickGetFullAcc]);
 
   // Fix #4: Stable keydown listener — no longer depends on inputs (stale closure
   // avoided by reading the latest inputs via a ref)
@@ -90,27 +67,6 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     window.addEventListener("keydown", enterListener);
     return () => window.removeEventListener("keydown", enterListener);
   }, [handleLoginStable]); // stable ref — listener registered only once
-
-  const handleGetAllAcc = async () => {
-    try {
-      const data = await GET({
-        path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
-        params: {
-          isTest: true,
-        },
-      });
-      // GET() returns an error-shaped object (not an array) on request
-      // failure — guard against passing that straight into array state.
-      if (Array.isArray(data)) {
-        setUsers(data);
-        setDisplayUsers(data);
-      } else {
-        console.error("handleGetAllAcc: unexpected response", data);
-      }
-    } catch (err) {
-      console.error("handleGetAllAcc: ", err);
-    }
-  };
 
   // Fix #10: validateField now only checks its own errors, not the whole object
   const validateField = (
@@ -151,33 +107,13 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
   };
 
   // Extracted inner logic so the stable keydown handler can call it with a snapshot
-  const handleLoginWithInputs = async (
-    currentInputs: LoginInput,
-    loginAsAdmin?: boolean,
-  ) => {
-    // Fix #3: Never mutate the inputs object — build a new payload instead
-    const payload: LoginInput = loginAsAdmin
-      ? { ...currentInputs, loginAsAdmin: true }
-      : currentInputs;
-
-    if (loginAsAdmin) {
-      await dispatch(login(payload));
-      dispatch(
-        showToast({
-          title: t("success"),
-          description: "Đăng nhập bằng Admin thành công",
-          status: "success",
-        }),
-      );
-      return;
-    }
-
+  const handleLoginWithInputs = async (currentInputs: LoginInput) => {
     if (!validateAll()) return;
 
     // Fix #7: Set loading state around API call
     setIsLoading(true);
     try {
-      const data: any = await dispatch(login(payload));
+      const data: any = await dispatch(login(currentInputs));
       if (data?.meta?.requestStatus === "fulfilled") {
         if (data?.payload?.error) {
           dispatch(
@@ -214,8 +150,8 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     }
   };
 
-  const handleLogin = async (loginAsAdmin?: boolean) => {
-    await handleLoginWithInputs(inputs, loginAsAdmin);
+  const handleLogin = async () => {
+    await handleLoginWithInputs(inputs);
   };
 
   const handleForgotPassword = async () => {
@@ -309,71 +245,16 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     }
   };
 
-  const loginForTest = (userId) => {
-    const objectIdRegex = /^[a-fA-F0-9]{24}$/;
-    if (objectIdRegex.test(userId)) {
-      localStorage.setItem("userId", userId);
-      location.reload();
-    }
-  };
-
-  if (countClickGetFullAcc >= 5) {
-    return (
-      <div className="login-debug">
-        <Text className="login-debug__title">Select user to login</Text>
-        <Input
-          className="login-debug__search"
-          placeholder={"Search user..."}
-          onChange={(e) => {
-            const searchValue = e.target.value;
-            const searchResult = users?.filter(({ username }) => {
-              if (
-                username?.includes(searchValue) ||
-                searchValue?.includes(username)
-              ) {
-                return true;
-              }
-              return false;
-            });
-            setDisplayUsers(searchResult);
-          }}
-        />
-        <div className="login-debug__list">
-          {displayUsers?.map((user) => (
-            <div
-              className="login-debug__item"
-              key={user._id}
-              onClick={() => loginForTest(user?._id)}
-            >
-              <Avatar src={user?.avatar} />
-              <Text>{user?.username}</Text>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   const cardContent = (
     <div className={`login-page__card ${isPopup ? "login-page__card--popup" : ""}`}>
       <div className="login-page__header">
-        <Heading
-          className="login-page__heading"
-          onClick={() => setCountClick((prev) => prev + 1)}
-        >
-          {t("SignIn")}
-        </Heading>
+        <Heading className="login-page__heading">{t("SignIn")}</Heading>
         <Text className="login-page__subtitle">Welcome back to Breads</Text>
       </div>
 
       <div className="login-page__form-stack">
         <FormControl isRequired isInvalid={!!errors?.email}>
-          <FormLabel
-            className="login-page__label"
-            onClick={() => setCountClickGetFullAcc((prev) => prev + 1)}
-          >
-            Email
-          </FormLabel>
+          <FormLabel className="login-page__label">Email</FormLabel>
           <Input
             type="email"
             className="login-page__input"
