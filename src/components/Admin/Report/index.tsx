@@ -43,7 +43,6 @@ const ReportBox = ({
   const handleSendMail = async () => {
     const htmlConverted = marked.parse(res);
     const payload = {
-      from: "mraducky@gmail.com",
       to: report.userReport?.email,
       subject: "Thanks for reporting the problem",
       html: htmlConverted,

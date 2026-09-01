@@ -176,7 +176,6 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
           const codeSendDecoded = encodedString(codeSend.current);
           try {
             const options = {
-              from: "mraducky@gmail.com",
               to: email,
               subject: "Reset password",
               code: codeSendDecoded,
