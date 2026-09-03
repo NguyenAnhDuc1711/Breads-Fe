@@ -243,12 +243,13 @@ export const followUser = createAsyncThunk(
   "user/handleFollow",
   async (payload: any, thunkAPI) => {
     try {
-      const { userFlId, userId } = payload;
+      const { userFlId } = payload;
+      // Bước 4 (access-control-hardening): KHÔNG gửi `userId` nữa — server lấy người follow từ JWT.
+      // Caller (`FollowBtn`) vẫn truyền `userId` vào thunk vì reducer dùng nó cho state cục bộ.
       await PUT({
         path: Route.USER + USER_PATH.FOLLOW,
         payload: {
           userFlId,
-          userId,
         },
       });
       return userFlId;

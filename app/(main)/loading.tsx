@@ -10,7 +10,7 @@ import "./loading.css";
 // a frozen screen, without needing every page to build its own loading
 // state. Kept shape-agnostic (a spinner, not a posts skeleton) since this
 // same fallback covers everything under (main) — feed, chat, search,
-// admin, auth.
+// auth.
 const Loading = () => (
   <div className="route-loading">
     <Spinner size="lg" />

@@ -23,13 +23,6 @@
   margin: 0;
 }
 
-.survey__option-value--admin {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  flex-grow: 1;
-}
-
 .survey__option-actions {
   display: flex;
   align-items: center;

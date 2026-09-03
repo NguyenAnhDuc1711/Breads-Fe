@@ -557,9 +557,6 @@ export const getEmojiNameFromIcon = (emojiIcon) => {
   return emjStr;
 };
 
-export const getIsAdminPage = (pathname: string | null) =>
-  !!pathname?.includes("admin");
-
 export const getAnalyticsInfoFromBrowser = async () => {
   const deviceInfo = {
     category: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop", // Detect mobile or desktop

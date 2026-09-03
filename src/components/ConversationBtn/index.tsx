@@ -26,8 +26,9 @@ const ConversationBtn = ({ user }: { user: IUser }) => {
       }
       const data = await POST({
         path: Route.MESSAGE + MESSAGE_PATH.GET_CONVERSATION_BY_USERS_ID,
+        // Bước 9 (access-control-hardening): không gửi `userId` nữa — server luôn dùng người đang
+        // đăng nhập làm 1 trong 2 participant.
         payload: {
-          userId: userInfo?._id,
           anotherId: user?._id,
         },
       });

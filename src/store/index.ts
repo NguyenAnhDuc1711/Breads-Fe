@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import AdminReducer, { AdminState } from "./AdminSlice";
 import MessageReducer, { MsgState } from "./MessageSlice";
 import NotificationReducer, { NotificationState } from "./NotificationSlice";
 import PostReducer, { PostState } from "./PostSlice";
@@ -16,7 +15,6 @@ export interface AppState {
   util: UtilState;
   message: MsgState;
   notification: NotificationState;
-  admin: AdminState;
   report: ReportState;
   [api.reducerPath]: ReturnType<typeof api.reducer>;
 }
@@ -28,7 +26,6 @@ const appReducer = combineReducers({
   util: UtilReducer,
   message: MessageReducer,
   notification: NotificationReducer,
-  admin: AdminReducer,
   report: ReportReducer,
   [api.reducerPath]: api.reducer,
 });

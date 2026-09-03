@@ -13,8 +13,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import { decodeString } from "../Breads-Shared/util";
-import { handleUpdatePW } from "../components/UpdateUser/changePWModal";
+import { handleConfirmResetPW } from "../components/UpdateUser/changePWModal";
 import { useAppDispatch } from "../hooks/redux";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
@@ -31,15 +30,14 @@ const ResetPWPage = ({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const router = useRouter();
-  // localStorage is only readable client-side — start false (SSR-safe
-  // default) and resolve for real once mounted, rather than reading it
-  // directly in the render body.
-  const [isTrueCode, setIsTrueCode] = useState(false);
-
-  useEffect(() => {
-    const encodedCode = localStorage.getItem("encodedCode");
-    setIsTrueCode(decodeString(encodedCode ?? "") === code);
-  }, [code]);
+  // Bước 2 (access-control-hardening): TRƯỚC ĐÂY trang này tự đối chiếu `code` với
+  // `localStorage.encodedCode` rồi coi đó là bằng chứng để đổi mật khẩu — một "kiểm tra" mà bất kỳ
+  // ai cũng bỏ qua được bằng cách gọi thẳng API. Việc đối chiếu giờ nằm ở server
+  // (`POST /users/password-reset/confirm`), trang chỉ chuyển tiếp `userId` + `code` từ URL.
+  // Không còn state `isTrueCode`: mã đúng hay sai chỉ server mới biết, và biết ở đúng thời điểm
+  // đổi mật khẩu. Gate render giờ chỉ kiểm tra link có ĐÚNG HÌNH DẠNG không (userId 24 hex, code 6
+  // ký tự) — thuần UX cho URL rác, KHÔNG phải biên bảo mật.
+  const isWellFormedLink = /^[a-fA-F0-9]{24}$/.test(userId ?? "") && (code ?? "").length === 6;
   const [showPassword, setShowPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     password: "",
@@ -65,20 +63,16 @@ const ResetPWPage = ({
     if (password === confirmPassword) {
       setPasswordData({ ...passwordData, passwordsMatch: true });
       if (userId) {
-        await handleUpdatePW({
-          currentPWValue: "",
+        await handleConfirmResetPW({
+          userId,
+          code,
           newPWValue: passwordData.password,
-          userId: userId,
-          forgotPW: true,
           endAction: () => {
-            const objectIdRegex = /^[a-fA-F0-9]{24}$/;
-            if (userId && objectIdRegex.test(userId)) {
-              localStorage.setItem("userId", userId);
-              localStorage.removeItem("encodedCode");
-              setTimeout(() => {
-                router.push("/");
-              }, 100);
-            }
+            // Không set `localStorage.userId` nữa: đặt lại mật khẩu KHÔNG tạo phiên đăng nhập
+            // (server đã revoke sạch refresh token của tài khoản), nên phải đi qua trang login.
+            setTimeout(() => {
+              router.push("/login");
+            }, 100);
           },
           dispatch,
         });
@@ -118,7 +112,7 @@ const ResetPWPage = ({
 
   return (
     <>
-      {isTrueCode ? (
+      {isWellFormedLink ? (
         <div className="reset-pw-page">
           <div>
             <Text className="reset-pw-page__title">{t("changePW")}</Text>

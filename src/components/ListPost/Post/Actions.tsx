@@ -11,7 +11,6 @@ import {
   Portal,
 } from "../../ui/primitives";
 import "./Actions.css";
-import { usePathname } from "next/navigation";
 import { Fragment, memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IoIosLink } from "react-icons/io";
@@ -35,11 +34,8 @@ import {
   toggleLikedByMe,
   updatePostAction,
 } from "../../../store/PostSlice";
-import {
-  updatePostStatus,
-  updatePostVisibility,
-} from "../../../store/PostSlice/asyncThunk";
-import { addEvent, getIsAdminPage } from "../../../util";
+import { updatePostVisibility } from "../../../store/PostSlice/asyncThunk";
+import { addEvent } from "../../../util";
 import { GA_EVENTS, sendGaEvent } from "../../../util/gtmEvents";
 import useCopyLink from "./MoreAction/CopyLink";
 import { openLoginPopupAction } from "../../../store/UtilSlice";
@@ -54,8 +50,6 @@ const ACTIONS_NAME = {
 
 const Actions = ({ post }: { post: IPost }) => {
   const { t } = useTranslation();
-  const pathname = usePathname();
-  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [openSubBox, setOpenSubBox] = useState<boolean>(false);
@@ -159,20 +153,10 @@ const Actions = ({ post }: { post: IPost }) => {
       : []),
   ];
 
-  const handleUpdatePostStatus = (status) => {
-    dispatch(
-      updatePostStatus({
-        userId: userInfo._id,
-        postId: post._id,
-        status: status,
-      }),
-    );
-  };
-
   const handleUpdatePostVisibility = (visibility: number) => {
     dispatch(
+      // #13: `userId` bỏ khỏi payload — BE xét chủ sở hữu / admin-mod trên `req.user`.
       updatePostVisibility({
-        userId: userInfo._id,
         postId: post._id,
         visibility: visibility,
       }),
@@ -191,29 +175,6 @@ const Actions = ({ post }: { post: IPost }) => {
       label: t("visibilityOnlyMe"),
     },
   ];
-
-  if (isAdmin) {
-    return (
-      <div className="post-actions post-actions--admin">
-        <Button
-          className="post-actions__admin-btn post-actions__admin-btn--accept"
-          onClick={() => {
-            handleUpdatePostStatus(Constants.POST_STATUS.PUBLIC);
-          }}
-        >
-          Accept
-        </Button>
-        <Button
-          className="post-actions__admin-btn btn-subtle"
-          onClick={() => {
-            handleUpdatePostStatus(Constants.POST_STATUS.DELETED);
-          }}
-        >
-          Reject
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <>

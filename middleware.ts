@@ -20,7 +20,6 @@ const PROTECTED_PREFIXES = [
   "/liked",
   "/saved",
   "/update",
-  "/admin",
   "/setting",
 ];
 
@@ -67,7 +66,5 @@ export const config = {
     "/activity",
     "/chat/:path*",
     "/chat",
-    "/admin/:path*",
-    "/admin",
   ],
 };

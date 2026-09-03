@@ -1,8 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import CreatePostBar from "../components/CreatePostBar";
 import ListPost from "../components/ListPost";
@@ -27,16 +25,9 @@ const HomePage = ({
   initialPosts: IPost[];
 }) => {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { currentPage } = useAppSelector((state: AppState) => state.util);
   const { FOR_YOU } = PageConstant;
-
-  useEffect(() => {
-    if (userInfo?._id && userInfo?.role === Constants.USER_ROLE.ADMIN) {
-      router.push(`/${PageConstant.ADMIN.DEFAULT}`);
-    }
-  }, [userInfo?._id]);
 
   useEffect(() => {
     // Seeds the feed with the server-fetched first page so ListPost renders

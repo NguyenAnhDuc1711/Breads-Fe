@@ -5,7 +5,7 @@ import { generateSitemaps as generateProfileSitemaps } from "./profile-sitemap/s
 /**
  * Generates /robots.txt for search engine crawler control.
  * - Public pages (posts, user profiles, search): allowed
- * - Private pages (chat, activity, admin, setting, update): disallowed
+ * - Private pages (chat, activity, setting, update): disallowed
  *
  * Sitemap URLs: Task 010's spike (see .ccpm/context/handoffs/010.md) found
  * that a `generateSitemaps()`-based route (app/post-sitemap/sitemap.ts,
@@ -48,7 +48,6 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
         disallow: [
           "/chat/",
           "/activity/",
-          "/admin/",
           "/setting",
           "/update",
           "/banned",

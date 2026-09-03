@@ -16,10 +16,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
+import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import { encodedString } from "../Breads-Shared/util";
-import { genRandomCode } from "../Breads-Shared/util/index";
 import CodePopup from "../components/CodePopup";
 import { POST } from "../config/API";
 import { useAppDispatch } from "../hooks/redux";
@@ -46,7 +44,6 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
   });
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const codeSend = useRef(genRandomCode());
 
   // Fix #4: Stable keydown listener — no longer depends on inputs (stale closure
   // avoided by reading the latest inputs via a ref)
@@ -154,51 +151,29 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     await handleLoginWithInputs(inputs);
   };
 
+  // Bước 2 (access-control-hardening): toàn bộ việc SINH mã và DỰNG URL reset đã chuyển sang
+  // server (`POST /users/password-reset/requests`). Ba thứ bị xoá khỏi đây:
+  //   - `codeSend`/`encodedString(...)`: client tự sinh mã thì mã không chứng minh được gì.
+  //   - `localStorage.setItem("encodedCode", ...)`: mã không còn được đối chiếu ở client.
+  //   - tiền kiểm `CHECK_VALID_USER`: endpoint đó trả lời thẳng "email này có tài khoản không" —
+  //     công cụ dò tài khoản. Server giờ LUÔN trả 200 nên UI cũng hiển thị cùng một thông báo bất
+  //     kể email có tồn tại hay không (chủ đích, không phải thiếu sót).
   const handleForgotPassword = async () => {
     try {
       const email = inputs.email;
       if (email.trim() && /\S+@\S+\.\S+/.test(email)) {
-        let isValidAccount = await POST({
-          path: Route.USER + USER_PATH.CHECK_VALID_USER,
-          payload: {
-            userEmail: email,
-          },
+        setOpenCodeBox(true);
+        dispatch(
+          showToast({
+            title: "",
+            description: t("codesend"),
+            status: "success",
+          }),
+        );
+        await POST({
+          path: Route.USER + USER_PATH.PW_RESET_REQUEST,
+          payload: { email },
         });
-        if (isValidAccount) {
-          dispatch(
-            showToast({
-              title: "",
-              description: t("codesend"),
-              status: "success",
-            }),
-          );
-          // Fix #8: Removed console.log that exposed the verification code
-          const codeSendDecoded = encodedString(codeSend.current);
-          try {
-            const options = {
-              to: email,
-              subject: "Reset password",
-              code: codeSendDecoded,
-              url: `${window.location.origin}/reset-pw/userId/${codeSendDecoded}`,
-            };
-            localStorage.setItem("encodedCode", codeSendDecoded);
-            setOpenCodeBox(true);
-            await POST({
-              path: Route.UTIL + UTIL_PATH.SEND_FORGOT_PW_MAIL,
-              payload: options,
-            });
-          } catch (err) {
-            console.error(err);
-          }
-        } else {
-          dispatch(
-            showToast({
-              title: "",
-              description: t("Invalidaccount"),
-              status: "error",
-            }),
-          );
-        }
       } else {
         dispatch(
           showToast({
@@ -220,16 +195,16 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     }
   };
 
+  // Đối chiếu mã do SERVER thực hiện. `userId` chỉ được trả về khi mã đúng — thay cho việc gọi
+  // `GET_USER_ID_FROM_EMAIL` (endpoint công khai email -> userId) như trước.
   const handleSubmitCode = async (code) => {
     try {
-      if (code === codeSend.current) {
-        const userId = await POST({
-          path: Route.USER + USER_PATH.GET_USER_ID_FROM_EMAIL,
-          payload: {
-            userEmail: inputs.email,
-          },
-        });
-        router.push(`/reset-pw/${userId}/${code}`);
+      const result = await POST({
+        path: Route.USER + USER_PATH.PW_RESET_VERIFY,
+        payload: { email: inputs.email, code },
+      });
+      if (result?.userId) {
+        router.push(`/reset-pw/${result.userId}/${code}`);
       } else {
         dispatch(
           showToast({

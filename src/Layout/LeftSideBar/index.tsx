@@ -5,19 +5,16 @@ import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { BiLogIn } from "react-icons/bi";
-import { BsFilePost } from "react-icons/bs";
-import { FaFacebookMessenger, FaRegHeart, FaUsers } from "react-icons/fa";
+import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
-import { GrHomeRounded, GrOverview } from "react-icons/gr";
+import { GrHomeRounded } from "react-icons/gr";
 import { MdAdd } from "react-icons/md";
-import { TbMessageReport } from "react-icons/tb";
 import {
   MESSAGE_PATH,
   NOTIFICATION_PATH,
   Route,
 } from "../../Breads-Shared/APIConfig";
-import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
@@ -43,7 +40,6 @@ const LeftSideBar = () => {
   const { colorMode } = useColorMode();
 
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
-  const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
   // Active item now comes from the URL, not from Redux (AD-4).
   const currentPage = getCurrentPage(pathname);
   const hasNewNotification = useAppSelector(
@@ -131,88 +127,69 @@ const LeftSideBar = () => {
     };
   };
 
-  const listItems: any = isAdmin
+  const listItems: any = userInfo?._id
     ? [
         {
-          icon: <GrOverview size={24} />,
-          ...getItemPropByPage(PageConstant.ADMIN.DEFAULT),
+          icon: <GrHomeRounded size={24} />,
+          ...getItemPropByPage(PageConstant.HOME),
         },
         {
-          icon: <BsFilePost size={24} />,
-          ...getItemPropByPage(PageConstant.ADMIN.POSTS),
+          icon: <FiSearch size={24} />,
+          ...getItemPropByPage(PageConstant.SEARCH),
         },
         {
-          icon: <FaUsers size={24} />,
-          ...getItemPropByPage(PageConstant.ADMIN.USERS),
+          icon: linkIcon,
+          ...getItemPropByPage(PageConstant.ACTIVITY),
+          onClick: () => {
+            getItemPropByPage(PageConstant.ACTIVITY).onClick();
+            dispatch(updateHasNotification(false));
+          },
         },
         {
-          icon: <TbMessageReport size={24} />,
-          ...getItemPropByPage(PageConstant.ADMIN.REPORT),
+          icon: <MdAdd size={24} />,
+          onClick: () => {
+            dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+          },
+        },
+        {
+          icon: <FaRegUser size={24} />,
+          ...getItemPropByPage(PageConstant.USER, `/${userInfo._id}`),
+        },
+        {
+          icon: messIcon,
+          ...getItemPropByPage(PageConstant.CHAT),
         },
       ]
-    : userInfo?._id
-      ? [
-          {
-            icon: <GrHomeRounded size={24} />,
-            ...getItemPropByPage(PageConstant.HOME),
-          },
-          {
-            icon: <FiSearch size={24} />,
-            ...getItemPropByPage(PageConstant.SEARCH),
-          },
-          {
-            icon: linkIcon,
-            ...getItemPropByPage(PageConstant.ACTIVITY),
-            onClick: () => {
-              getItemPropByPage(PageConstant.ACTIVITY).onClick();
-              dispatch(updateHasNotification(false));
-            },
-          },
-          {
-            icon: <MdAdd size={24} />,
-            onClick: () => {
-              dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
-            },
-          },
-          {
-            icon: <FaRegUser size={24} />,
-            ...getItemPropByPage(PageConstant.USER, `/${userInfo._id}`),
-          },
-          {
-            icon: messIcon,
-            ...getItemPropByPage(PageConstant.CHAT),
-          },
-        ]
-      : [
-          {
-            icon: <GrHomeRounded size={24} />,
-            ...getItemPropByPage(PageConstant.HOME),
-          },
-          {
-            icon: <FiSearch size={24} />,
-            ...getItemPropByPage(PageConstant.SEARCH),
-          },
-          {
-            icon: linkIcon,
-            onClick: () => dispatch(openLoginPopupAction()),
-            color: getButtonColor(false, colorMode),
-          },
-          {
-            icon: <MdAdd size={24} />,
-            onClick: () => dispatch(openLoginPopupAction()),
-            color: getButtonColor(false, colorMode),
-          },
-          {
-            icon: <FaRegUser size={24} />,
-            onClick: () => dispatch(openLoginPopupAction()),
-            color: getButtonColor(false, colorMode),
-          },
-          {
-            icon: messIcon,
-            onClick: () => dispatch(openLoginPopupAction()),
-            color: getButtonColor(false, colorMode),
-          },
-        ];
+    : [
+        {
+          icon: <GrHomeRounded size={24} />,
+          ...getItemPropByPage(PageConstant.HOME),
+        },
+        {
+          icon: <FiSearch size={24} />,
+          ...getItemPropByPage(PageConstant.SEARCH),
+        },
+        {
+          icon: linkIcon,
+          onClick: () => dispatch(openLoginPopupAction()),
+          color: getButtonColor(false, colorMode),
+        },
+        {
+          icon: <MdAdd size={24} />,
+          onClick: () => dispatch(openLoginPopupAction()),
+          color: getButtonColor(false, colorMode),
+        },
+        {
+          icon: <FaRegUser size={24} />,
+          onClick: () => dispatch(openLoginPopupAction()),
+          color: getButtonColor(false, colorMode),
+        },
+        {
+          icon: messIcon,
+          onClick: () => dispatch(openLoginPopupAction()),
+          color: getButtonColor(false, colorMode),
+        },
+      ];
 
   const mobileListItems = userInfo?._id
     ? [

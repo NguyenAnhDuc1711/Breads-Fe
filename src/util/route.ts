@@ -28,22 +28,12 @@ const ACTIVITY_TABS: string[] = [
   PageConstant.REPOSTS,
 ];
 
-// Longest-first so "admin/posts/validation" wins over "admin/posts".
-const ADMIN_PAGES: string[] = [
-  PageConstant.ADMIN.POSTS_VALIDATION,
-  PageConstant.ADMIN.POSTS,
-  PageConstant.ADMIN.USERS,
-  PageConstant.ADMIN.REPORT,
-  PageConstant.ADMIN.DEFAULT,
-];
-
 export const getSegments = (pathname: string | null): string[] =>
   (pathname ?? "").split("/").filter(Boolean);
 
 /** Pathname -> the value `state.util.currentPage` used to hold. */
 export const getCurrentPage = (pathname: string | null): string => {
-  const segments = getSegments(pathname);
-  const [first, second] = segments;
+  const [first, second] = getSegments(pathname);
 
   // "/" , "/home" and every home tab all belong to the HOME section.
   if (!first || first === PageConstant.HOME || HOME_TABS.includes(first)) {
@@ -56,14 +46,6 @@ export const getCurrentPage = (pathname: string | null): string => {
     return second === PageConstant.SIGNUP
       ? PageConstant.SIGNUP
       : PageConstant.LOGIN;
-  }
-  if (first === PageConstant.ADMIN.DEFAULT) {
-    const joined = segments.join("/");
-    return (
-      ADMIN_PAGES.find(
-        (page) => joined === page || joined.startsWith(page + "/")
-      ) ?? PageConstant.ADMIN.DEFAULT
-    );
   }
   if (first === PageConstant.SETTING.DEFAULT) {
     return PageConstant.SETTING.DEFAULT;

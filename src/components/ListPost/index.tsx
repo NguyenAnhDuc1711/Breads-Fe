@@ -1,19 +1,15 @@
-import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { EmptyContentSvg } from "../../assests/icons";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { getPosts } from "../../store/PostSlice/asyncThunk";
-import { getIsAdminPage } from "../../util";
 import InfiniteScroll from "../InfiniteScroll";
 import Post from "./Post";
 import SkeletonPost from "./Post/skeleton";
 import "./index.css";
 
 const ListPost = () => {
-  const pathname = usePathname();
-  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { listPost, isLoading } = useAppSelector(
@@ -21,9 +17,6 @@ const ListPost = () => {
   );
   const { currentPage, displayPageData } = useAppSelector(
     (state: AppState) => state.util,
-  );
-  const filterPostValidation = useAppSelector(
-    (state: AppState) => state.admin.filterPostValidation,
   );
 
   const handleGetPosts = async ({ page }) => {
@@ -34,16 +27,10 @@ const ListPost = () => {
       ) {
         return;
       }
-      if (page === 1 && !isAdmin && hasPosts) {
+      if (page === 1 && hasPosts) {
         return;
       }
-      let filter = { page: displayPageData };
-      if (isAdmin) {
-        filter = {
-          ...filter,
-          ...filterPostValidation,
-        };
-      }
+      const filter = { page: displayPageData };
       const payload: {
         filter: any;
         userId?: string;
@@ -67,7 +54,7 @@ const ListPost = () => {
 
   return (
     <>
-      {(isAdmin ? true : hasPosts) ? (
+      {hasPosts ? (
         <>
           <InfiniteScroll
             queryFc={(page) => {
@@ -82,9 +69,7 @@ const ListPost = () => {
                 <hr className="list-post__gap" />
               </Fragment>
             )}
-            condition={!isAdmin || !!filterPostValidation}
             skeletonCpn={<SkeletonPost />}
-            reloadPageDeps={isAdmin ? [filterPostValidation] : null}
           />
         </>
       ) : (

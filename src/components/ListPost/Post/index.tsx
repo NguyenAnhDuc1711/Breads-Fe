@@ -3,7 +3,7 @@
 import { ChevronRightIcon } from "../../../assests/chakraIcons";
 import { Button, Card, CardBody, Divider, Menu, MenuButton, MenuList, Portal, Text, Tooltip, useColorMode } from "../../ui/primitives";
 import dayjs from "../../../util/dayjs";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { memo, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdLock, MdPeopleAlt } from "react-icons/md";
@@ -18,7 +18,6 @@ import useSocket from "../../../hooks/useSocket";
 import { AppState } from "../../../store";
 import { IPost, updatePostLike } from "../../../store/PostSlice";
 import { getPostReplies } from "../../../store/PostSlice/asyncThunk";
-import { getIsAdminPage } from "../../../util";
 import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import CustomLinkPreview from "../../../util/CustomLinkPreview";
 import PopupCancel from "../../../util/PopupCancel";
@@ -52,8 +51,6 @@ const Post = ({
   const { t } = useTranslation();
   const { colorMode } = useColorMode();
   const router = useRouter();
-  const pathname = usePathname();
-  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
@@ -139,7 +136,7 @@ const Post = ({
               <span className="post__timestamp">
                 {dayjs(post?.createdAt).fromNow()}
               </span>
-              {!isParentPost && !isAdmin && (
+              {!isParentPost && (
                 <div className="post__more-action">
                   <Menu placement="bottom-end">
                     <MenuButton

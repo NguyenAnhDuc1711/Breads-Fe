@@ -67,8 +67,8 @@ const ReportPopup = () => {
   };
 
   const handleSubmitReport = () => {
+    // Bước 9: `userId` không còn gửi lên — server lấy người báo cáo từ JWT.
     sendReport({
-      userId: userInfo?._id,
       content: reportInfo.content,
       media: reportInfo.media,
     });

@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HeaderHeight } from ".";
-import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
@@ -27,11 +26,6 @@ const Header = () => {
     (state: AppState) => state.user,
   );
   const [openBox, setOpenBox] = useState(false);
-  const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
-
-  if (isAdmin) {
-    return <></>;
-  }
 
   const getBoxItems = () => {
     switch (currentPage) {

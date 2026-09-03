@@ -1,11 +1,9 @@
-import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
 import { IPost, ISurveyOption } from "../../../../store/PostSlice";
 import { selectSurveyOption } from "../../../../store/PostSlice/asyncThunk";
 import { openLoginPopupAction } from "../../../../store/UtilSlice";
-import { getIsAdminPage } from "../../../../util";
 import "./index.css";
 
 const SurveyOption = ({
@@ -17,8 +15,6 @@ const SurveyOption = ({
   post: IPost;
   isParentPost?: boolean;
 }) => {
-  const pathname = usePathname();
-  const isAdmin = getIsAdminPage(pathname);
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const handleTickOption = () => {
@@ -48,27 +44,19 @@ const SurveyOption = ({
 
   return (
     <div className="survey__option">
-      <p
-        className={`survey__option-value${
-          isAdmin ? " survey__option-value--admin" : ""
-        }`}
-      >
-        {option.value}
-      </p>
-      {!isAdmin && (
-        <div className="survey__option-actions">
-          <p className="survey__option-percent">{percent}%</p>
-          <input
-            type="checkbox"
-            onChange={() => {
-              if (!isParentPost && !isAdmin) {
-                handleTickOption();
-              }
-            }}
-            checked={option.usersId?.includes(userInfo._id)}
-          />
-        </div>
-      )}
+      <p className="survey__option-value">{option.value}</p>
+      <div className="survey__option-actions">
+        <p className="survey__option-percent">{percent}%</p>
+        <input
+          type="checkbox"
+          onChange={() => {
+            if (!isParentPost) {
+              handleTickOption();
+            }
+          }}
+          checked={option.usersId?.includes(userInfo._id)}
+        />
+      </div>
       <div className="survey__option-bg" style={{ width: `${percent}%` }} />
     </div>
   );

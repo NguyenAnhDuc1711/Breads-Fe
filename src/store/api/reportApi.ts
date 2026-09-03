@@ -1,8 +1,8 @@
 import { REPORT_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { api } from "./baseApi";
 
+// Bước 9: `userId` (người báo cáo) bỏ khỏi payload — server lấy từ JWT.
 export interface SendReportPayload {
-  userId?: string;
   content: string;
   media: any;
 }
