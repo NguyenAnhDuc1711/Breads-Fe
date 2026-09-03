@@ -5,7 +5,6 @@ import NextImage from "next/image";
 import { CSSProperties, useState } from "react";
 import "./OptimizedAvatar.css";
 
-// Chakra's default avatar size tokens (theme/components/avatar.ts), in px.
 const SIZE_TOKEN_PX: Record<string, number> = {
   "2xs": 16,
   xs: 24,
@@ -46,7 +45,6 @@ const largestTokenPx = (size?: ResponsiveSize): number | undefined => {
   return values.length ? Math.max(...values) : undefined;
 };
 
-// Falls back to Chakra Avatar (initials) on empty src AND on load error — Chakra's own fallback only covers the former.
 const OptimizedAvatar = ({
   src,
   name,
@@ -74,7 +72,6 @@ const OptimizedAvatar = ({
 
   const explicitPx = toPx(width) ?? toPx(height);
   const isResponsive = typeof size === "object";
-  // Fetch at the largest breakpoint's px so it stays sharp when the Box scales it down on smaller screens.
   const px = explicitPx ?? largestTokenPx(size) ?? SIZE_TOKEN_PX.md;
   const boxSize = isResponsive
     ? Object.fromEntries(

@@ -36,10 +36,8 @@ const Signup = () => {
   });
   const [openCodePopup, setOpenCodePopup] = useState(false);
   const [errors, setErrors] = useState<any>({});
-  // Fix #7: Add loading state so the button properly shows spinner
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Fix #11: Properly typed refs
   const usernameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -67,8 +65,6 @@ const Signup = () => {
     return validationErrors;
   };
 
-  // Fix #2: Removed dead handleValidateCode function (empty body, never called)
-
   const handleSignup = async () => {
     const validationErrors = validateInputs();
     setErrors(validationErrors);
@@ -76,7 +72,6 @@ const Signup = () => {
       return;
     }
 
-    // Fix #7: Set loading state around API call
     setIsLoading(true);
     try {
       const result = await dispatch(signUp(inputs));
@@ -136,7 +131,6 @@ const Signup = () => {
           }),
         );
         setTimeout(() => {
-          // Fix #1: Route to /login not /auth/login
           router.push(`/${PageConstant.LOGIN}`);
         }, 500);
       } else {
@@ -209,12 +203,10 @@ const Signup = () => {
     }
   };
 
-  // Fix #6: Validate password against the new value directly (not stale state)
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
     setInputs((prev) => ({ ...prev, password: newPassword }));
 
-    // Validate against newPassword directly — avoids stale state issue
     if (newPassword.length > 0 && newPassword.length < 6) {
       setErrors((prev) => ({ ...prev, password: t("minPassWarning") }));
     } else {

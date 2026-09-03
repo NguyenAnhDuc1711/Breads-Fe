@@ -96,7 +96,6 @@ const enTranslations = {
   confirmPWRequired: "Pleast confirm your password",
   confirmWarning: "Confirm password needs to be the same as password",
 
-  // thêm các từ khóa khác ở đây
   toastCreadtedPost: "Your post is waiting for validation from admin!",
   show: "Show",
   Yourconversations: "Your conversations",

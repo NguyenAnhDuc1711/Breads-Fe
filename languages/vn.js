@@ -99,7 +99,6 @@ const vnTranslations = {
   confirmPWRequired: "Vui lòng xác nhận mật khẩu",
   confirmWarning: "Mật khẩu xác nhận phải khớp với mật khẩu mới",
 
-  // thêm các từ khóa khác ở đây
   toastCreadtedPost: "Bài viết của bạn đang đợi được phê duyệt!",
   show: "Xem",
   Yourconversations: "Cuộc trò chuyện của bạn",

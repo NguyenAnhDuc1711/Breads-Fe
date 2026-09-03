@@ -35,9 +35,6 @@ const CustomLinkPreview = ({
     }
   }, [url, postInfo?.links?.length]);
 
-  // Calls our own /api/link-preview route instead of api.linkpreview.net
-  // directly — the API key(s) now live server-only (LINKPREVIEW_API_KEYS),
-  // never sent to or visible in the browser.
   const fetchLinkData = async (fetchUrl) => {
     try {
       const { data } = await axios.get("/api/link-preview", {

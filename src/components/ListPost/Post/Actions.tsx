@@ -86,9 +86,6 @@ const Actions = ({ post }: { post: IPost }) => {
     return intValue + (firstFloatValue ? "." + firstFloatValue : "") + strValue;
   };
 
-  // Repost is a UX-layer gate only — Be (task 011) is the real enforcement,
-  // rejecting reposts of non-PUBLIC content with a 400. Undefined visibility
-  // (pre-backfill posts) is treated as PUBLIC, matching the schema default.
   const canRepost =
     (post.visibility ?? Constants.POST_VISIBILITY.PUBLIC) ===
     Constants.POST_VISIBILITY.PUBLIC;
@@ -119,8 +116,6 @@ const Actions = ({ post }: { post: IPost }) => {
     },
     {
       name: ACTIONS_NAME.REPLY,
-      // `repliesCount` là counter riêng trên post (không còn suy từ `replies.length` — danh sách
-      // reply giờ tải phân trang, không có mặt trên card feed/list, chỉ trang detail mới tải).
       statistic: post.repliesCount ?? 0,
       icon: <ReplyIcon />,
       onClick: () => {
@@ -155,7 +150,6 @@ const Actions = ({ post }: { post: IPost }) => {
 
   const handleUpdatePostVisibility = (visibility: number) => {
     dispatch(
-      // #13: `userId` bỏ khỏi payload — BE xét chủ sở hữu / admin-mod trên `req.user`.
       updatePostVisibility({
         postId: post._id,
         visibility: visibility,

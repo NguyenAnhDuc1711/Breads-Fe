@@ -4,7 +4,7 @@ const CustomizeToast = ({ isVisible, message, onAction, hideToast }) => {
       position: "fixed",
       bottom: "20px",
       left: "50%",
-      transform: "translateX(-50%)", // Center align horizontally
+      transform: "translateX(-50%)",
       width: "300px",
       backgroundColor: "#333",
       color: "white",
@@ -12,17 +12,17 @@ const CustomizeToast = ({ isVisible, message, onAction, hideToast }) => {
       borderRadius: "8px",
       boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
       zIndex: 1000,
-      opacity: 0, // Start hidden for animation
+      opacity: 0,
       transition: "opacity 0.3s, transform 0.3s",
     },
     show: {
       opacity: 1,
       transform: "translateX(-50%) translateY(0)",
-      animation: "slideUp 0.5s ease-in-out", // Slide-up animation on show
+      animation: "slideUp 0.5s ease-in-out",
     },
     hide: {
       opacity: 0,
-      transform: "translateX(-50%) translateY(20px)", // Position slightly off-screen on hide
+      transform: "translateX(-50%) translateY(20px)",
     },
     closeButton: {
       position: "absolute",
@@ -69,7 +69,7 @@ const CustomizeToast = ({ isVisible, message, onAction, hideToast }) => {
     <div
       style={{
         ...styles.toastContainer,
-        ...(isVisible ? styles.show : styles.hide), // Apply animation based on visibility
+        ...(isVisible ? styles.show : styles.hide),
       }}
     >
       <button onClick={hideToast} style={styles.closeButton}>

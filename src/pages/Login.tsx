@@ -45,15 +45,12 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Fix #4: Stable keydown listener — no longer depends on inputs (stale closure
-  // avoided by reading the latest inputs via a ref)
   const inputsRef = useRef(inputs);
   useEffect(() => {
     inputsRef.current = inputs;
   }, [inputs]);
 
   const handleLoginStable = useCallback(async () => {
-    // Read latest inputs from ref so the listener is never stale
     await handleLoginWithInputs(inputsRef.current);
   }, []);
 
@@ -63,9 +60,8 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     };
     window.addEventListener("keydown", enterListener);
     return () => window.removeEventListener("keydown", enterListener);
-  }, [handleLoginStable]); // stable ref — listener registered only once
+  }, [handleLoginStable]);
 
-  // Fix #10: validateField now only checks its own errors, not the whole object
   const validateField = (
     fieldName: keyof LoginErrors,
     value?: string,
@@ -103,11 +99,9 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     return emailOk && passwordOk;
   };
 
-  // Extracted inner logic so the stable keydown handler can call it with a snapshot
   const handleLoginWithInputs = async (currentInputs: LoginInput) => {
     if (!validateAll()) return;
 
-    // Fix #7: Set loading state around API call
     setIsLoading(true);
     try {
       const data: any = await dispatch(login(currentInputs));
@@ -151,13 +145,6 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     await handleLoginWithInputs(inputs);
   };
 
-  // Bước 2 (access-control-hardening): toàn bộ việc SINH mã và DỰNG URL reset đã chuyển sang
-  // server (`POST /users/password-reset/requests`). Ba thứ bị xoá khỏi đây:
-  //   - `codeSend`/`encodedString(...)`: client tự sinh mã thì mã không chứng minh được gì.
-  //   - `localStorage.setItem("encodedCode", ...)`: mã không còn được đối chiếu ở client.
-  //   - tiền kiểm `CHECK_VALID_USER`: endpoint đó trả lời thẳng "email này có tài khoản không" —
-  //     công cụ dò tài khoản. Server giờ LUÔN trả 200 nên UI cũng hiển thị cùng một thông báo bất
-  //     kể email có tồn tại hay không (chủ đích, không phải thiếu sót).
   const handleForgotPassword = async () => {
     try {
       const email = inputs.email;
@@ -195,8 +182,6 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
     }
   };
 
-  // Đối chiếu mã do SERVER thực hiện. `userId` chỉ được trả về khi mã đúng — thay cho việc gọi
-  // `GET_USER_ID_FROM_EMAIL` (endpoint công khai email -> userId) như trước.
   const handleSubmitCode = async (code) => {
     try {
       const result = await POST({

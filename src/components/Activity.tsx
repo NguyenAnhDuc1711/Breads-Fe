@@ -240,10 +240,6 @@ const Activity = ({ currentPage }: { currentPage: string }) => {
 
                 <div className="activity-item__follow-row">
                   {item.FromUserDetails && (
-                    // Nhánh này chỉ render khi action === FOLLOW — BE trả FromUserDetails đầy đủ
-                    // (có _id) cho action này (xem notification.controller.ts $cond), khác nhánh
-                    // else (like/reply/...) chỉ có username/avatar. TS không narrow được theo
-                    // action nên assert thủ công.
                     <FollowBtn user={item.FromUserDetails as IUserShortInfo} />
                   )}
                 </div>

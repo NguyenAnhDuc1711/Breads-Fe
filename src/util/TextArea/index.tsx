@@ -1,4 +1,3 @@
-// TextArea.jsx
 import { useColorModeValue } from "../../components/ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import UsersTagBox from "../../components/UsersTagBox";
@@ -81,9 +80,7 @@ const TextArea = ({
     }
 
     let extractedUrls = value.match(urlRegex) || [];
-    // Loại bỏ các URL trùng lặp
     extractedUrls = [...new Set(extractedUrls)];
-    // Cập nhật nếu khác với danh sách URL hiện tại
     if (JSON.stringify(extractedUrls) !== JSON.stringify(urls)) {
       setUrls(extractedUrls);
     }

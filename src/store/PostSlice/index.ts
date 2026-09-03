@@ -78,18 +78,12 @@ const postSlice = createSlice({
     updateListPost: (state, action) => {
       state.listPost = Array.isArray(action.payload) ? action.payload : [];
     },
-    // Bridge for RTK Query-backed list fetches (e.g. useGetUserPostsQuery in
-    // UserHeader.tsx) to keep this shared flag in sync — ListPost's own
-    // skeleton/empty branch still reads state.post.isLoading directly.
     updatePostListLoading: (state, action) => {
       state.isLoading = action.payload;
     },
     selectPostReply: (state, action) => {
       state.postReply = action.payload;
     },
-    // Authoritative like count from the server broadcast (sent to every
-    // viewer of the post). Never touches `likedByMe` — that's per-viewer
-    // and only the acting client's own click can know it changed.
     updatePostLike: (state, action) => {
       const { postId, likesCount } = action.payload;
       const postIndex = state.listPost.findIndex((post) => post._id === postId);
@@ -113,8 +107,6 @@ const postSlice = createSlice({
         }
       }
     },
-    // Optimistic local flip for the user who just clicked Like — fires
-    // immediately on click, before the server round-trip / broadcast.
     toggleLikedByMe: (state, action) => {
       const { postId } = action.payload;
       const flip = (post: IPost) => {
@@ -149,8 +141,6 @@ const postSlice = createSlice({
       const newReplies = (payload.replies ?? []).map(
         (reply: Partial<IPost>) => new PostResponse(reply as any)
       );
-      // Runtime luôn có array (PostResponse default ở getPost.fulfilled) — `?? []` ở đây chỉ để
-      // thoả TS (`IPost.replies` vẫn khai optional ở type-level), không phải guard thực sự cần.
       state.postSelected.replies = payload.isNewPage
         ? newReplies
         : [...(state.postSelected.replies ?? []), ...newReplies];
@@ -181,8 +171,6 @@ const postSlice = createSlice({
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
       const rawNewPost = action.payload?.data;
-      // Create trả về post MỚI hoàn toàn (không phải patch/merge) — an toàn để wrap qua
-      // PostResponse như getPost/getPosts (FR-3), khác `editPost.fulfilled` bên dưới.
       const newPost: IPost | undefined = rawNewPost
         ? new PostResponse(rawNewPost)
         : undefined;
@@ -201,8 +189,6 @@ const postSlice = createSlice({
               ({ _id }) => _id === postSelected._id
             );
             if (state.postAction === REPLY) {
-              // `clonePostSelected.replies` luôn là array (mọi entry point vào `postSelected`/
-              // `listPost` đã qua PostResponse, default `replies: []`) — không cần guard nữa.
               clonePostSelected.replies.push(newPost);
               clonePostSelected.repliesCount = (clonePostSelected.repliesCount ?? 0) + 1;
             } else {
@@ -220,11 +206,6 @@ const postSlice = createSlice({
       state.postInfo = defaultPostInfo;
     });
     builder.addCase(editPost.fulfilled, (state, action) => {
-      // (T5 audit) CHỦ Ý không wrap qua PostResponse ở đây: payload được spread-merge vào
-      // `listPost[idx]` hiện có (`{...old, ...postUpdatedData}`), không phải full-replace như
-      // getPost/getPosts/createPost — nếu API edit trả về patch RỖNG cho field không đổi (chưa xác
-      // nhận), PostResponse sẽ default `content`/`media` thiếu về `undefined`, GHI ĐÈ nhầm giá trị
-      // cũ đang đúng khi merge. Cần xác nhận shape response thật của endpoint edit trước khi wrap.
       const postUpdatedData: IPost = action.payload;
       const listPost: IPost[] = state.listPost;
       const postInfo: IPost = state.postInfo;
@@ -256,8 +237,6 @@ const postSlice = createSlice({
             (post) => post._id !== postId
           );
           state.postSelected.replies = state.listPost;
-          // Badge (`Actions`/`ViewActivity`) đọc `repliesCount` riêng, không còn suy ra từ
-          // `replies.length` (trang hiện tải chỉ là 1 phần) — phải tự trừ khi xoá đúng 1 reply.
           if (hadReply) {
             state.postSelected.repliesCount = Math.max(
               0,
@@ -315,8 +294,6 @@ const postSlice = createSlice({
         }
       }
     });
-    // A visibility change keeps the post in place — only its `visibility`
-    // field changes, so task 013's badge stays in sync.
     builder.addCase(updatePostVisibility.fulfilled, (state, action) => {
       const postId = action.payload;
       const visibility = action.meta.arg?.visibility;

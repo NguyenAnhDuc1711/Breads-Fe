@@ -21,19 +21,6 @@ import theme from "../../../theme";
 
 export { useColorMode, useColorModeValue };
 
-// ---------------------------------------------------------------------------
-// A full drop-in replacement for the @chakra-ui/react components this app
-// uses. Every scale table / default style below is copied verbatim from
-// Chakra's own source (node_modules/@chakra-ui/theme, @chakra-ui/react)
-// rather than guessed, so both simple style-prop wrappers (Box/Flex/Text/...)
-// and interactive components (Modal/Menu/Popover/Tabs/Accordion/...) match
-// Chakra's real defaults. Positioning for Menu/Popover uses a fixed-position
-// + getBoundingClientRect approach instead of Popper.js, and Modal/Menu skip
-// focus-trap — deliberate simplifications, not oversights.
-// ---------------------------------------------------------------------------
-
-// Chakra's `space` scale: numeric keys are n * 0.25rem (4px) steps; "px" is
-// the one literal-string exception.
 function spaceProp(val: any): string | undefined {
   const resolved = resolveResponsive(val);
   if (resolved === undefined || resolved === null) return undefined;
@@ -42,7 +29,6 @@ function spaceProp(val: any): string | undefined {
   return String(resolved);
 }
 
-// Chakra's `sizes` scale extends `space` with named large tokens.
 const SIZE_TOKENS: Record<string, string> = {
   max: "max-content",
   min: "min-content",
@@ -163,9 +149,6 @@ function shadowProp(val: any): string | undefined {
   return String(resolved);
 }
 
-// Dot-path colour lookup against the project's real (extended) theme, e.g.
-// "gray.500", "gray.light", "cbg.dark", falling back to the raw string
-// (hex/rgba/named CSS colour) when no token matches.
 function colorProp(val: any): string | undefined {
   const resolved = resolveResponsive(val);
   if (
@@ -183,9 +166,6 @@ function colorProp(val: any): string | undefined {
   return typeof node === "string" ? node : resolved;
 }
 
-// Chakra allows responsive object ({base,md,...}) or array ([mobile, ...])
-// prop values. Responsive values are generated as CSS media queries in
-// buildResponsiveCssRules, so inline style resolution returns undefined.
 function resolveResponsive(val: any): any {
   if (Array.isArray(val) || (val !== null && typeof val === "object")) {
     return undefined;
@@ -193,11 +173,6 @@ function resolveResponsive(val: any): any {
   return val;
 }
 
-// ---------------------------------------------------------------------------
-// Pseudo-state styling (_hover/_active/_focus/_disabled/_placeholder) — a
-// scoped <style> tag + generated className, since inline `style` can't
-// express pseudo-selectors.
-// ---------------------------------------------------------------------------
 const CSS_PROP_ALIAS: Record<string, string> = { bg: "background-color" };
 const toKebabCase = (key: string) =>
   key.replace(/([A-Z])/g, "-$1").toLowerCase();
@@ -461,9 +436,6 @@ function usePseudoStyle(props: Record<string, any>) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Shared style props
-// ---------------------------------------------------------------------------
 export interface StyleProps extends PseudoProps {
   w?: any;
   width?: any;
@@ -756,9 +728,6 @@ function buildStyle(props: StyleProps): CSSProperties {
     float,
     flex: flex !== undefined ? String(flex) : undefined,
     flexDirection: resolveResponsive(flexDirection ?? direction ?? flexDir),
-    // Chakra's style-props system applies `align` as alignItems on every
-    // styled component uniformly (not just Flex/Stack) — matched here for
-    // fidelity even though it's a no-op on non-flex elements.
     alignItems: resolveResponsive(alignItems ?? align),
     justifyContent: resolveResponsive(justifyContent ?? justify),
     flexWrap: resolveResponsive(flexWrap ?? wrap),
@@ -771,11 +740,6 @@ function buildStyle(props: StyleProps): CSSProperties {
     ...(sx ? buildStyle(sx) : {}),
   };
 
-  // Omit keys the caller never actually specified (value undefined) instead
-  // of returning them as explicit `undefined` entries — otherwise spreading
-  // this result after a component's own hardcoded default (e.g. Button's
-  // `border: "none"`) silently wipes that default out even when nobody
-  // asked for a different value.
   for (const key of Object.keys(style)) {
     if ((style as any)[key] === undefined) delete (style as any)[key];
   }
@@ -907,16 +871,11 @@ function omitStyleProps<T extends Record<string, any>>(
   return rest;
 }
 
-// ---------------------------------------------------------------------------
-// Box
-// ---------------------------------------------------------------------------
 export interface BoxProps
   extends
     StyleProps,
     Omit<HTMLAttributes<HTMLDivElement>, "color" | "translate"> {
   as?: any;
-  // Allows `as="button" type="submit"` etc. — `type` isn't part of
-  // HTMLAttributes<HTMLDivElement> since real divs don't have it.
   type?: string;
 }
 
@@ -985,9 +944,6 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>(
 );
 Box.displayName = "Box";
 
-// ---------------------------------------------------------------------------
-// Flex
-// ---------------------------------------------------------------------------
 export type FlexProps = BoxProps;
 
 export const Flex = forwardRef<HTMLDivElement, FlexProps>(
@@ -997,12 +953,6 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>(
 );
 Flex.displayName = "Flex";
 
-// ---------------------------------------------------------------------------
-// Stack / HStack / VStack — ported 1:1 from @chakra-ui/layout's stack.tsx:
-// Stack defaults `spacing` to "0.5rem" (8px) with no forced alignItems;
-// HStack/VStack default `align` to "center" (still overridable by the
-// caller) but always force their own `direction` (not overridable).
-// ---------------------------------------------------------------------------
 export interface StackProps extends BoxProps {
   spacing?: any;
 }
@@ -1041,10 +991,6 @@ export const VStack = forwardRef<HTMLDivElement, StackProps>(
 );
 VStack.displayName = "VStack";
 
-// ---------------------------------------------------------------------------
-// Text / Heading — Heading sizes copied from Chakra's heading.mjs (fontSize
-// only; the responsive [base, null, lg] array collapses to its base value).
-// ---------------------------------------------------------------------------
 export interface TextProps extends BoxProps {
   noOfLines?: number;
   as?: any;
@@ -1103,9 +1049,6 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
 );
 Heading.displayName = "Heading";
 
-// ---------------------------------------------------------------------------
-// Badge — base style copied from Chakra's badge.mjs (subtle/gray default).
-// ---------------------------------------------------------------------------
 export interface BadgeProps extends BoxProps {
   colorScheme?: string;
   variant?: "solid" | "subtle" | "outline";
@@ -1146,9 +1089,6 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
 );
 Badge.displayName = "Badge";
 
-// ---------------------------------------------------------------------------
-// Container
-// ---------------------------------------------------------------------------
 export interface ContainerProps extends BoxProps {
   centerContent?: boolean;
 }
@@ -1174,10 +1114,6 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
 );
 Container.displayName = "Container";
 
-// ---------------------------------------------------------------------------
-// Card & CardBody — defaults copied from Chakra's card.mjs (variant
-// "elevated", size "md": radii.md, space.5 padding, shadows.base).
-// ---------------------------------------------------------------------------
 export const Card = forwardRef<HTMLDivElement, BoxProps>(
   ({ style, ...rest }, ref: ForwardedRef<HTMLDivElement>) => (
     <Box
@@ -1201,9 +1137,6 @@ export const CardBody = forwardRef<HTMLDivElement, BoxProps>(
 );
 CardBody.displayName = "CardBody";
 
-// ---------------------------------------------------------------------------
-// Divider
-// ---------------------------------------------------------------------------
 export const Divider = forwardRef<HTMLHRElement, BoxProps>(
   (
     { style, width, w, borderWidth, ...rest },
@@ -1224,9 +1157,6 @@ export const Divider = forwardRef<HTMLHRElement, BoxProps>(
 );
 Divider.displayName = "Divider";
 
-// ---------------------------------------------------------------------------
-// Button — sizes copied from Chakra's button.mjs.
-// ---------------------------------------------------------------------------
 const BUTTON_SIZES: Record<
   string,
   { h: string; minW: string; fontSize: string; px: string }
@@ -1250,10 +1180,6 @@ export interface ButtonProps
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref: ForwardedRef<HTMLButtonElement>) => {
-    // A caller that never asks for Chakra-style theming (no `variant`/
-    // `colorScheme`) is styling this Button entirely through `className` —
-    // don't let a hardcoded default color/size/radius win over that CSS just
-    // because it happens to be computed later in this function.
     const hasExplicitTheming =
       props.variant !== undefined || props.colorScheme !== undefined;
     const {
@@ -1362,9 +1288,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
-// ---------------------------------------------------------------------------
-// Input
-// ---------------------------------------------------------------------------
 export interface InputProps
   extends
     StyleProps,
@@ -1420,9 +1343,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-// ---------------------------------------------------------------------------
-// Spinner (used by Button's isLoading state and Loading screen)
-// ---------------------------------------------------------------------------
 export const Spinner = ({
   size = "md",
   color,
@@ -1452,11 +1372,6 @@ export const Spinner = ({
   );
 };
 
-// ---------------------------------------------------------------------------
-// Avatar — size scale copied from Chakra's avatar.mjs (getSize(n) against
-// the space/sizes table): 2xs=16px, xs=24px, sm=32px, md=48px, lg=64px,
-// xl=96px, 2xl=128px. fontSize = size / 2.5 (Chakra's own formula).
-// ---------------------------------------------------------------------------
 const AVATAR_SIZE_PX: Record<string, number> = {
   "2xs": 16,
   xs: 24,
@@ -1576,9 +1491,6 @@ export const AvatarBadge = forwardRef<HTMLDivElement, BoxProps>(
 );
 AvatarBadge.displayName = "AvatarBadge";
 
-// ---------------------------------------------------------------------------
-// Link
-// ---------------------------------------------------------------------------
 export interface LinkProps
   extends
     StyleProps,
@@ -1628,10 +1540,6 @@ Link.displayName = "Link";
 
 export const GridItem = Box;
 
-// ---------------------------------------------------------------------------
-// Image — Chakra's <Image> accepts the same style-prop shorthand as Box on
-// top of native <img> attributes.
-// ---------------------------------------------------------------------------
 export interface ImageProps
   extends
     StyleProps,
@@ -1678,9 +1586,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
 );
 Image.displayName = "Image";
 
-// ---------------------------------------------------------------------------
-// InputGroup / InputLeftElement / InputRightElement
-// ---------------------------------------------------------------------------
 export const InputGroup = forwardRef<
   HTMLDivElement,
   BoxProps & { size?: string }
@@ -1734,7 +1639,6 @@ export const InputRightElement = forwardRef<HTMLDivElement, BoxProps>(
 );
 InputRightElement.displayName = "InputRightElement";
 
-// Chakra's default breakpoints (theme.breakpoints), in px.
 const BREAKPOINTS_PX: Record<string, number> = {
   base: 0,
   sm: 480,
@@ -1755,14 +1659,7 @@ function getCurrentBreakpoint(): string {
   return current;
 }
 
-// A real reactive replacement for Chakra's useBreakpointValue — tracks
-// window width via a resize listener and re-renders on breakpoint changes.
-// (The static `resolveResponsive` used elsewhere for inline style props
-// intentionally stays SSR-only/mobile-first; this hook is specifically for
-// JS-level branching like `isMobile = useBreakpointValue({base:true,md:false})`.)
 export function useBreakpointValue(values: any): any {
-  // `base` on the server/first paint avoids a hydration mismatch; the real
-  // breakpoint is measured and applied right after mount.
   const [breakpoint, setBreakpoint] = useState("base");
 
   useEffect(() => {
@@ -1780,8 +1677,6 @@ export function useBreakpointValue(values: any): any {
     return values[0];
   }
   if (values !== null && typeof values === "object") {
-    // Mobile-first cascade: value defined at a breakpoint applies to that
-    // breakpoint and all larger ones until a bigger breakpoint overrides it.
     const idx = BREAKPOINT_ORDER.indexOf(breakpoint);
     for (let i = idx; i >= 0; i--) {
       const key = BREAKPOINT_ORDER[i];
@@ -1794,11 +1689,6 @@ export function useBreakpointValue(values: any): any {
 
 export type PlacementWithLogical = string;
 
-// ---------------------------------------------------------------------------
-// Icon — ported from @chakra-ui/icon: baseStyle is w/h "1em", inline-block,
-// lineHeight "1em", flexShrink 0, color white. `as` is the SVG
-// component (react-icons).
-// ---------------------------------------------------------------------------
 export interface IconProps extends StyleProps {
   as?: any;
   onClick?: React.MouseEventHandler;
@@ -1825,9 +1715,6 @@ export const Icon = forwardRef<SVGSVGElement, IconProps>(
 );
 Icon.displayName = "Icon";
 
-// ---------------------------------------------------------------------------
-// Center
-// ---------------------------------------------------------------------------
 export const Center = forwardRef<HTMLDivElement, BoxProps>(
   (props, ref: ForwardedRef<HTMLDivElement>) => (
     <Box
@@ -1841,10 +1728,6 @@ export const Center = forwardRef<HTMLDivElement, BoxProps>(
 );
 Center.displayName = "Center";
 
-// ---------------------------------------------------------------------------
-// WrapItem — simple flex-item wrapper (Chakra's Wrap/WrapItem uses negative
-// margins on the parent + margin on each item; only WrapItem is used here).
-// ---------------------------------------------------------------------------
 export const WrapItem = forwardRef<HTMLDivElement, BoxProps>(
   (props, ref: ForwardedRef<HTMLDivElement>) => (
     <Box ref={ref} display="flex" alignItems="flex-start" {...props} />
@@ -1852,11 +1735,6 @@ export const WrapItem = forwardRef<HTMLDivElement, BoxProps>(
 );
 WrapItem.displayName = "WrapItem";
 
-// ---------------------------------------------------------------------------
-// ButtonGroup — ported from @chakra-ui/react's button-group.tsx: `isAttached`
-// strips border-radius between adjacent children via real sibling
-// selectors (can't be done with inline style, hence the injected <style>).
-// ---------------------------------------------------------------------------
 let buttonGroupCounter = 0;
 
 export interface ButtonGroupProps extends BoxProps {
@@ -1915,10 +1793,6 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(
 );
 ButtonGroup.displayName = "ButtonGroup";
 
-// ---------------------------------------------------------------------------
-// Tag / TagLabel / TagCloseButton — ported from theme's tag.mjs (size "md",
-// variant "subtle", colorScheme "gray" defaults).
-// ---------------------------------------------------------------------------
 const TAG_SIZES: Record<
   string,
   { minH: string; fontSize: string; px: string }
@@ -2003,11 +1877,6 @@ export const TagCloseButton = ({ style, ...rest }: BoxProps) => (
   </Box>
 );
 
-// ---------------------------------------------------------------------------
-// Skeleton / SkeletonCircle / SkeletonText — ported from
-// @chakra-ui/react's skeleton.mjs: startColor/endColor default to
-// gray.100/gray.400 (light), animated background between them.
-// ---------------------------------------------------------------------------
 export interface SkeletonProps extends BoxProps {
   startColor?: string;
   endColor?: string;
@@ -2103,11 +1972,6 @@ export const SkeletonText = ({
   );
 };
 
-// ---------------------------------------------------------------------------
-// Fade / ScaleFade / Collapse / Slide — every real usage in this codebase
-// renders with `in={true}` (static), so these are conditional pass-throughs
-// rather than a framer-motion re-implementation.
-// ---------------------------------------------------------------------------
 interface TransitionWrapperProps {
   in?: boolean;
   children: ReactNode;
@@ -2127,9 +1991,6 @@ export const Collapse = ({
 export const Slide = ({ in: isIn = true, children }: TransitionWrapperProps) =>
   isIn ? <>{children}</> : null;
 
-// ---------------------------------------------------------------------------
-// Checkbox — control size/colours ported from theme's checkbox.mjs.
-// ---------------------------------------------------------------------------
 const CHECKBOX_SIZE_PX: Record<string, number> = { sm: 12, md: 16, lg: 20 };
 
 export interface CheckboxProps
@@ -2193,10 +2054,6 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 );
 Checkbox.displayName = "Checkbox";
 
-// ---------------------------------------------------------------------------
-// Progress — track/filled colours + size heights ported from theme's
-// progress.mjs.
-// ---------------------------------------------------------------------------
 const PROGRESS_TRACK_HEIGHT: Record<string, string> = {
   xs: "4px",
   sm: "8px",
@@ -2243,9 +2100,6 @@ export const Progress = ({
   );
 };
 
-// ---------------------------------------------------------------------------
-// FormControl / FormLabel / FormErrorMessage
-// ---------------------------------------------------------------------------
 const FormControlContext = createContext<{
   isInvalid?: boolean;
   isRequired?: boolean;
@@ -2307,9 +2161,6 @@ export const FormErrorMessage = ({ children, ...rest }: BoxProps) => {
   );
 };
 
-// ---------------------------------------------------------------------------
-// useDisclosure
-// ---------------------------------------------------------------------------
 export function useDisclosure(props: { defaultIsOpen?: boolean } = {}) {
   const [isOpen, setIsOpen] = useState(!!props.defaultIsOpen);
   return {
@@ -2320,13 +2171,6 @@ export function useDisclosure(props: { defaultIsOpen?: boolean } = {}) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Floating position helper — shared by Menu, Popover, Tooltip. Renders into
-// a document.body portal at a `position: fixed` coordinate computed from
-// the trigger's bounding box, so dropdowns escape any `overflow:hidden`
-// scroll container instead of being clipped (Chakra uses Popper.js for
-// this; a fixed-position calculation is a deliberate lighter substitute).
-// ---------------------------------------------------------------------------
 function useFloatingPosition(
   triggerRef: RefObject<HTMLElement>,
   isOpen: boolean,
@@ -2347,7 +2191,6 @@ function useFloatingPosition(
       const rect = triggerRef.current.getBoundingClientRect();
       let effectivePlacement = placement;
 
-      // Auto-flip horizontal placement if it would overflow the screen
       if (placement.endsWith("start") && rect.left > window.innerWidth / 2) {
         effectivePlacement = placement.replace("start", "end");
       } else if (
@@ -2405,7 +2248,6 @@ function useOutsideClick(
   }, [active, onOutside, refs]);
 }
 
-// Chakra's Portal escapes clipped ancestors via a real DOM portal.
 export const Portal = ({ children }: { children: ReactNode }) => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -2413,9 +2255,6 @@ export const Portal = ({ children }: { children: ReactNode }) => {
   return createPortal(children, document.body);
 };
 
-// ---------------------------------------------------------------------------
-// Tooltip — bg/color/padding/radius ported from theme's tooltip.mjs.
-// ---------------------------------------------------------------------------
 export const Tooltip = ({
   children,
   label,
@@ -2491,11 +2330,6 @@ export const Tooltip = ({
   );
 };
 
-// ---------------------------------------------------------------------------
-// useToast — ported from Chakra's default position ("bottom") and solid
-// status styling; a lightweight module-level pub/sub store instead of the
-// real @chakra-ui toast manager.
-// ---------------------------------------------------------------------------
 interface ToastOptions {
   title?: string;
   description?: string;
@@ -2610,11 +2444,6 @@ export const ToastViewport = () => {
   );
 };
 
-// ---------------------------------------------------------------------------
-// Tabs / TabList / Tab / TabPanels / TabPanel — variant "line" (the only
-// variant used in this codebase), sizing/colours ported from theme's
-// tabs.mjs.
-// ---------------------------------------------------------------------------
 const TabsContext = createContext<{
   index: number;
   setIndex: (i: number) => void;
@@ -2710,10 +2539,6 @@ export const TabPanels = (props: BoxProps) => {
 
 export const TabPanel = (props: BoxProps) => <Box {...props} />;
 
-// ---------------------------------------------------------------------------
-// Accordion / AccordionItem / AccordionButton / AccordionPanel /
-// AccordionIcon — ported from theme's accordion.mjs.
-// ---------------------------------------------------------------------------
 const AccordionContext = createContext<{
   isOpen: (i: number) => boolean;
   toggle: (i: number) => void;
@@ -2822,10 +2647,6 @@ export const AccordionIcon = () => {
   );
 };
 
-// ---------------------------------------------------------------------------
-// Menu / MenuButton / MenuList / MenuItem / MenuDivider — bg/shadow/spacing
-// ported from theme's menu.mjs.
-// ---------------------------------------------------------------------------
 const MenuContext = createContext<{
   isOpen: boolean;
   toggle: () => void;
@@ -3003,11 +2824,6 @@ export const MenuDivider = () => (
   />
 );
 
-// ---------------------------------------------------------------------------
-// Popover / PopoverTrigger / PopoverContent / PopoverHeader / PopoverBody /
-// PopoverFooter / PopoverCloseButton / PopoverArrow — ported from theme's
-// popover.mjs.
-// ---------------------------------------------------------------------------
 const PopoverContext = createContext<{
   triggerRef: RefObject<HTMLElement>;
   placement: string;
@@ -3184,11 +3000,6 @@ export const PopoverCloseButton = ({ style, ...rest }: BoxProps) => (
 );
 export const PopoverArrow = () => null;
 
-// ---------------------------------------------------------------------------
-// Modal / ModalOverlay / ModalContent / ModalHeader / ModalBody /
-// ModalFooter / ModalCloseButton — size/colour defaults ported from theme's
-// modal.mjs (size "md" = sizes.md = 28rem, not centred by default).
-// ---------------------------------------------------------------------------
 const MODAL_SIZES: Record<string, string> = {
   xs: SIZE_TOKENS.xs,
   sm: SIZE_TOKENS.sm,
@@ -3276,9 +3087,6 @@ export const Modal = ({
 };
 
 export const ModalOverlay = ({ bg, onClick, ...rest }: BoxProps) => {
-  // Visual backdrop: z-index 0 within the click-catcher (z-index 1401) stacking context.
-  // ModalContent at z-index 1 (default) or higher appears on top.
-  // pointerEvents:none lets clicks fall through to the transparent click-catcher wrapper.
   return (
     <Box
       position="fixed"
@@ -3308,8 +3116,6 @@ export const ModalContent = forwardRef<HTMLDivElement, BoxProps>(
         borderRadius="md"
         color="inherit"
         maxW={maxW}
-        // zIndex as a normal prop so callers can override it via {...rest}.
-        // No zIndex in the hardcoded style object to avoid overriding caller values.
         zIndex={1}
         style={{ display: "flex", flexDirection: "column", ...style }}
         onClick={(e: any) => e.stopPropagation()}
@@ -3362,10 +3168,6 @@ export const ModalCloseButton = ({ style, ...rest }: BoxProps) => {
   );
 };
 
-// ---------------------------------------------------------------------------
-// AlertDialog family — same visuals/behaviour as Modal; Chakra's real
-// AlertDialog nests Content inside Overlay (Modal keeps them siblings).
-// ---------------------------------------------------------------------------
 export const AlertDialog = Modal as unknown as (
   props: ModalProps & { leastDestructiveRef?: RefObject<HTMLElement> },
 ) => JSX.Element;

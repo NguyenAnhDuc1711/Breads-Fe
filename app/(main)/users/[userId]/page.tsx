@@ -10,14 +10,6 @@ import ContainerLayout from "../../../../src/components/MainBoxLayout";
 import UserHeader from "../../../../src/components/UserHeader";
 import UserPageHydrate from "./UserPageHydrate";
 
-// New server-side fetches — separate from the client-only getUserInfo
-// Redux thunk (Server Components can't dispatch thunks). Forwards the
-// jwt cookie for parity with client requests (src/config/API.ts's
-// Authorization header). No visibility/privacy model exists for user
-// profiles in this codebase (confirmed during plan-review via
-// `grep -rniE "visibility|private|isPrivate|blocked" src/store/UserSlice
-// src/pages/UserPage.tsx` — zero matches) — SSR is unconditional for any
-// existing userId, unlike posts/[postId] which forks on status.
 async function fetchJson(path: string, cookieHeader: string | undefined) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   try {

@@ -10,11 +10,6 @@ import { changePage } from "../../../../src/store/UtilSlice/asyncThunk";
 import { addEvent } from "../../../../src/util";
 import { GA_EVENTS, getPostContentType, sendGaEvent } from "../../../../src/util/gtmEvents";
 
-// Renders nothing — reproduces PostDetail.tsx's original mount effect
-// (populate Redux `postSelected` via the existing thunk, page-tracking,
-// analytics event) for the PUBLIC/server-rendered branch, since that
-// branch renders <Post> directly instead of the client-only PostDetail
-// component that normally owns this effect.
 const PostDetailHydrate = ({ postId }: { postId: string }) => {
   const dispatch = useAppDispatch();
   const currentPage = useAppSelector((state: AppState) => state.util.currentPage);

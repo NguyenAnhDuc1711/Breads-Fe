@@ -278,9 +278,6 @@ const PostPopup = () => {
             },
           });
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
-          // Snapshot the parent post's visibility at creation time so a
-          // reply never leaks context from a non-PUBLIC thread — no
-          // later re-sync if the parent's visibility changes.
           payload.visibility =
             postReply?.visibility ?? Constants.POST_VISIBILITY.PUBLIC;
           payload.parentPost = postReply?._id;

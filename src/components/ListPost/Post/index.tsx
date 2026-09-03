@@ -78,8 +78,6 @@ const Post = ({
     window.open(`/posts/${post._id}`, "_self");
   };
 
-  // Chỉ dùng khi `isDetail` (xem JSX bên dưới) — trang reply của CHÍNH post này, phân trang qua
-  // `InfiniteScroll` (cùng cơ chế `ListPost` dùng cho feed chính, xem `ListPost/index.tsx`).
   const handleGetReplies = ({ page }: { page: number }) => {
     dispatch(
       getPostReplies({

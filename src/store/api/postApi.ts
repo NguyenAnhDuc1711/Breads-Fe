@@ -8,9 +8,6 @@ export interface GetUserPostsArgs {
   displayPageData: string;
 }
 
-// getPosts (Home feed, paginated + SSR-seeded) and the create/edit/delete
-// mutations stay on classic thunks — see RTK_QUERY_PERF_BASELINE.md for why
-// only getPost/getUserPosts were migrated this pass.
 export const postApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getPost: builder.query<IPost, string>({

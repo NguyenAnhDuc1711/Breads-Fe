@@ -18,12 +18,6 @@ const methodFns: Record<ApiMethod, (opts: any) => Promise<any>> = {
   DELETE,
 };
 
-// Wraps the existing GET/POST/PUT/PATCH/DELETE helpers (config/API.ts) —
-// keeps the shared axios instance, token-refresh interceptor and path
-// prefix as the single source of truth instead of a separate fetch-based
-// baseQuery. Those helpers swallow AxiosError into an `{errorType, error}`
-// shaped object instead of throwing, so a request is only surfaced to RTK
-// Query as an error when the response matches that shape.
 const apiBaseQuery: BaseQueryFn<ApiBaseQueryArgs, unknown, unknown> = async ({
   path,
   method = "GET",
@@ -37,9 +31,6 @@ const apiBaseQuery: BaseQueryFn<ApiBaseQueryArgs, unknown, unknown> = async ({
   return { data };
 };
 
-// Single shared RTK Query instance — feature slices add their own
-// endpoints via `api.injectEndpoints` (see store/api/reportApi.ts) instead
-// of each calling `createApi` separately.
 export const api = createApi({
   reducerPath: "api",
   baseQuery: apiBaseQuery,

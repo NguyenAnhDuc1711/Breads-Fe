@@ -16,12 +16,8 @@ const ThemeContext = createContext<ThemeContextValue>({
   setColorMode: () => {},
 });
 
-// Same storage key Chakra's ColorModeScript used, so existing users keep
-// their saved preference across the switch.
 const STORAGE_KEY = "chakra-ui-color-mode";
 
-// Matches theme.ts's old Chakra config: { initialColorMode: "dark",
-// useSystemColorMode: true } — dark unless the OS explicitly prefers light.
 function getInitialColorMode(): ColorMode {
   if (typeof window === "undefined") return "dark";
   const stored = window.localStorage.getItem(STORAGE_KEY);
@@ -53,8 +49,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useSystemColorMode: true — follow OS changes unless the user picked a
-  // mode explicitly (stored value present).
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const handler = (e: MediaQueryListEvent) => {
@@ -72,21 +66,15 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-/** Drop-in replacement for Chakra's `useColorMode()`. */
 export function useColorMode() {
   return useContext(ThemeContext);
 }
 
-/** Drop-in replacement for Chakra's `useColorModeValue(lightVal, darkVal)`. */
 export function useColorModeValue<T>(lightVal: T, darkVal: T): T {
   const { colorMode } = useContext(ThemeContext);
   return colorMode === "dark" ? darkVal : lightVal;
 }
 
-/**
- * Written into <head> before paint so a hard refresh never flashes the
- * wrong colour mode — same purpose as Chakra's <ColorModeScript>.
- */
 export const ColorModeScript = () => (
   <script
     dangerouslySetInnerHTML={{

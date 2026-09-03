@@ -40,7 +40,6 @@ const LeftSideBar = () => {
   const { colorMode } = useColorMode();
 
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
-  // Active item now comes from the URL, not from Redux (AD-4).
   const currentPage = getCurrentPage(pathname);
   const hasNewNotification = useAppSelector(
     (state: AppState) => state.notification.hasNewNotification,
@@ -76,9 +75,6 @@ const LeftSideBar = () => {
   useSocket((socket) => {
     socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, () => {
       dispatch(updateHasNotification(true));
-      // Refetches only if an Activity page query is actively subscribed —
-      // replaces the old client-side unshift-into-slice (addNotification),
-      // now that `notifications` lives in RTK Query cache (notificationApi).
       dispatch(api.util.invalidateTags(["Notification"]));
     });
   }, []);

@@ -10,13 +10,6 @@ import { changeDisplayPageData } from "../../../../src/store/UtilSlice";
 import { changePage } from "../../../../src/store/UtilSlice/asyncThunk";
 import { addEvent } from "../../../../src/util";
 
-// Renders nothing — reproduces UserPage.tsx's original mount effects
-// (populate Redux userSelected via RTK Query + selectUser bridge, page-
-// tracking, analytics event) since the server-rendered branch renders
-// <UserHeader> directly instead of the client-only UserPage component
-// that normally owns these effects. Posts are fetched by UserHeader's own
-// useGetUserPostsQuery (keyed on displayPageData, which this effect resets
-// to "" first), not dispatched from here.
 const UserPageHydrate = ({ userId }: { userId: string }) => {
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);

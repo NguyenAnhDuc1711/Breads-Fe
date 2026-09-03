@@ -8,30 +8,14 @@ import ContainerLayout from "../../../../src/components/MainBoxLayout";
 import PostDetail from "../../../../src/pages/PostDetail";
 import PostDetailHydrate from "./PostDetailHydrate";
 
-// Classifies a fetched post into one of 3 mutually-exclusive access outcomes
-// covering every status x visibility combination (PRD FR-7):
-// - "deleted": status === DELETED -> notFound()/410, never render PostDetail.
-// - "public": status === PUBLIC && visibility === PUBLIC (or undefined) ->
-//   full SSR + indexable (case a of the epic's "public" branch).
-// - "noindex": everything else that still exists — any private visibility
-//   combination, AND PRE_ACCEPT+PUBLIC (AD-5: intentionally still shown to
-//   preserve UX, but must not be indexed while pending review). Both of
-//   these map to the same SEO signal (200 + noindex), only UX differs, which
-//   is handled by the branches that call this helper.
-// Shared by generateMetadata and Page so both places stay in sync (previously
-// each computed `isPublic` separately, which is exactly the kind of drift
-// this task fixes).
 function classifyPostAccess(post: any): "deleted" | "noindex" | "public" {
   if (!post || post.status === Constants.POST_STATUS.DELETED) return "deleted";
   const isPublicVisibility =
     post.visibility === Constants.POST_VISIBILITY.PUBLIC || post.visibility === undefined;
   if (isPublicVisibility && post.status === Constants.POST_STATUS.PUBLIC) return "public";
-  // catch-all: PRE_ACCEPT+PUBLIC (case c) OR any private-visibility combination (case b)
   return "noindex";
 }
 
-// Server-side fetch forwards cookies so backend sees identity if cookies present.
-// Parity with src/config/API.ts with fallback to localhost:8080.
 async function fetchPost(postId: string): Promise<any | null> {
   const refreshToken = cookies().get("refreshToken")?.value;
   const jwt = cookies().get("jwt")?.value;
@@ -68,8 +52,6 @@ export async function generateMetadata({
   const access = classifyPostAccess(post);
 
   if (access === "deleted") {
-    // notFound() can't be called from generateMetadata; the Page component
-    // below handles the actual 404/410 response.
     return { title: "Bread" };
   }
   if (access === "noindex") {
@@ -102,8 +84,6 @@ const Page = async ({ params }: { params: { postId: string } }) => {
   const access = classifyPostAccess(post);
 
   if (access === "deleted") {
-    // PRD allows 404 or 410; Next.js App Router Server Components don't
-    // expose a convenient arbitrary-status API, so notFound() (404) is used.
     notFound();
   }
 
@@ -140,10 +120,6 @@ const Page = async ({ params }: { params: { postId: string } }) => {
     );
   }
 
-  // access === "noindex": deleted post already returned above via notFound().
-  // Fallback to client-side PostDetail component which has access to localStorage tokens
-  // and full client-side Redux gating for authenticated, private, or client-loaded posts.
-  // noindex is already applied via generateMetadata; UX here is unchanged.
   return <PostDetail postId={params.postId} />;
 };
 
