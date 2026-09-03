@@ -1,10 +1,3 @@
-// Colour tokens only — this used to be a Chakra `extendTheme()` result.
-// `src/components/ui/primitives.tsx` resolves any "family.shade" prop
-// (e.g. "gray.700", "blue.500") by dot-path lookup against `theme.colors`,
-// so the full default Chakra palette is kept here verbatim (copied from
-// @chakra-ui/theme's foundations/colors.mjs) with the app's custom
-// semantic tokens (gray.light/dark, cbg, cuse, ccl) merged on top — same
-// shape `extendTheme({ colors })` used to produce.
 const colors = {
   transparent: "transparent",
   current: "currentColor",

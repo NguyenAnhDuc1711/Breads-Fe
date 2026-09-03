@@ -2,12 +2,6 @@ import { cookies } from "next/headers";
 import { API_PREFIX, POST_PATH, Route } from "../../src/Breads-Shared/APIConfig";
 import { IPost } from "../../src/store/PostSlice";
 
-// Server-side equivalent of the first getPosts() dispatch HomePage fires
-// client-side (src/store/PostSlice/asyncThunk.ts) — same endpoint, same
-// page-1/limit-20 params, just fetched during SSR so the feed shows real
-// content on first paint instead of a loading skeleton. Any failure here
-// just falls back to an empty array — the existing client-side fetch
-// (unchanged) still runs afterward and fills the feed in as before.
 export async function getInitialPosts(
   tab: string,
   userId: string

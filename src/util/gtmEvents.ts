@@ -13,7 +13,6 @@ export const GA_EVENTS = {
   SHARE: "share",
 } as const;
 
-// Post chưa có field "content type" lưu sẵn — suy theo thứ tự: poll > media > text.
 export const getPostContentType = (post: {
   survey?: unknown[];
   media?: { type?: string }[];
@@ -23,10 +22,6 @@ export const getPostContentType = (post: {
   return "text";
 };
 
-// Hướng B: gọi thẳng gtag.js qua sendGAEvent (đúng cú pháp gtag('event', tên,
-// params)) — không qua GTM container, không cần cấu hình trigger/tag nào cho
-// event mới. sendGAEvent tự warn (không throw) nếu GA chưa init, nhưng vẫn
-// bọc try/catch cho chắc (đảm bảo không crash UI nếu load thất bại).
 export const sendGaEvent = ({
   event,
   params,

@@ -1,18 +1,5 @@
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 
-/**
- * Single source of truth for "which page / which tab am I on".
- *
- * Before the Next.js migration this lived in Redux (`state.util.currentPage`
- * and `state.util.displayPageData`, written by the `changePage` /
- * `changeDisplayPageData` actions). It is now derived purely from the URL, so
- * the router is the only source of truth (epic AD-4).
- *
- * `getCurrentPage()` returns exactly the same `PageConstant` values the old
- * `state.util.currentPage` held, so every existing `currentPage === X` check
- * keeps working unchanged — only the input changed.
- */
-
 const HOME_TABS: string[] = [
   PageConstant.FOR_YOU,
   PageConstant.FOLLOWING,
@@ -31,11 +18,9 @@ const ACTIVITY_TABS: string[] = [
 export const getSegments = (pathname: string | null): string[] =>
   (pathname ?? "").split("/").filter(Boolean);
 
-/** Pathname -> the value `state.util.currentPage` used to hold. */
 export const getCurrentPage = (pathname: string | null): string => {
   const [first, second] = getSegments(pathname);
 
-  // "/" , "/home" and every home tab all belong to the HOME section.
   if (!first || first === PageConstant.HOME || HOME_TABS.includes(first)) {
     return PageConstant.HOME;
   }
@@ -59,11 +44,9 @@ export const getCurrentPage = (pathname: string | null): string => {
   if (first === "reset-pw") {
     return PageConstant.RESET_PW;
   }
-  // /search, /chat, /chat/:id, /update, /error ... map to their first segment.
   return first;
 };
 
-/** Pathname -> the value `state.util.displayPageData` used to hold. */
 export const getDisplayPageData = (pathname: string | null): string => {
   const [first, second] = getSegments(pathname);
 
@@ -79,6 +62,5 @@ export const getDisplayPageData = (pathname: string | null): string => {
   return "";
 };
 
-/** Href a LeftSideBar/Header entry for `page` should point at. */
 export const getPathForPage = (page: string, suffix: string = ""): string =>
   page === PageConstant.HOME ? "/" : "/" + page + (suffix ?? "");

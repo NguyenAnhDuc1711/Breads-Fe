@@ -47,14 +47,6 @@ const InfiniteScroll = ({
   const observer = useRef<IntersectionObserver>();
   const isFirstRender = useRef<boolean>(true);
   const prevPage = useRef<number>(page);
-  // Guards against the IntersectionObserver firing again (fast scroll / slow
-  // network) before the in-flight page fetch's result has actually landed in
-  // `data` — queryFc is fire-and-forget (not awaited), so without this a
-  // second/third page could be requested before the first resolves, and
-  // out-of-order responses could merge into the list in the wrong order.
-  // 15s safety-release covers the (pre-existing, unrelated) case where the
-  // fetch fails and `data` never changes, so scrolling isn't permanently
-  // blocked for that list instance.
   const isFetchInFlight = useRef<boolean>(false);
 
   const shouldInitialFetch =
@@ -80,10 +72,6 @@ const InfiniteScroll = ({
             // setIsLoading(true);
           }
         },
-        // Fetch the next page ~1 viewport height before the sentinel actually
-        // enters view, instead of only once it's already on-screen — gives
-        // slow networks a head start so the skeleton fallback (rendered
-        // below the sentinel) is less likely to actually be seen mid-scroll.
         { rootMargin: "800px 0px" },
       );
       if (node) {

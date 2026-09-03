@@ -1,4 +1,3 @@
-// ViewActivity.tsx
 import { Avatar, Button, Divider, Spinner, Text } from "../ui/primitives";
 import {
   Modal,
@@ -266,7 +265,6 @@ const ViewActivity = ({
               </div>
             </>
           ) : (
-            /* Interacted Users Subview */
             <div className="view-activity-modal__users-list-wrap">
               {loading ? (
                 <div className="view-activity-modal__loading">

@@ -48,7 +48,6 @@
   max-height: 65vh;
 }
 
-/* Custom scrollbar for theme list */
 .theme-modal__list-wrap::-webkit-scrollbar {
   width: 6px;
 }

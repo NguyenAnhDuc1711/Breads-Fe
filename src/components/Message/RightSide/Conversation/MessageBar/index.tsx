@@ -127,10 +127,6 @@ const MessageInput = () => {
         />
       ),
     },
-    // {
-    //   action: ACTIONS.AUDIO,
-    //   icon: <AiFillAudio style={iconStyle} />,
-    // },
   ];
 
   const handleSendMsg = async ({ clickUpload = true, sendIcon = false }) => {

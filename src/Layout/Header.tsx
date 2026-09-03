@@ -19,7 +19,6 @@ const Header = () => {
   const pathname = usePathname();
   const { t } = useTranslation();
 
-  // Active section / tab now comes from the URL, not from Redux (AD-4).
   const currentPage = getCurrentPage(pathname);
   const displayPageData = getDisplayPageData(pathname);
   const { userInfo, userSelected } = useAppSelector(

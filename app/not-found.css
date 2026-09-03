@@ -14,7 +14,6 @@
   background-color: #0a0a0a;
 }
 
-/* Subtle radial glow behind the 404 */
 .not-found-page__glow {
   position: absolute;
   width: 500px;
@@ -62,7 +61,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ---------- 404 digits ---------- */
 .not-found-page__code-wrap {
   display: flex;
   align-items: center;
@@ -108,7 +106,6 @@
   75%      { transform: translateY(-4px) rotate(3deg); }
 }
 
-/* ---------- Text ---------- */
 .not-found-page__title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -134,7 +131,6 @@
   color: #a0aec0;
 }
 
-/* ---------- Buttons ---------- */
 .not-found-page__actions {
   display: flex;
   gap: 12px;
@@ -205,7 +201,6 @@
   border-color: #4a5568;
 }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 480px) {
   .not-found-page__code-digit {
     font-size: 5rem;

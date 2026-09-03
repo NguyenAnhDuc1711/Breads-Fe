@@ -2,11 +2,6 @@ import { cookies } from "next/headers";
 import { API_PREFIX, Route, USER_PATH } from "../../src/Breads-Shared/APIConfig";
 import { IUser } from "../../src/store/UserSlice";
 
-// Resolves identity server-side during SSR.
-//
-// Passes the refreshToken (or legacy jwt) cookie to /me so the server can
-// verify the session without destroying/rotating the refresh token prematurely.
-// This allows the initial SSR page to render with user data on first paint.
 export async function getCurrentUser(): Promise<IUser | null> {
   const refreshToken = cookies().get("refreshToken")?.value;
   const legacyJwt = cookies().get("jwt")?.value;

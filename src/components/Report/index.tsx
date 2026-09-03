@@ -54,10 +54,6 @@ const ReportPopup = () => {
         };
       })
     );
-    // addEvent({
-    //   event: "add_post_media",
-    //   payload: {},
-    // });
     dispatch(
       updateReportInfo({
         key: "media",
@@ -67,7 +63,6 @@ const ReportPopup = () => {
   };
 
   const handleSubmitReport = () => {
-    // Bước 9: `userId` không còn gửi lên — server lấy người báo cáo từ JWT.
     sendReport({
       content: reportInfo.content,
       media: reportInfo.media,

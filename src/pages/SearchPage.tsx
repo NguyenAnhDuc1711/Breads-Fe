@@ -53,8 +53,6 @@ const SearchPage = () => {
             searchValue,
           },
         });
-        // Chỉ tính là 1 lượt "search" thật khi: có từ khoá (không phải lần
-        // fetch ban đầu rỗng lúc vào trang) và không phải trang phân trang.
         if (!isFetchMore && searchValue) {
           sendGaEvent({
             event: GA_EVENTS.SEARCH,

@@ -24,13 +24,10 @@ const FolderUpload = () => {
       return;
     }
 
-    // Upload logic for each file
     console.log("Uploading files:", files);
 
-    // Example: Looping through each file to show names
     files.forEach((file) => console.log(file.webkitRelativePath, file.size));
 
-    // Reset files after submission
     setFiles([]);
   };
 
@@ -39,8 +36,6 @@ const FolderUpload = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="file"
-          // webkitdirectory="true"
-          // directory=""
           onChange={handleFolderChange}
         />
 

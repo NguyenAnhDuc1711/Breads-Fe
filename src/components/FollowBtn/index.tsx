@@ -25,10 +25,6 @@ export const handleFollow = async (
     return;
   }
   try {
-    // plan-review ARCH-1: trước đây dispatch không await/unwrap nên lỗi
-    // network được Redux thunk tự xử lý êm. Giờ cần await để biết chính
-    // xác thời điểm thành công (cho sendGaEvent) — bắt buộc bọc try/catch
-    // để không biến lỗi network thành unhandled promise rejection.
     await dispatch(
       followUser({
         userFlId: user._id,

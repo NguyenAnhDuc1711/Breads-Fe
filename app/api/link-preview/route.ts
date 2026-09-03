@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Server-only — LINKPREVIEW_API_KEYS (no NEXT_PUBLIC_ prefix) never reaches
-// the client bundle, unlike the previous implementation which called
-// api.linkpreview.net directly from a "use client" component with the key
-// embedded in the request URL (visible in devtools/browser history).
 const apiKeys = (process.env.LINKPREVIEW_API_KEYS ?? "")
   .split(",")
   .map((key) => key.trim())
@@ -21,8 +17,6 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Same "cycle through keys until one isn't over quota" behavior the
-  // client-side version had, just executed server-side now.
   for (const key of apiKeys) {
     try {
       const res = await fetch(

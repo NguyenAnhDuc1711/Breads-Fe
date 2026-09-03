@@ -386,13 +386,6 @@ export const handleUploadFiles = async ({
   }
 };
 
-/**
- * Đổi media base64 (`data:` URI, từ `convertToBase64` lúc chọn file — dùng để preview local) thành
- * URL Cloudinary thật, theo cơ chế Signed Upload (epic presigned-media-upload). Item nào KHÔNG phải
- * base64 (vd. GIF — url ngoài, chọn từ thư viện GIF có sẵn) được giữ nguyên, không upload lại.
- *
- * Gọi 1 lần duy nhất cho cả batch (không phải 1 lần/file) — khớp đúng thiết kế FR-1/FR-2 phía BE.
- */
 export const uploadMediaToCloudinary = async ({
   media,
   entityType,
@@ -559,13 +552,13 @@ export const getEmojiNameFromIcon = (emojiIcon) => {
 
 export const getAnalyticsInfoFromBrowser = async () => {
   const deviceInfo = {
-    category: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop", // Detect mobile or desktop
+    category: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop",
     mobile_brand_name: /Samsung|Apple|Huawei/i.test(navigator.userAgent)
       ? navigator.userAgent?.match(/(Samsung|Apple|Huawei)/)?.[0]
       : "Unknown",
-    mobile_model_name: navigator.userAgent, // No direct way to get model from JS, will get the whole UA string
-    operating_system: navigator.platform, // Platform information (e.g., "Win32", "Linux")
-    operating_system_version: navigator.appVersion, // OS version
+    mobile_model_name: navigator.userAgent,
+    operating_system: navigator.platform,
+    operating_system_version: navigator.appVersion,
   };
 
   const webInfo = {

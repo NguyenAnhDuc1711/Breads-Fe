@@ -30,13 +30,6 @@ const ResetPWPage = ({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const router = useRouter();
-  // Bước 2 (access-control-hardening): TRƯỚC ĐÂY trang này tự đối chiếu `code` với
-  // `localStorage.encodedCode` rồi coi đó là bằng chứng để đổi mật khẩu — một "kiểm tra" mà bất kỳ
-  // ai cũng bỏ qua được bằng cách gọi thẳng API. Việc đối chiếu giờ nằm ở server
-  // (`POST /users/password-reset/confirm`), trang chỉ chuyển tiếp `userId` + `code` từ URL.
-  // Không còn state `isTrueCode`: mã đúng hay sai chỉ server mới biết, và biết ở đúng thời điểm
-  // đổi mật khẩu. Gate render giờ chỉ kiểm tra link có ĐÚNG HÌNH DẠNG không (userId 24 hex, code 6
-  // ký tự) — thuần UX cho URL rác, KHÔNG phải biên bảo mật.
   const isWellFormedLink = /^[a-fA-F0-9]{24}$/.test(userId ?? "") && (code ?? "").length === 6;
   const [showPassword, setShowPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -68,8 +61,6 @@ const ResetPWPage = ({
           code,
           newPWValue: passwordData.password,
           endAction: () => {
-            // Không set `localStorage.userId` nữa: đặt lại mật khẩu KHÔNG tạo phiên đăng nhập
-            // (server đã revoke sạch refresh token của tài khoản), nên phải đi qua trang login.
             setTimeout(() => {
               router.push("/login");
             }, 100);

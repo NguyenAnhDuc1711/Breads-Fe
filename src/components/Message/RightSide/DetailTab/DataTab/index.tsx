@@ -50,8 +50,6 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
   const [tabIndex, setTabIndex] = useState(
     Object.values(TABS).findIndex((tabValue) => tabValue === currentTab)
   );
-  // Nguồn đọc "mới nhất" cho các guard trong handleGetDataByTab — tránh đọc
-  // phải state cũ từ closure khi effect scroll không re-tạo lại hàm mỗi lần data đổi.
   const tabStateRef = useRef(tabStateByTab);
   tabStateRef.current = tabStateByTab;
   const currentConversationIdRef = useRef(selectedConversation?._id);
@@ -61,9 +59,9 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
   const handleGetDataByTab = async (tab, { loadMore = false } = {}) => {
     const current = tabStateRef.current[tab] || emptyTabState();
     if (current.isLoading) return;
-    if (!loadMore && current.page > 0) return; // đã có sẵn (cache) -> không fetch lại
+    if (!loadMore && current.page > 0) return;
     if (loadMore && current.total > 0 && current.data.length >= current.total)
-      return; // đã tải hết
+      return;
 
     const nextPage = current.page + 1;
     const conversationId = selectedConversation?._id;
@@ -95,7 +93,6 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
           break;
       }
 
-      // Conversation đã đổi trong lúc chờ response -> bỏ qua, tránh ghi đè nhầm.
       if (conversationId !== currentConversationIdRef.current) return;
 
       setTabStateByTab((prev) => {

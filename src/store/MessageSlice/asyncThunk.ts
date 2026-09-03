@@ -66,8 +66,6 @@ export const getConversationById = createAsyncThunk(
     try {
       const rootState: any = thunkApi.getState();
       const userId = rootState.user.userInfo._id;
-      // Task 021 (D-1): GET /messages/conversation/:id -> GET /messages/conversations/:id
-      // (số nhiều, T012) — hardcode "/conversation/" cũ bị lệch sau khi đổi route.
       const conversation = await GET({
         path:
           Route.MESSAGE +

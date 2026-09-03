@@ -8,9 +8,6 @@ import { changeDisplayPageData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
 
-// `tab` is the single source of truth for which Activity tab is active — it
-// comes from the matched route segment (app/(main)/activity/page.tsx or
-// app/(main)/activity/[tab]/page.tsx), not from Redux state.util.displayPageData (AD-4).
 const ActivityPage = ({ tab }: { tab: string }) => {
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);

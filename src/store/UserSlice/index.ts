@@ -92,8 +92,6 @@ const userSlice = createSlice({
     });
     builder.addCase(updateUser.fulfilled, (state, action) => {
       const newUserData = action.payload;
-      // Full-replace (không merge) -> an toàn để wrap qua UserResponse, khác editPost bên
-      // PostSlice (merge-patch, chủ ý không wrap).
       if (newUserData?._id === state.userInfo?._id) {
         state.userInfo = new UserResponse(newUserData);
       }

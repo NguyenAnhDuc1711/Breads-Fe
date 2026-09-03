@@ -42,12 +42,6 @@ export const defaulMessageInfo: IMessageDraft = {
   content: "",
   files: [],
   media: [],
-  /*
-  {
-    url: "",
-    type: "",
-  }
-  */
   icon: "",
 };
 
@@ -122,7 +116,6 @@ const msgSlice = createSlice({
           state.messages[msgCreateDate] = [...msgsInfo];
         }
       }
-      // Update last message
       const lastMsg = msgsInfo[msgsInfo.length - 1];
       if (state.selectedConversation && state.selectedConversation._id === conversationId) {
         state.selectedConversation.lastMsg = lastMsg;
@@ -151,7 +144,6 @@ const msgSlice = createSlice({
         ? formatDateToDDMMYYYY(new Date(msgUpdate?.createdAt))
         : dayjs(msgUpdate?.createdAt).format("DD/MM/YYYY");
 
-      // 1. Direct date bucket lookup
       if (Array.isArray(state.messages[msgDateConvert])) {
         const msgInListIndex = state.messages[msgDateConvert].findIndex(
           (msg: any) => msg?._id === msgUpdate._id
@@ -162,7 +154,6 @@ const msgSlice = createSlice({
         }
       }
 
-      // 2. Fallback: Search across all date buckets in state.messages
       for (const dateKey of Object.keys(state.messages)) {
         const list = state.messages[dateKey];
         if (Array.isArray(list)) {

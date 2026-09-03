@@ -10,9 +10,6 @@ interface ApiOptions {
   payload?: Record<string, any>;
 }
 
-// ---------------------------------------------------------------------------
-// In-memory access token management
-// ---------------------------------------------------------------------------
 let accessToken: string | null = null;
 
 export const getAccessToken = (): string | null => accessToken;
@@ -21,17 +18,12 @@ export const setAccessToken = (token: string | null): void => {
   accessToken = token;
 };
 
-// Callback invoked after a successful token refresh — used by the socket
-// module to reconnect with the new token without creating circular imports.
 let onTokenRefreshedCallback: (() => void) | null = null;
 
 export const onTokenRefreshed = (callback: () => void): void => {
   onTokenRefreshedCallback = callback;
 };
 
-// ---------------------------------------------------------------------------
-// Refresh token queue — ensures only ONE refresh request runs at a time
-// ---------------------------------------------------------------------------
 let isRefreshing = false;
 let failedQueue: {
   resolve: (token: string) => void;
@@ -49,10 +41,6 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-/**
- * Call the refresh-token endpoint to get a new access token.
- * The refresh token is sent automatically via httpOnly cookie.
- */
 const refreshAccessToken = async (): Promise<string> => {
   const url = serverUrl + API_PREFIX + Route.USER + USER_PATH.REFRESH_TOKEN;
   const { data } = await axios.post(
@@ -61,8 +49,6 @@ const refreshAccessToken = async (): Promise<string> => {
     {
       withCredentials: true,
       timeout: 10000,
-      // Send the (potentially expired) access token so the BE can identify
-      // the user in case of token-reuse detection.
       headers: accessToken
         ? { Authorization: `Bearer ${accessToken}` }
         : undefined,
@@ -74,15 +60,6 @@ const refreshAccessToken = async (): Promise<string> => {
   return newToken;
 };
 
-/**
- * Cửa DUY NHẤT để lấy access token mới. Single-flight: nhiều caller đồng
- * thời (axios 401, socket auth-error, bootstrap sau SSR) chỉ sinh ra ĐÚNG 1
- * request /refresh-token.
- *
- * Facade này — và chỉ facade này — chịu trách nhiệm notify listener
- * (socket) sau khi có token mới. Caller KHÔNG được tự gọi reconnect sau
- * khi await thành công.
- */
 export const ensureFreshAccessToken = async (): Promise<string> => {
   if (isRefreshing) {
     return new Promise<string>((resolve, reject) => {
@@ -103,14 +80,9 @@ export const ensureFreshAccessToken = async (): Promise<string> => {
   }
 };
 
-/** Notify listener (socket) rằng đã có access token mới mà không qua refresh (vd: login). */
 export const notifyTokenRefreshed = (): void => onTokenRefreshedCallback?.();
 
-// ---------------------------------------------------------------------------
-// Axios Interceptors
-// ---------------------------------------------------------------------------
 if (typeof window !== "undefined") {
-  // Request interceptor: attach access token to every request
   axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -118,7 +90,6 @@ if (typeof window !== "undefined") {
     return config;
   });
 
-  // Response interceptor: handle 401 TOKEN_EXPIRED with silent refresh
   axios.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
@@ -126,7 +97,6 @@ if (typeof window !== "undefined") {
         _retry?: boolean;
       };
 
-      // If the refresh endpoint itself fails → don't retry, go to login
       const isRefreshRequest = originalRequest?.url?.includes(
         USER_PATH.REFRESH_TOKEN,
       );
@@ -159,7 +129,6 @@ if (typeof window !== "undefined") {
           }
         }
 
-        // Non-TOKEN_EXPIRED 401 (e.g. truly unauthorized) — redirect to login
         if (
           !window.location.pathname.startsWith("/login") &&
           !window.location.pathname.startsWith("/signup")
@@ -173,9 +142,6 @@ if (typeof window !== "undefined") {
   );
 }
 
-// ---------------------------------------------------------------------------
-// API methods (unchanged public interface)
-// ---------------------------------------------------------------------------
 export const GET = async ({ path, params }: ApiOptions) => {
   try {
     const url = serverUrl + API_PREFIX + path;
