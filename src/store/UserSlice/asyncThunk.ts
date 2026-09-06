@@ -19,7 +19,7 @@ import {
 } from "../../config/API";
 import Socket from "../../socket";
 import { initialMsgState } from "../MessageSlice";
-import { initialPostState, updateListPost } from "../PostSlice";
+import { initialPostState, removeOnePost } from "../PostSlice";
 import { initialUtilState } from "../UtilSlice";
 
 export const validateEmailByCode = createAsyncThunk(
@@ -189,10 +189,7 @@ export const removePostFromCollection = createAsyncThunk(
         ),
       });
       if (displayPageData === PageConstant.SAVED) {
-        const newListPost = rootState.post.listPost.filter(
-          (post) => post._id !== postId,
-        );
-        dispatch(updateListPost(newListPost));
+        dispatch(removeOnePost(postId));
         return {
           postId: postId,
         };

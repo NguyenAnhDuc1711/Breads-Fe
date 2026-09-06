@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createEntityAdapter, createSlice, EntityState } from "@reduxjs/toolkit";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import {
@@ -35,14 +35,23 @@ export const surveyTemplate = ({
 
 export interface ILink {}
 
-export interface PostState {
-  listPost: IPost[];
+// --- Entity Adapter ---
+// _id is optional in IPost (drafts don't have it), so we use selectId with non-null assertion.
+// Only posts with _id should be added to the entity state.
+const postsAdapter = createEntityAdapter<IPost, string>({
+  selectId: (post) => post._id!,
+});
+
+// Extra state fields beyond what EntityState provides
+export interface PostExtraState {
   postSelected: IPost | null;
   postInfo: IPostDraft;
   postAction: string;
   postReply: IPost | null;
   isLoading: boolean;
 }
+
+export type PostState = EntityState<IPost, string> & PostExtraState;
 
 export const defaultPostInfo: IPostDraft = {
   content: "",
@@ -53,14 +62,13 @@ export const defaultPostInfo: IPostDraft = {
   links: [],
 };
 
-export const initialPostState: PostState = {
-  listPost: [],
+export const initialPostState: PostState = postsAdapter.getInitialState({
   postSelected: null,
   postInfo: defaultPostInfo,
   postAction: "",
   postReply: null,
   isLoading: true,
-};
+});
 
 const postSlice = createSlice({
   name: "post",
@@ -76,7 +84,10 @@ const postSlice = createSlice({
       state.postAction = action.payload ?? "";
     },
     updateListPost: (state, action) => {
-      state.listPost = Array.isArray(action.payload) ? action.payload : [];
+      const posts: IPost[] = Array.isArray(action.payload)
+        ? action.payload.filter((p: IPost) => p._id)
+        : [];
+      postsAdapter.setAll(state, posts);
     },
     updatePostListLoading: (state, action) => {
       state.isLoading = action.payload;
@@ -86,12 +97,12 @@ const postSlice = createSlice({
     },
     updatePostLike: (state, action) => {
       const { postId, likesCount } = action.payload;
-      const postIndex = state.listPost.findIndex((post) => post._id === postId);
-      if (postIndex !== -1) {
-        state.listPost[postIndex] = {
-          ...state.listPost[postIndex],
-          likesCount,
-        };
+      const existingPost = state.entities[postId];
+      if (existingPost) {
+        postsAdapter.updateOne(state, {
+          id: postId,
+          changes: { likesCount },
+        });
       } else {
         if (!!state.postSelected) {
           let postSelected: IPost = state.postSelected;
@@ -114,9 +125,9 @@ const postSlice = createSlice({
         post.likedByMe = !wasLiked;
         post.likesCount = Math.max(0, (post.likesCount ?? 0) + (wasLiked ? -1 : 1));
       };
-      const postIndex = state.listPost.findIndex((post) => post._id === postId);
-      if (postIndex !== -1) {
-        flip(state.listPost[postIndex]);
+      const existingPost = state.entities[postId];
+      if (existingPost) {
+        flip(existingPost);
       } else if (state.postSelected) {
         const postSelected: IPost = state.postSelected;
         if (postSelected._id === postId) {
@@ -127,8 +138,11 @@ const postSlice = createSlice({
         }
       }
     },
+    removeOnePost: (state, action) => {
+      postsAdapter.removeOne(state, action.payload);
+    },
     reloadListPost: (state) => {
-      state.listPost = [];
+      postsAdapter.removeAll(state);
       state.isLoading = true;
     },
   },
@@ -151,14 +165,16 @@ const postSlice = createSlice({
     builder.addCase(getPosts.fulfilled, (state, action) => {
       state.isLoading = false;
       if (Array.isArray(action.payload?.posts)) {
-        const newPosts: IPost[] = action.payload.posts.map(
-          (p: Partial<IPost>) => new PostResponse(p as any)
-        );
+        const newPosts: IPost[] = action.payload.posts
+          .map((p: Partial<IPost>) => new PostResponse(p as any))
+          .filter((p: IPost) => p._id);
         const isNewPage = action.payload.isNewPage;
-        if (!isNewPage && Array.isArray(state.listPost)) {
-          state.listPost.push(...newPosts);
+        if (!isNewPage) {
+          // Append — keep existing posts + add new (dedup by id)
+          postsAdapter.addMany(state, newPosts);
         } else {
-          state.listPost = newPosts;
+          // New page — replace all
+          postsAdapter.setAll(state, newPosts);
         }
         state.postInfo = defaultPostInfo;
       }
@@ -174,28 +190,39 @@ const postSlice = createSlice({
       const newPost: IPost | undefined = rawNewPost
         ? new PostResponse(rawNewPost)
         : undefined;
-      const listPost: IPost[] = state.listPost;
       const currentPage: string = action.payload?.currentPage;
-      if (!!newPost) {
+      if (!!newPost && newPost._id) {
         if (currentPage === PageConstant.USER) {
-          state.listPost.unshift(newPost);
+          // Prepend: insert at the beginning of ids
+          postsAdapter.addOne(state, newPost);
+          // Move to front of ids array to preserve feed order
+          const idx = state.ids.indexOf(newPost._id!);
+          if (idx > 0) {
+            state.ids.splice(idx, 1);
+            state.ids.unshift(newPost._id!);
+          }
         }
         const { REPOST, REPLY } = PostConstants.ACTIONS;
         if (state.postSelected) {
           const postSelected: IPost = state.postSelected;
           if ([REPOST, REPLY].includes(state.postAction) && postSelected?._id) {
             const clonePostSelected = JSON.parse(JSON.stringify(postSelected));
-            const postSelectedIndex = listPost.findIndex(
-              ({ _id }) => _id === postSelected._id
-            );
             if (state.postAction === REPLY) {
               clonePostSelected.replies.push(newPost);
               clonePostSelected.repliesCount = (clonePostSelected.repliesCount ?? 0) + 1;
             } else {
               clonePostSelected.repostNum += 1;
             }
-            if (postSelectedIndex !== -1) {
-              state.listPost[postSelectedIndex] = { ...clonePostSelected };
+            // Update in entity if it exists
+            if (state.entities[postSelected._id!]) {
+              postsAdapter.updateOne(state, {
+                id: postSelected._id!,
+                changes: {
+                  ...(state.postAction === REPLY
+                    ? { replies: clonePostSelected.replies, repliesCount: clonePostSelected.repliesCount }
+                    : { repostNum: clonePostSelected.repostNum }),
+                },
+              });
             }
             state.postSelected = clonePostSelected;
           }
@@ -207,15 +234,13 @@ const postSlice = createSlice({
     });
     builder.addCase(editPost.fulfilled, (state, action) => {
       const postUpdatedData: IPost = action.payload;
-      const listPost: IPost[] = state.listPost;
       const postInfo: IPost = state.postInfo;
-      let postPrevUpdateIndex: number = listPost.findIndex(
-        (post) => post._id === postUpdatedData._id
-      );
-      listPost[postPrevUpdateIndex] = {
-        ...listPost[postPrevUpdateIndex],
-        ...postUpdatedData,
-      };
+      if (postUpdatedData?._id && state.entities[postUpdatedData._id]) {
+        postsAdapter.updateOne(state, {
+          id: postUpdatedData._id,
+          changes: postUpdatedData,
+        });
+      }
       if (typeof postInfo != null) {
         state.postSelected = postInfo;
         state.postAction = "";
@@ -229,14 +254,17 @@ const postSlice = createSlice({
         postId !== state.postSelected?._id &&
         currentPage === PageConstant.POST_DETAIL
       ) {
+        // Deleting a reply within PostDetail
         if (state.postSelected.replies) {
           const hadReply = state.postSelected.replies.some(
             (post) => post._id === postId
           );
-          state.listPost = state.postSelected.replies.filter(
+          const filteredReplies = state.postSelected.replies.filter(
             (post) => post._id !== postId
           );
-          state.postSelected.replies = state.listPost;
+          state.postSelected.replies = filteredReplies;
+          // Also sync entity state for replies displayed via adapter
+          postsAdapter.setAll(state, filteredReplies.filter((p) => p._id) as IPost[]);
           if (hadReply) {
             state.postSelected.repliesCount = Math.max(
               0,
@@ -245,26 +273,33 @@ const postSlice = createSlice({
           }
         }
       } else {
-        const listPost = JSON.parse(JSON.stringify(state.listPost));
-        const newListPost = listPost.filter(({ _id }) => _id !== postId);
-        for (let i = 0; i < newListPost.length; i++) {
-          const post = newListPost[i];
+        // Remove the post from entities
+        postsAdapter.removeOne(state, postId);
+        // Clean up parentPostInfo and quote references in remaining posts
+        for (const id of state.ids) {
+          const post = state.entities[id];
+          if (!post) continue;
           if (post.parentPost === postId) {
-            delete newListPost[i].parentPostInfo;
+            postsAdapter.updateOne(state, {
+              id: id as string,
+              changes: { parentPostInfo: undefined },
+            });
           }
-          if (post?.quote?._id === postId) {
-            delete newListPost[i].quote;
+          if (post.quote?._id === postId) {
+            postsAdapter.updateOne(state, {
+              id: id as string,
+              changes: { quote: undefined },
+            });
           }
         }
-        state.listPost = newListPost;
       }
     });
     builder.addCase(selectSurveyOption.fulfilled, (state, action) => {
       const { postId, userId, isAdd, optionId }: any = action.payload;
-      const postTickedIndex = state.listPost.findIndex(
-        ({ _id }) => _id === postId
-      );
-      const survey = state.listPost[postTickedIndex]?.survey;
+      const tickedPost = state.entities[postId];
+      if (!tickedPost) return;
+
+      const survey = tickedPost.survey;
       const optionIndex = survey?.findIndex(
         (option) => option._id === optionId
       );
@@ -280,35 +315,39 @@ const postSlice = createSlice({
         }
       }
       //Update share post with survey
-      const listPost = JSON.parse(JSON.stringify(state.listPost));
-      const postsShared = listPost.filter(
-        ({ parentPost }) => parentPost === postId
-      );
-      if (postsShared?.length) {
-        for (const post of postsShared) {
-          const postIndex = listPost.findIndex(({ _id }) => _id === post._id);
-          if (state.listPost[postIndex].parentPostInfo) {
-            state.listPost[postIndex].parentPostInfo.survey =
-              state.listPost[postTickedIndex].survey;
-          }
+      for (const id of state.ids) {
+        const post = state.entities[id];
+        if (post?.parentPost === postId && post?.parentPostInfo) {
+          post.parentPostInfo.survey = tickedPost.survey;
         }
       }
     });
     builder.addCase(updatePostVisibility.fulfilled, (state, action) => {
       const postId = action.payload;
       const visibility = action.meta.arg?.visibility;
-      const postIndex = state.listPost.findIndex(({ _id }) => _id === postId);
-      if (postIndex !== -1) {
-        state.listPost[postIndex] = {
-          ...state.listPost[postIndex],
-          visibility,
-        };
+      if (state.entities[postId]) {
+        postsAdapter.updateOne(state, {
+          id: postId,
+          changes: { visibility },
+        });
       } else if (state.postSelected && state.postSelected._id === postId) {
         state.postSelected = { ...state.postSelected, visibility };
       }
     });
   },
 });
+
+// --- Selectors ---
+// Global selectors (pass root state, not state.post)
+import type { AppState } from "../index";
+
+export const {
+  selectAll: selectAllPosts,
+  selectById: selectPostById,
+  selectIds: selectPostIds,
+  selectEntities: selectPostEntities,
+  selectTotal: selectTotalPosts,
+} = postsAdapter.getSelectors((state: AppState) => state.post);
 
 export const {
   selectPost,
@@ -319,6 +358,7 @@ export const {
   selectPostReply,
   updatePostLike,
   toggleLikedByMe,
+  removeOnePost,
   reloadListPost,
 } = postSlice.actions;
 export default postSlice.reducer;

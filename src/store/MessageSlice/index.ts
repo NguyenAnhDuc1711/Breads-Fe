@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createEntityAdapter, createSlice, EntityState } from "@reduxjs/toolkit";
 import { getConversationById, getConversations, getMsgs } from "./asyncThunk";
 import { formatDateToDDMMYYYY } from "../../util";
 import dayjs from "../../util/dayjs";
@@ -15,8 +15,15 @@ import {
 export type { Media, IMessage, IMessageDraft, IConversation };
 export { MessageResponse, ConversationResponse };
 
-export interface MsgState {
-  conversations: IConversation[];
+// --- Entity Adapter ---
+// _id is optional in IConversation (same pattern as PostSlice).
+// Only conversations with _id should be added to the entity state.
+const conversationsAdapter = createEntityAdapter<IConversation, string>({
+  selectId: (conversation) => conversation._id!,
+});
+
+// Extra state fields beyond what EntityState provides
+export interface MsgExtraState {
   userSelected: IUser | null;
   messages: any;
   selectedConversation: IConversation | null;
@@ -37,6 +44,7 @@ export interface MsgState {
   msgAction: string;
 }
 
+export type MsgState = EntityState<IConversation, string> & MsgExtraState;
 
 export const defaulMessageInfo: IMessageDraft = {
   content: "",
@@ -45,8 +53,7 @@ export const defaulMessageInfo: IMessageDraft = {
   icon: "",
 };
 
-export const initialMsgState: MsgState = {
-  conversations: [], //List user message
+export const initialMsgState: MsgState = conversationsAdapter.getInitialState({
   userSelected: null,
   messages: {}, //List message in a conversation
   selectedConversation: null,
@@ -65,7 +72,7 @@ export const initialMsgState: MsgState = {
     conversations: [],
   },
   msgAction: "",
-};
+});
 
 const msgSlice = createSlice({
   name: "message",
@@ -120,14 +127,12 @@ const msgSlice = createSlice({
       if (state.selectedConversation && state.selectedConversation._id === conversationId) {
         state.selectedConversation.lastMsg = lastMsg;
       }
-      const conversationIndex = state.conversations.findIndex(
-        (item: any) => item?._id === conversationId
-      );
-      if (conversationIndex !== -1) {
-        state.conversations[conversationIndex] = {
-          ...state.conversations[conversationIndex],
-          lastMsg: lastMsg,
-        };
+      // O(1) lookup instead of findIndex
+      if (conversationId && state.entities[conversationId]) {
+        conversationsAdapter.updateOne(state, {
+          id: conversationId,
+          changes: { lastMsg },
+        });
       }
       state.selectedMsg = null;
       state.loadingUploadMsg = false;
@@ -178,12 +183,13 @@ const msgSlice = createSlice({
         (c: any) => new ConversationResponse(c)
       );
       for (let conversation of conversations) {
-        const converstaionIndex = state.conversations.findIndex(
-          ({ _id }) => _id === conversation?._id
-        );
-        if (converstaionIndex !== -1) {
-          state.conversations.splice(converstaionIndex, 1);
+        if (!conversation._id) continue;
+        const existsInAdapter = !!state.entities[conversation._id];
+        if (existsInAdapter) {
+          // Remove from current position (will be re-added at front)
+          conversationsAdapter.removeOne(state, conversation._id);
         } else {
+          // New conversation — adjust pagination tracking
           if (state.limitConversation - 1 === 0) {
             state.limitConversation = 15;
             state.currentPageConversation += 1;
@@ -191,7 +197,13 @@ const msgSlice = createSlice({
             state.limitConversation -= 1;
           }
         }
-        state.conversations.unshift(conversation);
+        // Prepend: add to entities and insert id at front
+        conversationsAdapter.addOne(state, conversation);
+        const idx = state.ids.indexOf(conversation._id);
+        if (idx > 0) {
+          state.ids.splice(idx, 1);
+          state.ids.unshift(conversation._id);
+        }
       }
     },
     updateCurrentPageConversation: (state, action) => {
@@ -206,11 +218,12 @@ const msgSlice = createSlice({
     },
     updateUnreadCount: (state, action) => {
       const { conversationId, unreadCount } = action.payload;
-      const conversationIndex = state.conversations.findIndex(
-        (item: any) => item?._id === conversationId
-      );
-      if (conversationIndex !== -1) {
-        state.conversations[conversationIndex].unreadCount = unreadCount;
+      // O(1) lookup instead of findIndex
+      if (conversationId && state.entities[conversationId]) {
+        conversationsAdapter.updateOne(state, {
+          id: conversationId,
+          changes: { unreadCount },
+        });
       }
       if (state.selectedConversation && state.selectedConversation._id === conversationId) {
         state.selectedConversation.unreadCount = unreadCount;
@@ -227,14 +240,16 @@ const msgSlice = createSlice({
     builder.addCase(getConversations.fulfilled, (state, action) => {
       if (action.payload) {
         const rawConversations = action.payload.data ?? [];
-        const newConversations = rawConversations.map(
-          (c: any) => new ConversationResponse(c)
-        );
+        const newConversations: IConversation[] = rawConversations
+          .map((c: any) => new ConversationResponse(c))
+          .filter((c: IConversation) => c._id);
         const isLoadNew = action.payload.isLoadNew;
         if (!isLoadNew) {
-          state.conversations.push(...newConversations);
+          // Append — keep existing + add new (dedup by id)
+          conversationsAdapter.addMany(state, newConversations);
         } else {
-          state.conversations = newConversations;
+          // Load new — replace all
+          conversationsAdapter.setAll(state, newConversations);
         }
         state.loadingConversations = false;
         state.limitConversation = 15;
@@ -279,6 +294,16 @@ const msgSlice = createSlice({
   },
 });
 
+// --- Selectors ---
+import type { AppState } from "../index";
+
+export const {
+  selectAll: selectAllConversations,
+  selectById: selectConversationById,
+  selectIds: selectConversationIds,
+  selectEntities: selectConversationEntities,
+  selectTotal: selectTotalConversations,
+} = conversationsAdapter.getSelectors((state: AppState) => state.message);
 
 export const {
   updateMsgInfo,

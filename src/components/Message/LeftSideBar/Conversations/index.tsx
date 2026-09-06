@@ -10,6 +10,7 @@ import Socket from "../../../../socket";
 import { AppState } from "../../../../store";
 import {
   selectConversation,
+  selectAllConversations,
   updateCurrentPageConversation,
 } from "../../../../store/MessageSlice";
 import { getConversations } from "../../../../store/MessageSlice/asyncThunk";
@@ -33,8 +34,8 @@ const Conversations = ({
   const currentPage = useAppSelector(
     (state: AppState) => state.util.currentPage
   );
+  const conversations = useAppSelector(selectAllConversations);
   const {
-    conversations,
     selectedConversation,
     loadingConversations,
     limitConversation,

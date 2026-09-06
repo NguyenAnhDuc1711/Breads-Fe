@@ -9,6 +9,7 @@ import {
 import { GridItem } from "../ui/primitives";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { updateHasMoreData } from "../../store/UtilSlice";
+import VirtualRows from "./VirtualRows";
 
 const InfiniteScroll = ({
   queryFc,
@@ -23,6 +24,9 @@ const InfiniteScroll = ({
   elementId,
   updatePageValue,
   gridColSpan = -1,
+  virtualized = false,
+  estimateSize = 480,
+  overscan,
 }: {
   queryFc: Function;
   data: any;
@@ -36,6 +40,11 @@ const InfiniteScroll = ({
   elementId?: string;
   updatePageValue?: number;
   gridColSpan?: number;
+  /** Bật windowing. Mặc định tắt — 8 call site còn lại giữ nguyên code path cũ. */
+  virtualized?: boolean;
+  /** Chiều cao ước lượng ban đầu mỗi hàng (px). Baseline đo được ~467px/post. */
+  estimateSize?: number;
+  overscan?: number;
 }) => {
   const dispatch = useAppDispatch();
   const hasMoreData = useAppSelector((state) => state.util.hasMoreData);
@@ -173,6 +182,30 @@ const InfiniteScroll = ({
             </>
           )}
         </>
+      ) : virtualized ? (
+        <VirtualRows
+          data={data}
+          cpnFc={cpnFc}
+          preloadIndex={preloadIndex}
+          estimateSize={estimateSize}
+          overscan={overscan}
+          skeletonCpn={skeletonCpn}
+          showTrailingSkeleton={hasMoreData && !reverseScroll}
+          canLoadMore={hasMoreData && !reverseScroll && !isLoading}
+          onReachEnd={() => {
+            // Thay cho IntersectionObserver của nhánh cũ: dưới windowing, node
+            // mà observer bám vào không nằm trong DOM khi ở xa vùng render.
+            // Guard giữ y hệt callback của observer để hành vi fetch không đổi.
+            if (
+              hasMoreData &&
+              !reverseScroll &&
+              !isLoading &&
+              !isFetchInFlight.current
+            ) {
+              setPage((prevPage) => prevPage + 1);
+            }
+          }}
+        />
       ) : (
         <>
           {data?.map((ele, index) => {
