@@ -70,6 +70,7 @@ const ListPost = () => {
               </Fragment>
             )}
             skeletonCpn={<SkeletonPost />}
+            virtualized
           />
         </>
       ) : (
