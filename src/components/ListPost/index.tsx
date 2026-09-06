@@ -3,6 +3,7 @@ import { EmptyContentSvg } from "../../assests/icons";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
+import { selectAllPosts } from "../../store/PostSlice";
 import { getPosts } from "../../store/PostSlice/asyncThunk";
 import InfiniteScroll from "../InfiniteScroll";
 import Post from "./Post";
@@ -12,9 +13,8 @@ import "./index.css";
 const ListPost = () => {
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
-  const { listPost, isLoading } = useAppSelector(
-    (state: AppState) => state.post,
-  );
+  const listPost = useAppSelector(selectAllPosts);
+  const isLoading = useAppSelector((state: AppState) => state.post.isLoading);
   const { currentPage, displayPageData } = useAppSelector(
     (state: AppState) => state.util,
   );
