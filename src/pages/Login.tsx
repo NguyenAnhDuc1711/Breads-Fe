@@ -21,9 +21,12 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import CodePopup from "../components/CodePopup";
 import { POST } from "../config/API";
 import { useAppDispatch } from "../hooks/redux";
-import { login } from "../store/UserSlice/asyncThunk";
+import { googleLogin, login } from "../store/UserSlice/asyncThunk";
 import { closeLoginPopupAction, showToast } from "../store/UtilSlice";
 import "./Login.css";
+
+const GOOGLE_SCRIPT_POLL_MS = 200;
+const GOOGLE_SCRIPT_TIMEOUT_MS = 4000;
 
 type LoginInput = {
   email: string;
@@ -44,6 +47,8 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
   });
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [googleUnavailable, setGoogleUnavailable] = useState<boolean>(false);
+  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   const inputsRef = useRef(inputs);
   useEffect(() => {
@@ -144,6 +149,101 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
   const handleLogin = async () => {
     await handleLoginWithInputs(inputs);
   };
+
+  // Fires only once the user has picked a Google account and GIS handed us
+  // an ID token — if the user closes the account chooser before that,
+  // this callback never runs, so isLoading is never engaged and can't get stuck.
+  const handleGoogleCredential = useCallback(
+    async (response: { credential: string }) => {
+      setIsLoading(true);
+      try {
+        const data: any = await dispatch(
+          googleLogin({ idToken: response.credential }),
+        );
+        if (data?.meta?.requestStatus === "fulfilled" && !data?.payload?.error) {
+          dispatch(
+            showToast({
+              title: t("success"),
+              description: t("loginsuccess"),
+              status: "success",
+            }),
+          );
+          dispatch(closeLoginPopupAction());
+          if (
+            window.location.pathname.startsWith("/login") ||
+            window.location.pathname.startsWith("/signup")
+          ) {
+            router.replace("/");
+          }
+        } else {
+          dispatch(
+            showToast({
+              title: "Không thành công!",
+              description:
+                data?.payload?.error || data?.payload?.message || t("checkagain"),
+              status: "error",
+            }),
+          );
+        }
+      } catch (error: any) {
+        dispatch(
+          showToast({
+            title: "Không thành công!",
+            description: error?.error || t("checkagain"),
+            status: "error",
+          }),
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [dispatch, router, t],
+  );
+
+  // Loads the Google button once the GIS script (loaded via next/script in
+  // app/layout.tsx) is ready. The script is commonly blocked by ad blockers
+  // and school/corporate networks and throws no exception when blocked, so we
+  // poll for it and surface an explicit message instead of leaving an empty space.
+  useEffect(() => {
+    let elapsed = 0;
+    let pollId: ReturnType<typeof setInterval> | null = null;
+
+    const tryRenderButton = (): boolean => {
+      const gsi = (window as any).google?.accounts?.id;
+      if (!gsi) return false;
+      gsi.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential,
+      });
+      if (googleButtonRef.current) {
+        gsi.renderButton(googleButtonRef.current, {
+          type: "standard",
+          theme: "outline",
+          size: "large",
+          width: 320,
+        });
+      }
+      return true;
+    };
+
+    if (!tryRenderButton()) {
+      pollId = setInterval(() => {
+        elapsed += GOOGLE_SCRIPT_POLL_MS;
+        if (tryRenderButton()) {
+          if (pollId) clearInterval(pollId);
+          return;
+        }
+        if (elapsed >= GOOGLE_SCRIPT_TIMEOUT_MS) {
+          setGoogleUnavailable(true);
+          if (pollId) clearInterval(pollId);
+        }
+      }, GOOGLE_SCRIPT_POLL_MS);
+    }
+
+    return () => {
+      if (pollId) clearInterval(pollId);
+    };
+  }, [handleGoogleCredential]);
 
   const handleForgotPassword = async () => {
     try {
@@ -315,6 +415,18 @@ const Login = ({ isPopup = false }: { isPopup?: boolean } = {}) => {
             {t("SignIn")}
           </Button>
         </div>
+
+        <div className="login-page__divider">
+          <span>hoặc</span>
+        </div>
+
+        {googleUnavailable ? (
+          <Text className="login-page__google-unavailable">
+            Không tải được đăng nhập Google, vui lòng dùng email/mật khẩu
+          </Text>
+        ) : (
+          <div className="login-page__google-btn" ref={googleButtonRef} />
+        )}
 
         <div className="login-page__footer">
           <Text className="login-page__footer-text">

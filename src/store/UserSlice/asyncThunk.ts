@@ -83,6 +83,33 @@ export const login = createAsyncThunk(
   },
 );
 
+export const googleLogin = createAsyncThunk(
+  "user/googleLogin",
+  async (payload: { idToken: string }, { rejectWithValue }) => {
+    try {
+      const data: IUser | undefined | null = await POST({
+        path: Route.USER + USER_PATH.GOOGLE_SESSION,
+        payload,
+      });
+      if (data) {
+        const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+        if (data?._id && objectIdRegex.test(data?._id)) {
+          localStorage.setItem("userId", data?._id);
+        }
+        if (data?.accessToken) {
+          setAccessToken(data.accessToken);
+          notifyTokenRefreshed();
+        }
+      }
+      return data;
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        return rejectWithValue(err.response?.data);
+      }
+    }
+  },
+);
+
 export const bootstrapSession = createAsyncThunk(
   "user/bootstrapSession",
   async (_, { rejectWithValue }) => {

@@ -3,6 +3,7 @@ import {
   addPostToCollection,
   followUser,
   getMe,
+  googleLogin,
   login,
   logout,
   removePostFromCollection,
@@ -56,6 +57,12 @@ const userSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(login.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.userInfo = new UserResponse(action.payload);
+        state.isLoading = false;
+      }
+    });
+    builder.addCase(googleLogin.fulfilled, (state, action) => {
       if (action.payload) {
         state.userInfo = new UserResponse(action.payload);
         state.isLoading = false;
