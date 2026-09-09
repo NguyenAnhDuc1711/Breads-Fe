@@ -7,7 +7,6 @@ import {
   MenuItem,
   MenuList,
 } from "../../components/ui/primitives";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BsBrightnessHigh } from "react-icons/bs";
@@ -25,7 +24,6 @@ import "./SidebarMenu.css";
 const SidebarMenu = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -132,8 +130,12 @@ const SidebarMenu = () => {
 
   const handleLogout = async () => {
     try {
-      dispatch(logout());
-      router.push(`${PageConstant.LOGIN}`);
+      // Chờ logout xong rồi mới điều hướng, và điều hướng "cứng" thay vì
+      // router.push: logout.fulfilled reset toàn bộ store, nên UI đang mounted
+      // phải được dựng lại. Nếu chỉ push, HomePage còn sống sẽ giữ nguyên feed
+      // rỗng + isLoading=true và kẹt ở skeleton vĩnh viễn.
+      await dispatch(logout());
+      window.location.href = `/${PageConstant.LOGIN}`;
     } catch (error: any) {
       dispatch(
         showToast({

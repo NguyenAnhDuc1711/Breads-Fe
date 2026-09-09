@@ -88,6 +88,10 @@ const postSlice = createSlice({
         ? action.payload.filter((p: IPost) => p._id)
         : [];
       postsAdapter.setAll(state, posts);
+      // Danh sách đã được thay thế dứt điểm nên không còn "đang tải". Nếu không
+      // gỡ ở đây, isLoading (khởi tạo true) thành một latch: feed rỗng mà không
+      // có request nào đang chạy sẽ kẹt ở skeleton vĩnh viễn.
+      state.isLoading = false;
     },
     updatePostListLoading: (state, action) => {
       state.isLoading = action.payload;
