@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReactNode, Suspense } from "react";
+import Script from "next/script";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "../src/index.css";
 import "../src/animations.css";
@@ -76,6 +77,10 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
         }}
       >
         {gaId && <GoogleAnalytics gaId={gaId} />}
+        <Script
+          src="https://accounts.google.com/gsi/client"
+          strategy="afterInteractive"
+        />
         <Suspense fallback={null}>
           <GtmPageviewTracker />
         </Suspense>

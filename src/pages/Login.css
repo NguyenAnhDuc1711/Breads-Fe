@@ -229,6 +229,44 @@
   box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15) !important;
 }
 
+.login-page__divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.login-page__divider::before,
+.login-page__divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.login-page__divider span {
+  padding: 0 12px;
+}
+
+[data-theme="dark"] .login-page__divider::before,
+[data-theme="dark"] .login-page__divider::after {
+  border-bottom-color: #2d2d2d;
+}
+
+.login-page__google-btn {
+  display: flex;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.login-page__google-unavailable {
+  font-size: 13px;
+  color: #ef4444;
+  text-align: center;
+  margin: 0;
+}
+
 .login-page__footer {
   margin-top: 8px;
   padding-top: 20px;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import CreatePostBar from "../components/CreatePostBar";
 import ListPost from "../components/ListPost";
@@ -24,22 +24,41 @@ const HomePage = ({
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { currentPage } = useAppSelector((state: AppState) => state.util);
   const { FOR_YOU } = PageConstant;
+  const userId = userInfo?._id ?? "";
+  const loadedForUserId = useRef(userId);
+
+  const fetchFeed = () =>
+    dispatch(
+      getPosts({
+        filter: { page: tab },
+        page: 1,
+        isNewPage: true,
+        ...(userId ? { userId } : {}),
+      })
+    );
 
   useEffect(() => {
-    dispatch(updateListPost(initialPosts));
-    dispatch(updateHasMoreData(initialPosts.length > 0));
-    if (!initialPosts || initialPosts.length === 0) {
-      dispatch(
-        getPosts({
-          filter: { page: tab },
-          page: 1,
-          isNewPage: true,
-          ...(userInfo?._id ? { userId: userInfo._id } : {}),
-        })
-      );
+    // initialPosts đến từ fetch phía server; khi fetch đó hỏng nó có thể không
+    // phải mảng, nên chuẩn hoá trước khi lấy .length làm điều kiện — nếu không,
+    // `undefined === 0` là false và request cứu hộ bên dưới không bao giờ chạy.
+    const seeded = Array.isArray(initialPosts) ? initialPosts : [];
+    dispatch(updateListPost(seeded));
+    dispatch(updateHasMoreData(seeded.length > 0));
+    if (seeded.length === 0) {
+      fetchFeed();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
+
+  // Feed chỉ được nạp lúc mount, nên khi danh tính người xem đổi mà trang vẫn
+  // đang mounted (đăng nhập bằng popup, đăng xuất) thì dữ liệu của phiên trước
+  // ở lại: likedByMe và phần cá nhân hoá đều sai. Ref chặn fetch thừa lúc mount.
+  useEffect(() => {
+    if (loadedForUserId.current === userId) return;
+    loadedForUserId.current = userId;
+    fetchFeed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, tab]);
 
   useEffect(() => {
     dispatch(
